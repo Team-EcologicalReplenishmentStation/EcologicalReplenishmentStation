@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "ers:horseshoe_crab_meat"
+  },
+  "result": "ers:cooked_horseshoe_crab_meat"
+}

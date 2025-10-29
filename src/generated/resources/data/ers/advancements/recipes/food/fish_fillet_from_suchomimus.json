@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_suchomimus": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ers:suchomimus"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:fish_fillet_from_suchomimus"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_suchomimus",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:fish_fillet_from_suchomimus"
+    ]
+  },
+  "sends_telemetry_event": false
+}

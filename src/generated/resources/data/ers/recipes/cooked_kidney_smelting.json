@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.6,
+  "ingredient": {
+    "item": "oasis:kidney"
+  },
+  "result": "oasis:cooked_kidney"
+}

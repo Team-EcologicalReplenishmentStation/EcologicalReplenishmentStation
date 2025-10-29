@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ers:item/longirostris_spawn_egg"
+  }
+}

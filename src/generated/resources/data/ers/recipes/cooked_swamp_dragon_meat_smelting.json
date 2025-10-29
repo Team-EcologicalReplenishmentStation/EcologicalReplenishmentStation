@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "ers:swamp_dragon_meat"
+  },
+  "result": "ers:cooked_swamp_dragon_meat"
+}

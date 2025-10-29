@@ -1,0 +1,31 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "bleeding": {
+      "conditions": {
+        "effects": {
+          "ers:bleeding": {}
+        }
+      },
+      "trigger": "minecraft:effects_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:tourniquet"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "bleeding",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:tourniquet"
+    ]
+  },
+  "sends_telemetry_event": false
+}

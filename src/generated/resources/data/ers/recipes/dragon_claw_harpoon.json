@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "ers:swamp_dragon_claw"
+    },
+    "B": {
+      "item": "minecraft:trident"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "D": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "pattern": [
+    " AA",
+    "CBA",
+    "DC "
+  ],
+  "result": {
+    "item": "ers:dragon_claw_harpoon"
+  },
+  "show_notification": true
+}

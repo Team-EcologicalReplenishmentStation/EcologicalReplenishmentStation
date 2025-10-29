@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "ers:block/soul_cube_top",
+    "east": "ers:block/soul_cube_side",
+    "north": "ers:block/soul_cube_side",
+    "particle": "ers:block/soul_cube_side",
+    "south": "ers:block/soul_cube_side",
+    "up": "ers:block/soul_cube_top",
+    "west": "ers:block/soul_cube_side"
+  }
+}

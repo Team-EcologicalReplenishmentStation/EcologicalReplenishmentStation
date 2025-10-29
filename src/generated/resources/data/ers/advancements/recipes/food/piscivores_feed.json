@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "ers:has_fish_fillet": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ers:fish_fillet"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:piscivores_feed"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "ers:has_fish_fillet",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:piscivores_feed"
+    ]
+  },
+  "sends_telemetry_event": false
+}

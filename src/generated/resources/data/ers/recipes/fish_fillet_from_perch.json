@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ers:perch"
+    }
+  ],
+  "result": {
+    "count": 5,
+    "item": "ers:fish_fillet"
+  }
+}

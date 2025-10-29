@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    },
+    {
+      "item": "ers:cooked_fish_fillet"
+    }
+  ],
+  "result": {
+    "item": "ers:dried_fish"
+  }
+}

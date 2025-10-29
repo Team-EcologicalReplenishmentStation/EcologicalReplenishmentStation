@@ -1,0 +1,17 @@
+{
+  "durovela_tubunasus_call": {
+    "sounds": [
+      "oasis:durovela_tubunasus_call"
+    ]
+  },
+  "durovela_tubunasus_hurt": {
+    "sounds": [
+      "oasis:durovela_tubunasus_hurt"
+    ]
+  },
+  "tel_ring": {
+    "sounds": [
+      "ers:tel_ring"
+    ]
+  }
+}

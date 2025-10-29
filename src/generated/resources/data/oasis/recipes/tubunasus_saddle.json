@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "oasis:leather"
+    },
+    "C": {
+      "item": "minecraft:lead"
+    },
+    "D": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "A  ",
+    "BBB",
+    "CDB"
+  ],
+  "result": {
+    "item": "oasis:tubunasus_saddle"
+  },
+  "show_notification": true
+}

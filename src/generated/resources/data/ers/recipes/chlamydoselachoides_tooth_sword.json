@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "ers:chlamydoselachoides_tooth"
+    },
+    "C": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "AA ",
+    "A  ",
+    "C  "
+  ],
+  "result": {
+    "item": "ers:chlamydoselachoides_tooth_sword"
+  },
+  "show_notification": true
+}

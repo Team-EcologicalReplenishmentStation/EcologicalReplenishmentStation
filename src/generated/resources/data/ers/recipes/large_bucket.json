@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:bucket"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "pattern": [
+    "I I",
+    "I I",
+    " B "
+  ],
+  "result": {
+    "item": "ers:large_bucket"
+  },
+  "show_notification": true
+}

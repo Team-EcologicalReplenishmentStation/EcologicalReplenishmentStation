@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "entered_world": {
+      "conditions": {
+        "block": "minecraft:air"
+      },
+      "trigger": "minecraft:enter_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "ers:textures/block/soul_cube_side.png",
+    "description": {
+      "translate": "advancements.ers.enter_world.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "ers:soul_cube"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.ers.enter_world.title"
+    }
+  },
+  "requirements": [
+    [
+      "entered_world"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

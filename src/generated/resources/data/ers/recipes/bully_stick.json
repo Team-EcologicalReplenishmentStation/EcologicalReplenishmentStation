@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "C": {
+      "item": "minecraft:bone_block"
+    },
+    "D": {
+      "item": "minecraft:lead"
+    },
+    "I": {
+      "item": "minecraft:leather"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "CCC",
+    "D D"
+  ],
+  "result": {
+    "item": "ers:bully_stick"
+  },
+  "show_notification": true
+}

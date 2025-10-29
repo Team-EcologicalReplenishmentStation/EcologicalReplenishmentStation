@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "ers:fish_fillet"
+  },
+  "result": "ers:cooked_fish_fillet"
+}

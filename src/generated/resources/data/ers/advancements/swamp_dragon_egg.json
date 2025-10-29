@@ -1,0 +1,38 @@
+{
+  "parent": "ers:enter_world",
+  "criteria": {
+    "has_swamp_dragon_egg": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ers:swamp_dragon_egg"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.ers.swamp_dragon_egg.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "ers:swamp_dragon_egg"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.ers.swamp_dragon_egg.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_swamp_dragon_egg"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

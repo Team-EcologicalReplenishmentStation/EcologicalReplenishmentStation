@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:lead"
+    },
+    "I": {
+      "item": "minecraft:bamboo"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "IBI",
+    "IBI"
+  ],
+  "result": {
+    "item": "ers:scratching_board"
+  },
+  "show_notification": true
+}

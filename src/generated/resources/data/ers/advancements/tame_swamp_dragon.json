@@ -1,0 +1,40 @@
+{
+  "parent": "ers:swamp_dragon_egg",
+  "criteria": {
+    "tamed_swamp_dragon": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "ers:dentisaurus_longirostris"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:tame_animal"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.ers.tame_swamp_dragon.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "ers:swamp_dragon_saddle"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.ers.tame_swamp_dragon.title"
+    }
+  },
+  "requirements": [
+    [
+      "tamed_swamp_dragon"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

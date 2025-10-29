@@ -1,0 +1,27 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:swamp",
+    "minecraft:mangrove_swamp"
+  ],
+  "spawners": [
+    {
+      "type": "ers:tachypleus_gladius",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "ers:latimeria_percoides",
+      "maxCount": 3,
+      "minCount": 1,
+      "weight": 15
+    },
+    {
+      "type": "ers:latimeria_suchomimus",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 8
+    }
+  ]
+}

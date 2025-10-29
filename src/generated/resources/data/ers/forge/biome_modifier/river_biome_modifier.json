@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "minecraft:river",
+  "spawners": {
+    "type": "ers:latimeria_suchomimus",
+    "maxCount": 2,
+    "minCount": 1,
+    "weight": 10
+  }
+}

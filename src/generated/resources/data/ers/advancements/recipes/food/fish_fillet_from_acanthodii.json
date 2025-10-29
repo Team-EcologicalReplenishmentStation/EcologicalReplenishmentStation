@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_acanthodii": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ers:chlamydoselachoides"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:fish_fillet_from_acanthodii"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_acanthodii",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:fish_fillet_from_acanthodii"
+    ]
+  },
+  "sends_telemetry_event": false
+}

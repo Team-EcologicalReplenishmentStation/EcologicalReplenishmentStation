@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_acanthodii_tooth": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ers:chlamydoselachoides_tooth"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:chlamydoselachoides_tooth_sword"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_acanthodii_tooth",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:chlamydoselachoides_tooth_sword"
+    ]
+  },
+  "sends_telemetry_event": false
+}
