@@ -2,6 +2,7 @@ package cn.aurorian.oasis.init;
 
 import cn.aurorian.oasis.Oasis;
 import cn.aurorian.oasis.entity.pygopodusannulatum.PygopodusAnnulatumEntity;
+import cn.aurorian.oasis.entity.tubunasusclyderotunda.TubunasusClyderotundaEntity;
 import cn.aurorian.oasis.entity.tubunasusdurovela.TubunasusDurovelaEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -19,6 +20,11 @@ public class OasisEntities {
         () -> EntityType.Builder.of(TubunasusDurovelaEntity::new, MobCategory.CREATURE)
                 .sized(3, 3.2f)
                 .build(ResourceLocation.fromNamespaceAndPath(Oasis.MODID, "tubunasus_durovela").toString()));
+
+    public static final RegistryObject<EntityType<TubunasusClyderotundaEntity>> TUBUNASUS_CLYDEROTUNDA = ENTITIES.register("tubunasus_clyderotunda",
+        () -> EntityType.Builder.of(TubunasusClyderotundaEntity::new, MobCategory.CREATURE)
+                .sized(2.85f, 2.9f)
+                .build(ResourceLocation.fromNamespaceAndPath(Oasis.MODID, "tubunasus_clyderotunda").toString()));
 
     public static final RegistryObject<EntityType<PygopodusAnnulatumEntity>> PYGOPODUS_ANNULATUM = ENTITIES.register("pygopodus_annulatum",
         () -> EntityType.Builder.of(PygopodusAnnulatumEntity::new, MobCategory.CREATURE)

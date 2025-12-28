@@ -3,29 +3,30 @@ package cn.aurorian.ers.entity.creatures.dentisauruslongirostris;
 import cn.aurorian.ers.client.animator.GeneralAnimator;
 import cn.aurorian.ers.client.animator.SwampDragonAnimator;
 import cn.aurorian.ers.entity.AttackType;
+import cn.aurorian.ers.entity.ErsTamable;
 import cn.aurorian.ers.entity.ErsTamableVehicle;
 import cn.aurorian.ers.entity.MobAttack;
-import cn.aurorian.ers.entity.ai.goal.MobFollowOwnerGoal;
-import cn.aurorian.ers.entity.ai.goal.MobWanderGoal;
+import cn.aurorian.ers.entity.ai.ErsTamableLookAtPlayerGoal;
+import cn.aurorian.ers.entity.ai.goal.*;
 import cn.aurorian.ers.entity.ai.movecontrol.AquaticMoveControl;
 import cn.aurorian.ers.entity.ai.movecontrol.LimitedMoveControl;
 import cn.aurorian.ers.entity.ai.navigation.MMGroundPathNavigation;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.*;
+import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.AttackFishGoal;
+import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.DentisaurusLongirostrisMeleeAttackGoal;
+import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.DentisaurusLongirostrisRandomSwimGoal;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.invertory.DentisaurusLongirostrisMenuProvider;
 import cn.aurorian.ers.init.ErsBlocks;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.init.ErsNetwork;
 import cn.aurorian.ers.item.ErsMobLargeBucket;
-import cn.aurorian.ers.item.equipment.MountEquipment;
 import cn.aurorian.ers.packet.MobSyncDimPacket;
 import cn.aurorian.ers.packet.MobTurnPacket;
-import cn.aurorian.ers.packet.VehicleJumpPacket;
+import cn.aurorian.ers.packet.VehicleJumpInWaterPacket;
 import cn.aurorian.ers.util.ErsUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -58,6 +59,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -69,41 +71,41 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-import org.joml.Vector3f;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.IntFunction;
 
 public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<DentisaurusLongirostrisEntity> implements ContainerListener, HasCustomInventoryScreen, Bucketable, VariantHolder<DentisaurusLongirostrisEntity.Variant>{
     private final GeneralAnimator<DentisaurusLongirostrisEntity> animator;
+
     private static final float BASE_MOVE_SPEED = 0.25f;
-    private static final float BASE_HEALTH = 150.0f;
+
+    private static final float BASE_HEALTH = 250.0f;
+
     private static final float BASE_ATTACK_DAMAGE = 15.0f;
+
     public static final float BASE_BOUNDING_BOX_WIDTH = 3.5f;
-    public static final float BASE_BOUNDING_BOX_HEIGHT = 2.75f;
+
+    public static final float BASE_BOUNDING_BOX_HEIGHT = 3.4f;
+
     private static final float ACCELERATION = 0.08f;
+
     private boolean init = false;
 
-    private static final EntityDataAccessor<Float> RENDER_SIZE = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> NEXT_POOP_TIME = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Vector3f> FOOD_POSITION = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.VECTOR3);
+
     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntityDataAccessor<Float> HUNGER = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Boolean> BLOODY = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> ARMORED = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
+
     public static final EntityDataAccessor<Integer> FILLED_FISH = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> ELITE = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> CAN_BE_ELITE = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> MATURE = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
+
     public DentisaurusLongirostrisEntity(EntityType<? extends DentisaurusLongirostrisEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         animator = new SwampDragonAnimator(this);
@@ -115,6 +117,9 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         this.SPRINT_COST = 0.15f;
         this.RECOVER = 0.25f;
         this.WATER_ANIMAL = true;
+
+        this.doAgeTick = true;
+        this.doHunger = true;
     }
 
     protected void switchNavigator(boolean onLand) {
@@ -182,9 +187,17 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     }
 
     @Override
+    public void executeJumpAttackType() {
+        if(getAttackState().isEmpty() && !onGround() && !isInWater()){
+           this.startAttack(AttackType.SWAMP_DRAGON_JUMP_ATTACK);
+           this.setDeltaMovement(this.getDeltaMovement().scale(0.5f));
+        }
+    }
+
+    @Override
     public boolean isPushable() {
         boolean mightBeSleeping = updateSkyBrightness() < 4 && this.getControllingPassenger() == null && getCommand() == 0 && this.getAttackState().getType() == AttackType.EMPTY && this.getTarget() == null && !this.isInWater();
-        return !isVehicle() && !mightBeSleeping && getCommand() != 1 && getAttackState().getType().canMove();
+        return (!mightBeSleeping && getCommand() != 1 && getAttackState().getType().canMove()) || (isMoving() && isVehicle());
     }
 
     @Override
@@ -200,22 +213,19 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         goalSelector.addGoal(5, new MobWanderGoal(this, 1.2){
             @Override
             public boolean canUse() {
-                if (this.mob.isInWater() || !((DentisaurusLongirostrisEntity)this.mob).getAttackState().getType().canMove()) {
-                    return false;
-                }
-                return super.canUse() && ((DentisaurusLongirostrisEntity)this.mob).updateSkyBrightness() > 4 && ((DentisaurusLongirostrisEntity)this.mob).getCommand() == 0;
+                return super.canUse() && ((ErsTamable<?>)this.mob).updateSkyBrightness() > 4;
             }
         });
-        goalSelector.addGoal(6, new DentisaurusLongirostrisLookAtPlayerGoal(this, Player.class, 6.0F));
-        targetSelector.addGoal(1, new DentisaurusLongirostrisHurtByTargetGoal(this));
+        goalSelector.addGoal(6, new ErsTamableLookAtPlayerGoal(this, Player.class, 6.0F));
+        targetSelector.addGoal(1, new ErsTamableHurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this,Player.class, true){
             @Override
             public boolean canUse() {
-                return super.canUse() && !isTame() && isMature();
+                return super.canUse() && !isTame() && isMature() && !mightBeSleeping();
             }
         });
-        targetSelector.addGoal(2, new DentisaurusLongirostrisOwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(3, new DentisaurusLongirostrisOwnerHurtTargetGoal(this));
+        targetSelector.addGoal(2, new ErsTamableOwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(3, new ErsTamableOwnerHurtTargetGoal(this));
         targetSelector.addGoal(4, new AttackFishGoal(this, AbstractFish.class, Boolean.TRUE));
     }
     @Override
@@ -232,6 +242,11 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 return true;
             }
         };
+    }
+
+    @Override
+    public boolean mightBeSleeping() {
+        return updateSkyBrightness() < 4 && this.getControllingPassenger() == null && getCommand() == 0 && this.getAttackState().getType() == AttackType.EMPTY && this.getTarget() == null && !this.isInWater();
     }
 
     @Override
@@ -265,12 +280,6 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             if(this.isMoving()){
                 updateMount();
             }
-
-            if(entityData.get(BLOODY)){
-                if(tickCount % 2400 == 0 || isInWater()){
-                    entityData.set(BLOODY, false);
-                }
-            }
         }
 
         if (!isClientSide()) {
@@ -291,17 +300,13 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 }
             }
 
-            if(staminaCount > 40 && this.getCommand() == 1){
-                setStamina(getStamina() + 0.4f);
-            }
-
             if(tickCount % 20 == 0){
                 if(tickCount % 400 ==0){
                     this.heal(1);
                 }
 
                 //饥饿机制
-                float hunger = this.entityData.get(HUNGER);
+                float hunger = getHunger();
                 if(tickCount % 100 == 0){
                     if(isElite())
                         hunger -= 0.1f;
@@ -311,7 +316,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 }
 
                 if((hunger < 50 || this.getHealth() < this.getMaxHealth()) && tickCount % 200 == 0){
-                    for (int slot = 1; slot <= 3; slot++) {
+                    for (int slot = 5; slot <= 7; slot++) {
                         if (!this.getInventory().getItem(slot).isEmpty()) {
                             this.getInventory().getItem(slot).shrink(1);
                             this.feed(3);
@@ -331,46 +336,36 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
                 //装备更新
                 int filledSlots = 0;
-                for (int slot = 1; slot <= 3; slot++) {
+                for (int slot = 5; slot <= 7; slot++) {
                     if (!getInventory().getItem(slot).isEmpty()) {
                         filledSlots++;
                     }
                 }
-                entityData.set(FILLED_FISH,filledSlots);
+                setFilledFish(filledSlots);
 
-                if(hunger > 0){
-                    this.setAgeInTicks(this.getAgeInTicks() + 20);
-                }
-
-                int nextPoopTime = this.entityData.get(NEXT_POOP_TIME);
+                int nextPoopTime = getNextPoopTime();
                 if (nextPoopTime > 0) {
-                    this.entityData.set(NEXT_POOP_TIME, nextPoopTime - 20);
+                    setNextPoopTime(nextPoopTime - 20);
                 } else {
                     this.generateFeces();
-                    this.entityData.set(NEXT_POOP_TIME, 10000 + RandomSource.create().nextInt(14000));
+                    setNextPoopTime(10000 + RandomSource.create().nextInt(14000));
                 }
             }
 
-            boolean hasScratchingBoard = false;
-            for (int i = 5; i <= 7; i++) {
+            for (int i = 1; i <= 3; i++) {
                 ItemStack itemStack = this.inventory.getItem(i);
                 if(!itemStack.isEmpty()){
-                    if(itemStack.getItem() instanceof MountEquipment equipment){
-                        equipment.tickEquip(itemStack,this);
-                    }
                     if(itemStack.is(Items.TURTLE_HELMET)){
                         if(this.getControllingPassenger()!=null){
                             turtleHelmetTick();
                         }
                     }
-                    if(itemStack.is(ErsItems.SCRATCHING_BOARD.get()))
-                        hasScratchingBoard = true;
                 }
             }
 
             //践踏
             if(this.isSprinting()){
-                stompEffect(3f, 3f, hasScratchingBoard ? 4f : 2f);
+                stompEffect(3f, 3f, checkEquipment(ErsItems.SCRATCHING_BOARD.get()) ? 4f : 2f);
             }
         }
     }
@@ -415,6 +410,18 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     }
 
     @Override
+    protected float calculateScale() {
+        int age = getAgeInDays();
+        if(this.isMature()){
+            age -= 20;
+        }
+        if(this.isElite()){
+            age -= 18;
+        }
+        return ErsUtils.calculateRenderSize(age);
+    }
+
+    @Override
     public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
         int age = getAgeInDays();
         float scale;
@@ -432,51 +439,19 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         return this.getType().getDimensions().scale(scale);
     }
 
-    public float getHunger() {
-        return this.entityData.get(HUNGER);
-    }
-
-    public void setHunger(float hunger) {
-        entityData.set(HUNGER, java.lang.Math.max(java.lang.Math.min(hunger, 100),0));
-    }
-
-    public void feed(int foodAmount) {
-        setHunger(getHunger() + foodAmount);
-    }
-
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
         return itemStack.is(ItemTags.FISHES);
     }
-
-    public int getCommand() {
-        return this.entityData.get(COMMAND);
+    public void setFilledFish(int count) {
+        this.entityData.set(FILLED_FISH, count);
     }
-
-    public void setCommand(int command) {
-        this.entityData.set(COMMAND, command);
-    }
-    public boolean canBeElite() {
-        return this.entityData.get(CAN_BE_ELITE);
-    }
-    public void setCanBeElite(boolean canBeElite) {
-        this.entityData.set(CAN_BE_ELITE, canBeElite);
-    }
-    public boolean isElite() {
-        return this.entityData.get(ELITE);
-    }
-    public void setElite(boolean elite) {
-        this.entityData.set(ELITE, elite);
-    }
-    public boolean isMature() {
-        return this.entityData.get(MATURE);
-    }
-    public void setMature(boolean mature) {
-        this.entityData.set(MATURE, mature);
+    public int getFilledFish() {
+        return this.entityData.get(FILLED_FISH);
     }
 
     @Override
-    public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand pHand) {
+    public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand pHand) {
         if(player.getMainHandItem().getItem() == ErsItems.LARGE_WATER_BUCKET.get() && this.isTame() && this.isOwnedBy(player))
         {
             return ErsMobLargeBucket.bucketMobPickup(player, pHand, this).orElse(InteractionResult.PASS);
@@ -487,7 +462,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             player.startRiding(this);
         }
 
-        if (player.isCrouching() && this.isTame() && this.isOwnedBy(player) && !player.getMainHandItem().is(ItemTags.FISHES))
+        if (pHand == InteractionHand.MAIN_HAND && player.isCrouching() && this.isTame() && this.isOwnedBy(player) && !player.getMainHandItem().is(ItemTags.FISHES))
         {
             navigation.stop();
             if (!level().isClientSide) {
@@ -499,12 +474,12 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             String commandText = "stand";
             if (this.getCommand() == 1) {
                 commandText = "sit";
+                this.setTarget(null);
             } else if (this.getCommand() == 2) {
                 commandText = "follow";
                 this.setTarget(null);
             }
             player.displayClientMessage(Component.translatable("ers.command." + commandText), true);
-            if (isOrderedToSit()) setTarget(null);
         }
 
         if (!isClientSide() && (player.getMainHandItem().is(ItemTags.FISHES) || player.getMainHandItem().is(ErsItems.PISCIVORES_FEED.get()))) {
@@ -528,11 +503,11 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     private void generateFeces(){
         if (this.level().isClientSide) return;
-        List<BlockState> fecesBlocks = List.of(ErsBlocks.SWAMP_DRAGON_BONE_FECES.get().defaultBlockState(),
-                ErsBlocks.SWAMP_DRAGON_SMALL_FECES.get().defaultBlockState(),
-                ErsBlocks.SWAMP_DRAGON_LARGE_FECES.get().defaultBlockState(),
-                ErsBlocks.SWAMP_DRAGON_GLASSES_FECES.get().defaultBlockState(),
-                ErsBlocks.SWAMP_DRAGON_TEL_FECES.get().defaultBlockState());
+        List<BlockState> fecesBlocks = List.of(ErsBlocks.BONE_FECES.get().defaultBlockState(),
+                ErsBlocks.SMALL_FECES.get().defaultBlockState(),
+                ErsBlocks.LARGE_FECES.get().defaultBlockState(),
+                ErsBlocks.GLASSES_FECES.get().defaultBlockState(),
+                ErsBlocks.TEL_FECES.get().defaultBlockState());
         BlockPos pos = this.blockPosition();
         Level level = this.level();
 
@@ -544,7 +519,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         if (level.getBlockState(targetPos).isAir() &&
             level.getBlockState(targetPos.below()).isSolidRender(level, targetPos.below())) {
             BlockState state = fecesBlocks.get(this.level().random.nextInt(fecesBlocks.size()));
-            if(state.is(ErsBlocks.SWAMP_DRAGON_TEL_FECES.get())){
+            if(state.is(ErsBlocks.TEL_FECES.get())){
                 if(this.level().random.nextFloat() < 0.1f){
                     return;
                 }
@@ -567,14 +542,9 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         BlockPos pos = this.blockPosition();
         Level level = this.level();
 
-        double yRot = Math.toRadians(this.getYRot());
-        int offsetX = (int) (-Math.sin(yRot) * 1.5);
-        int offsetZ = (int) (Math.cos(yRot) * 1.5);
-
-        BlockPos targetPos = pos.offset(offsetX, 0, offsetZ);
-        if (level.getBlockState(targetPos).isAir() &&
-                level.getBlockState(targetPos.below()).isSolidRender(level, targetPos.below())) {
-            level.setBlock(targetPos, state, 3);
+        if (level.getBlockState(pos).isAir() &&
+                level.getBlockState(pos.below()).isSolidRender(level, pos.below())) {
+            level.setBlock(pos, state, 3);
         }
     }
 
@@ -584,25 +554,16 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     }
 
     @Override
-    protected @NotNull Vec3 getRiddenInput(@NotNull Player pPlayer, @NotNull Vec3 pTravelVector) {
-        if(this.rideSpeed != 0 || pPlayer.jumping){
+    protected @NotNull Vec3 getRiddenInput(@NotNull Player player, @NotNull Vec3 pTravelVector) {
+        if(this.rideSpeed != 0 || player.jumping){
             updateMount();
             if(getCommand() == 1)
                 this.setCommand(0);
         }
         if(this.isInFluidType()){
-            if(this.isSprinting())
-            {
-                this.getAttribute(ForgeMod.SWIM_SPEED.get()).setBaseValue(12);
-            }
-            else
-            {
-                this.getAttribute(ForgeMod.SWIM_SPEED.get()).setBaseValue(8);
-            }
-
             float y = 0;
-            if(pPlayer.jumping && getSwimState() != 1){
-                y = 0.4f;
+            if(player.jumping && getSwimState() != 1){
+                y = 0.45f;
                 if(!wasEyeInWater && getSwimState() != 3)
                     setSwimState(1);
             }else if(entityData.get(IS_DIVING) && getSwimState() != 1) {
@@ -621,6 +582,10 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         }
         else
         {
+            if(onGround() && player.jumping && getAttackState().isEmpty()){
+                startAttack(AttackType.JUMP);
+                this.setDeltaMovement(this.getDeltaMovement().scale(2).add(0, 1, 0));
+            }
             return new Vec3(0, 0, this.rideSpeed);
         }
     }
@@ -646,7 +611,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             if((!this.getRotDirection().isLargeTurn() || this.isSprinting()) && (Math.abs(driver.zza) > 0 || Math.abs(driver.xxa) > 0))
             {
                 float baseSpeed = (float) this.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
-                this.rideSpeed = Mth.approach(this.rideSpeed, isSprinting() ? baseSpeed * 2.2f : baseSpeed, ACCELERATION);
+                this.rideSpeed = Mth.approach(this.rideSpeed, isSprinting() ? baseSpeed * 2.2f : isInWater() ? 1.25f * baseSpeed : baseSpeed, ACCELERATION);
             }else{
                 this.rideSpeed = Mth.approach(this.rideSpeed, 0, ACCELERATION * 2);
             }
@@ -660,22 +625,18 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     @Override
     protected void jumpFromGround() {
         // 基础跳跃速度
-        double jumpVelocity = 0.2;
+        double jumpVelocity = 0.36;
         // 设置新的运动速度
         this.setDeltaMovement(this.getDeltaMovement().add(0, jumpVelocity, 0));
         this.hasImpulse = true;
         ForgeHooks.onLivingJump(this);
         if(this.level().isClientSide)
-            ErsNetwork.INSTANCE.sendToServer(new VehicleJumpPacket(this.getId()));
-    }
-
-    public int updateSkyBrightness() {
-        return ErsUtils.updateSkyBrightness(level());
+            ErsNetwork.INSTANCE.sendToServer(new VehicleJumpInWaterPacket(this.getId()));
     }
 
     @Override
     public void registerControllers(ControllerRegistrar controllers) {
-        AnimationController<DentisaurusLongirostrisEntity> main = new AnimationController<>(this, "main", 4, state -> {
+        AnimationController<DentisaurusLongirostrisEntity> main = new AnimationController<>(this, "main", 5, state -> {
             RawAnimation builder = RawAnimation.begin();
             boolean flag1 = false;
             for(int y = 1; y <= 8; y++) {
@@ -692,7 +653,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             if (isFalling() && !flag1) {
                 builder.thenLoop("animation.fall");
             }
-            if (isInWater() && !onGround()) {
+            if (isInWater() && !onGround() && (!isMature() || getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) > 1.7f * getRenderSize())) {
                 if (isMoving() && isSprinting()) {
                     builder.thenLoop("animation.quickly_swimming");
                 } else if (isMoving() && !isSprinting() && (getWaterDepth() <= 3 || this.onGround() || !this.isMature())) {
@@ -717,12 +678,9 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                     }
                 }
             } else {
-                if (!this.onGround() && flag1) {
-                    builder.thenLoop("animation.swim_shallow");
-                }
-                if (isMoving() && isSprinting()) {
+                if (isMoving() && isSprinting() && onGround()) {
                     builder.thenLoop("animation.run");
-                } else if (isMoving()) {
+                } else if (isMoving() && onGround()) {
                     builder.thenLoop("animation.walk");
                 } else if (!this.getRotDirection().isNone()) {
                     if (this.getRotDirection().isLeft()) {
@@ -740,13 +698,13 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                     if(getCommand() == 1){
                         builder.thenLoop("animation.idle_sit");
                     }
-                    else if(updateSkyBrightness() < 4 && this.getControllingPassenger() == null && getCommand() == 0 && this.getAttackState().getType() == AttackType.EMPTY && this.getTarget() == null && !this.isInWater()){
-                        if(isMature() && this.level().getRawBrightness(this.blockPosition(),0) > 8){
+                    else if(mightBeSleeping()){
+                        if(this.level().getRawBrightness(this.blockPosition(),0) > 8 && isMature()){
                             builder.thenLoop("animation.sleep-sunlight");
                         }else {
                             builder.thenLoop("animation.sleep");
                         }
-                    }else {
+                    }else if(onGround()){
                         builder.thenLoop("animation.idle");
                     }
                 }
@@ -755,7 +713,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             return state.setAndContinue(builder);
             });
 
-        AnimationController<DentisaurusLongirostrisEntity> attack = new AnimationController<>(this, "attack",4, state -> PlayState.STOP)
+        AnimationController<DentisaurusLongirostrisEntity> attack = new AnimationController<>(this, "attack",5, state -> PlayState.STOP)
                 .triggerableAnim("attack", RawAnimation.begin().thenPlay("animation.attack-idle"))
                 .triggerableAnim("attack-walk", RawAnimation.begin().thenPlay("animation.attack-walk"))
                 .triggerableAnim("attack-run", RawAnimation.begin().thenPlay("animation.attack-run"))
@@ -772,7 +730,11 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 .triggerableAnim("swim_attack-miss", RawAnimation.begin().thenPlay("animation.swim_attack-miss"))
                 .triggerableAnim("swim_attack2", RawAnimation.begin().thenPlay("animation.swim_attack2"))
                 .triggerableAnim("catch_fish-small", RawAnimation.begin().thenPlay("animation.catch_fish-small"))
-                .triggerableAnim("catch_fish-middle", RawAnimation.begin().thenPlay("animation.catch_fish-middle"));
+                .triggerableAnim("catch_fish-middle", RawAnimation.begin().thenPlay("animation.catch_fish-middle"))
+                .triggerableAnim("knockdown_left", RawAnimation.begin().thenPlay("animation.knockdown_left"))
+                .triggerableAnim("knockdown_right", RawAnimation.begin().thenPlay("animation.knockdown_right"))
+                .triggerableAnim("jump",RawAnimation.begin().thenPlay("animation.jump"))
+                .triggerableAnim("jump_attack",RawAnimation.begin().thenPlay("animation.jump_attack"));
 
         AnimationController<DentisaurusLongirostrisEntity> extra = new AnimationController<>(this, "extra",0, state -> PlayState.STOP)
                 .triggerableAnim("idle2", RawAnimation.begin().thenPlay("animation.idle2"))
@@ -798,7 +760,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         }
         // 从实体当前位置向上检查
         int depth = 0;
-        int maxCheckHeight = 16; // 设置一个最大检查高度，避免无限循环
+        int maxCheckHeight = 12; // 设置一个最大检查高度，避免无限循环
         for (int i = 0; i < maxCheckHeight; i++) {
             BlockPos checkPos = entityPos.above(i);
             // 检查世界边界
@@ -837,26 +799,23 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     protected void dropCustomDeathLoot(@NotNull DamageSource pSource, int pLooting, boolean pRecentlyHit) {
+        if(isSoul())
+            return;
+
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
         if(isMature() && random.nextFloat() < 0.15f){
             ItemStack stack = new ItemStack(ErsItems.SWAMP_DRAGON_EGG.get());
             this.spawnAtLocation(stack);
         }
-
-        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
-            ItemStack stack = this.inventory.getItem(i);
-            this.spawnAtLocation(stack);
-            this.inventory.setItem(i, ItemStack.EMPTY);
-        }
     }
     @Override
     public void containerChanged(@NotNull Container pContainer) {
         this.setSaddled(!this.inventory.getItem(0).isEmpty());
-        this.entityData.set(ARMORED,!getInventory().getItem(4).isEmpty());
+        setArmored(!getInventory().getItem(4).isEmpty() && isElite());
 
         boolean healthBoost = false;
         boolean armorBoost = false;
-        for (int i = 5; i <= 7; i++) {
+        for (int i = 1; i <= 3; i++) {
             ItemStack itemStack = this.inventory.getItem(i);
             if(!itemStack.isEmpty()){
                 if(itemStack.is(Items.ENCHANTED_GOLDEN_APPLE)){
@@ -888,24 +847,12 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         }
     }
 
-    private float calculateScale() {
-        int age = getAgeInDays();
-        if(this.isMature()){
-            age -= 20;
-        }
-        if(this.isElite()){
-            age -= 18;
-        }
-        return ErsUtils.calculateRenderSize(age);
-    }
-
     @Override
     public void openCustomInventoryScreen(@NotNull Player player) {
-        if (!isClientSide()) {
+        if (!isClientSide() && !isSoul()) {
             NetworkHooks.openScreen(
                 (ServerPlayer) player,
                 new DentisaurusLongirostrisMenuProvider(this),
-                // 写入实体ID到数据缓冲区
                 buf -> buf.writeInt(this.getId())
             );
         }
@@ -921,91 +868,50 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(FOOD_POSITION, new Vector3f(0, 0, 0));
         entityData.define(FROM_BUCKET, false);
         entityData.define(NEXT_POOP_TIME, RandomSource.create().nextInt(24000));
-        entityData.define(RENDER_SIZE, 1.0f);
-        entityData.define(HUNGER,100f);
         entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(200,400));
-        entityData.define(BLOODY, false);
-        entityData.define(ARMORED,false);
         entityData.define(FILLED_FISH,0);
-        entityData.define(COMMAND, 0);
-        entityData.define(CAN_BE_ELITE, false);
-        entityData.define(ELITE, false);
-        entityData.define(MATURE,false);
     }
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
-        compound.putInt("AgeTicks", this.getAgeInTicks());
-        compound.putInt("NextPoopTime", this.getNextPoopTime());
-        compound.putFloat("RenderSize", this.getRenderSize());
-        compound.putFloat("Hunger", this.getHunger());
         compound.putInt("Command", this.getCommand());
-        compound.putBoolean("Armored",entityData.get(ARMORED));
-        compound.putBoolean("Elite", this.isElite());
-        compound.putBoolean("CanBeElite", this.canBeElite());
-        compound.putBoolean("Mature", this.isMature());
-        if(hasCustomName())
-            compound.putString("CustomName", Component.Serializer.toJson(this.getCustomName()));
-
-        ListTag itemsList = new ListTag();
-        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
-            ItemStack stack = this.inventory.getItem(i);
-            if (!stack.isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putInt("Slot", i);
-                stack.save(itemTag);
-                itemsList.add(itemTag);
-            }
-        }
-        compound.put("Items", itemsList);
+        compound.putInt("FilledFish",this.getFilledFish());
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
-        this.setAgeInTicks(compound.getInt("AgeTicks"));
-        this.setNextPoopTime(compound.getInt("NextPoopTime"));
-        this.setRenderSize(compound.getFloat("RenderSize"));
-        this.setHunger(compound.getFloat("Hunger"));
         this.setCommand(compound.getInt("Command"));
-        this.entityData.set(ARMORED,compound.getBoolean("Armored"));
-        this.setElite(compound.getBoolean("Elite"));
-        this.setCanBeElite(compound.getBoolean("CanBeElite"));
-        this.setMature(compound.getBoolean("Mature"));
-        if(compound.contains("CustomName"))
-            this.setCustomName(Component.Serializer.fromJson(compound.getString("CustomName")));
-
-        this.inventory.clearContent();
-        ListTag itemsList = compound.getList("Items", 10);
-        for (int i = 0; i < itemsList.size(); i++) {
-            CompoundTag itemTag = itemsList.getCompound(i);
-            int slot = itemTag.getInt("Slot");
-            ItemStack stack = ItemStack.of(itemTag);
-            if (!stack.isEmpty() && slot >= 0 && slot < this.inventory.getContainerSize()) {
-                this.inventory.setItem(slot, stack);
-            }
-        }
+        this.setFilledFish(compound.getInt("FilledFish"));
     }
 
     @Override
     public void updateMount() {
         this.getEntityData().set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200,400));
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle2");
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle3");
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle_yawn");
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle_sit2");
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle_sit3");
+        getAnimatableInstanceCache().getManagerForId(getId()).getAnimationControllers().get("extra").stop();
+//        stopTriggeredAnimation("extra","idle2");
+//        stopTriggeredAnimation("extra","idle3");
+//        stopTriggeredAnimation("extra","idle_yawn");
+//        stopTriggeredAnimation("extra","idle_sit2");
+//        stopTriggeredAnimation("extra","idle_sit3");
 
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("catch_fish-small");
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("catch_fish-middle");
+        stopTriggeredAnimation("attack","catch_fish-small");
+        stopTriggeredAnimation("attack","catch_fish-middle");
+        if(this.getAttackState().isEmpty()){
+            stopTriggeredAnimation("attack","knockdown_left");
+            stopTriggeredAnimation("attack","knockdown_right");
+        }
         if(this.getAttackState().getType() == AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL || this.getAttackState().getType() == AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE){
             this.getAttackState().isSyncInstance = true;
             this.setAttackState(new MobAttack(AttackType.EMPTY,this));
+        }
+
+        if(horizontalCollision || onGround()){
+            stopTriggeredAnimation("attack","jump");
         }
     }
 
@@ -1020,22 +926,13 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         return false;
     }
 
-    public GeneralAnimator<DentisaurusLongirostrisEntity> getAnimator(){
-        return animator;
+    @Override
+    public boolean checkSpawnObstruction(@NotNull LevelReader pLevel) {
+        return pLevel.isUnobstructed(this);
     }
 
-    public void setFoodPosition(Vector3f foodPosition){
-        entityData.set(FOOD_POSITION, foodPosition);
-    }
-    public Vector3f getFoodPosition(){
-        return entityData.get(FOOD_POSITION);
-    }
-    public float getRenderSize()
-    {
-        return entityData.get(RENDER_SIZE);
-    }
-    public void setRenderSize(float renderSize){
-        entityData.set(RENDER_SIZE, renderSize);
+    public GeneralAnimator<DentisaurusLongirostrisEntity> getAnimator(){
+        return animator;
     }
     public int getInventorySize(){
         return 8;
@@ -1050,7 +947,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     @Override
     public boolean isSaddleable()
     {
-        return isAlive() && isTame() && isMature();
+        return super.isSaddleable() && isMature();
     }
     public static AttributeSupplier.Builder createAttributes()
     {
@@ -1061,11 +958,11 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1)
                 .add(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE * 0.7)
                 .add(Attributes.ARMOR,12)
-                .add(ForgeMod.SWIM_SPEED.get(),8);
+                .add(ForgeMod.SWIM_SPEED.get(),10);
     }
 
     @Override
-    public void equipSaddle(@Nullable SoundSource source)
+    public void equipSaddle()
     {
         this.inventory.setItem(0, new ItemStack(ErsItems.SWAMP_DRAGON_SADDLE.get()));
         setSaddled(true);
@@ -1103,7 +1000,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     }
     @Override
     public @NotNull ItemStack getBucketItemStack() {
-        return new ItemStack(ErsItems.SWAMP_DRAGON_LARGE_BUCKET.get());
+        return new ItemStack(ErsItems.DENTISARUS_LONGIROSTRIS_LARGE_BUCKET.get());
     }
 
      public boolean isFalling() {
@@ -1128,11 +1025,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     public void aiStep() {
         super.aiStep();
         if(getControllingPassenger() != null){
-            float i = 1.7f;
-            if(getAgeInDays() > 50){
-                i = 1.8f;
-            }
-            waterAiStep(i);
+            waterAiStep(isElite() ? 2.6f * getRenderSize() : 2.4f * getRenderSize());
         }else {
             this.setNoGravity(false);
         }
@@ -1169,32 +1062,42 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     public void makeStuckInBlock(@NotNull BlockState pState, @NotNull Vec3 pMotionMultiplier) {}
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @org.jetbrains.annotations.Nullable SpawnGroupData pSpawnData, @org.jetbrains.annotations.Nullable CompoundTag pDataTag) {
+    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @org.jetbrains.annotations.Nullable SpawnGroupData pSpawnData, @org.jetbrains.annotations.Nullable CompoundTag pDataTag) {
         if (pReason == MobSpawnType.BUCKET) {
+            if (pDataTag != null && pDataTag.contains("UUID")) {
+                setUUID(UUID.fromString(pDataTag.getString("UUID")));
+            }
+
             return pSpawnData;
         } else {
-            RandomSource $$6 = pLevel.getRandom();
+            RandomSource random = pLevel.getRandom();
             if (pSpawnData == null) {
-                if($$6.nextFloat() < 0.1f) {
-                    pSpawnData = new SwampDragonGroupData(Variant.getRareSpawnVariant($$6));
+                if(random.nextFloat() < 0.1f) {
+                    pSpawnData = new SwampDragonGroupData(Variant.getRareSpawnVariant(random));
                 }else {
-                    pSpawnData = new SwampDragonGroupData(Variant.getCommonSpawnVariant($$6),Variant.getCommonSpawnVariant($$6),
-                            Variant.getCommonSpawnVariant($$6),Variant.getCommonSpawnVariant($$6));
+                    pSpawnData = new SwampDragonGroupData(Variant.getCommonSpawnVariant(random),Variant.getCommonSpawnVariant(random),
+                            Variant.getCommonSpawnVariant(random),Variant.getCommonSpawnVariant(random));
                 }
             }
 
-            this.setVariant(((SwampDragonGroupData)pSpawnData).getVariant($$6));
+            this.setVariant(((SwampDragonGroupData)pSpawnData).getVariant(random));
 
-            if(this.random.nextFloat() < 0.05f){
+            if(this.random.nextFloat() < 0.25f){
                 this.setCanBeElite(true);
             }
 
             this.setAgeInDays(this.random.nextIntBetweenInclusive(15,50));
             updateFromAgeServer();
+            this.setHealth(this.getMaxHealth());
             if(isMature()){
                 if(this.random.nextFloat() < 0.15f){
                     placeNest();
                 }
+            }
+
+            if(this.random.nextFloat() < 0.01f){
+                var customNameList = new String[]{"Ladon", "Forsaken","Acheron_Pollux","profound","Nakishimo","Carpodacus dubius","sunfyre","Nekorizu","U3UUU"};
+                this.setCustomName(Component.literal(customNameList[this.random.nextInt(customNameList.length)]));
             }
 
             return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);

@@ -1,0 +1,40 @@
+{
+  "parent": "ers:saevus_egg",
+  "criteria": {
+    "tamed_saevus": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "ers:terridensaurus_saevus"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:tame_animal"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.ers.tame_saevus.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "ers:terridensaurus_saevus_saddle"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.ers.tame_saevus.title"
+    }
+  },
+  "requirements": [
+    [
+      "tamed_saevus"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

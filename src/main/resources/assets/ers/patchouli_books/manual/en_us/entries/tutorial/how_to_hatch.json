@@ -1,0 +1,17 @@
+{
+    "name": "How to Hatch",
+    "icon": "ers:artificial_nest",
+    "category": "ers:tutorial",
+    "sortnum": 1,
+    "pages": [
+    {
+        "type": "text",
+        "text": "By some fortunate means, you have obtained an egg containing a powerful creature that holds the future. You need to create an artificial nest to provide it with ideal incubation conditions, and then leave everything to waiting! Be careful not to miss the moment it hatches—if it does not see you the very first time it breaks out of the shell, you may no longer have chance to tame."
+    },
+    {
+        "type": "crafting",
+        "recipe": "ers:artificial_nest",
+        "text": "Creating the $(item)Artificial Nest$()"
+    }
+    ]
+}

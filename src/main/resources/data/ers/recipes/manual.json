@@ -1,0 +1,12 @@
+{
+  "type": "patchouli:shaped_book_recipe",
+  "pattern": [
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "ers:riding_guide"
+    }
+  },
+  "book": "ers:manual"
+}

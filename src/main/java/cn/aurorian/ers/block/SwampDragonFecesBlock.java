@@ -1,6 +1,6 @@
 package cn.aurorian.ers.block;
 
-import cn.aurorian.ers.block.be.SwampDragonFecesBlockEntity;
+import cn.aurorian.ers.block.be.FecesBlockEntity;
 import cn.aurorian.ers.init.ErsBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,7 +44,7 @@ public class SwampDragonFecesBlock extends BaseEntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        return new SwampDragonFecesBlockEntity(pPos, pState);
+        return new FecesBlockEntity(pPos, pState);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SwampDragonFecesBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
         return (level1, blockPos, blockState, t) -> {
-            if (t instanceof SwampDragonFecesBlockEntity tickable && t.getType() == ErsBlockEntities.SWAMP_DRAGON_TEL_FECES_BLOCK_ENTITY.get()) {
+            if (t instanceof FecesBlockEntity tickable && t.getType() == ErsBlockEntities.TEL_FECES_BLOCK_ENTITY.get()) {
                 tickable.clientTick(tickable, level1, blockPos);
             }
             if (level1.getGameTime() % 20000 == 0){

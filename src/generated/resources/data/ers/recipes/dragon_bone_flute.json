@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "ers:dragon_bone"
+    },
+    "B": {
+      "item": "minecraft:flint"
+    }
+  },
+  "pattern": [
+    " BA",
+    "BA ",
+    "A  "
+  ],
+  "result": {
+    "item": "ers:dragon_bone_flute"
+  },
+  "show_notification": true
+}

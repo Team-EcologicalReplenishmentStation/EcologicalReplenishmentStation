@@ -23,26 +23,62 @@ public class ErsBiomeModifier
         context.register(key("swamp_dragon_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
                 HolderSet.direct(biomes.getOrThrow(Biomes.BEACH),biomes.getOrThrow(Biomes.SWAMP),biomes.getOrThrow(Biomes.MANGROVE_SWAMP))
                 , List.of(
-                        new MobSpawnSettings.SpawnerData(ErsEntities.DENTISAURUS_LONGIROSTRIS.get(), 5, 1, 1)
+                        new MobSpawnSettings.SpawnerData(ErsEntities.DENTISAURUS_LONGIROSTRIS.get(), 5, 1, 1),
+                        new MobSpawnSettings.SpawnerData(ErsEntities.LATIMERIA_PERCOIDES.get(), 20, 2, 4)
         )));
         context.register(key("swamp_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
                 HolderSet.direct(biomes.getOrThrow(Biomes.SWAMP),biomes.getOrThrow(Biomes.MANGROVE_SWAMP))
                 , List.of(
                 new MobSpawnSettings.SpawnerData(ErsEntities.TACHYPLEUS_GLADIUS.get(), 5, 2, 4),
                 new MobSpawnSettings.SpawnerData(ErsEntities.LATIMERIA_PERCOIDES.get(), 15, 1, 3),
-                new MobSpawnSettings.SpawnerData(ErsEntities.LATIMERIA_SUCHOMIMUS.get(), 8, 1, 2)
+                new MobSpawnSettings.SpawnerData(ErsEntities.LATIMERIA_SUCHOMIMUS.get(), 8, 1, 2),
+                new MobSpawnSettings.SpawnerData(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(), 8, 2, 3)
         )));
 
         context.register(key("river_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
                 HolderSet.direct(biomes.getOrThrow(Biomes.RIVER))
                 , List.of(
-                new MobSpawnSettings.SpawnerData(ErsEntities.LATIMERIA_SUCHOMIMUS.get(), 10, 1, 2)
+                new MobSpawnSettings.SpawnerData(ErsEntities.LATIMERIA_SUCHOMIMUS.get(), 10, 1, 2),
+                new MobSpawnSettings.SpawnerData(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(), 10, 2, 3)
         )));
 
         context.register(key("ocean_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
                 biomes.getOrThrow(BiomeTags.IS_OCEAN)
                 , List.of(
-                new MobSpawnSettings.SpawnerData(ErsEntities.ACANTHODES_CHLAMYDOSELACHOIDES.get(), 1, 1, 1)
+                new MobSpawnSettings.SpawnerData(ErsEntities.ACANTHODES_CHLAMYDOSELACHOIDES.get(), 1, 1, 1),
+                new MobSpawnSettings.SpawnerData(ErsEntities.ARGENTUMNISCUS_ACICULAULAR.get(), 4, 2, 4)
+        )));
+
+        context.register(key("savana_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                HolderSet.direct(biomes.getOrThrow(Biomes.SAVANNA))
+                , List.of(
+                new MobSpawnSettings.SpawnerData(ErsEntities.TERRIDENSAURUS_SAEVUS.get(), 3, 1, 1),
+                new MobSpawnSettings.SpawnerData(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), 5, 2, 4)
+        )));
+
+        context.register(key("plain_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                HolderSet.direct(biomes.getOrThrow(Biomes.PLAINS))
+                , List.of(
+                new MobSpawnSettings.SpawnerData(OasisEntities.PYGOPODUS_ANNULATUM.get(), 5, 3, 5),
+                new MobSpawnSettings.SpawnerData(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), 5, 2, 4)
+        )));
+
+        context.register(key("snowy_plain_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                HolderSet.direct(biomes.getOrThrow(Biomes.SNOWY_PLAINS))
+                , List.of(
+                new MobSpawnSettings.SpawnerData(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), 5, 2, 4)
+        )));
+
+        context.register(key("desert_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                HolderSet.direct(biomes.getOrThrow(Biomes.DESERT))
+                , List.of(
+                new MobSpawnSettings.SpawnerData(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), 5, 2, 4)
+        )));
+
+        context.register(key("badlands_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                HolderSet.direct(biomes.getOrThrow(Biomes.BADLANDS))
+                , List.of(
+                new MobSpawnSettings.SpawnerData(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), 5, 2, 4)
         )));
 
         context.register(key("tubunasus_biome_modifier"), new ForgeBiomeModifiers.AddSpawnsBiomeModifier(

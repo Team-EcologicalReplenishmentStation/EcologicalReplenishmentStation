@@ -16,6 +16,6 @@ public class TubunasusDurovelaBodyControl extends GeneralVehicleBodyControl {
                     this.entity.getRushTimer() < 200 ? 5 : 2, entity.getRushTimer() < 100 ? 9 : 0, 20,25);
 
         } else
-            aiTick(25f);
+            aiTick(35f,2f, entity.isInWater() ? 2.3f : 10f);
     }
 }

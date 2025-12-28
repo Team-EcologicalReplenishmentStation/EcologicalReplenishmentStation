@@ -24,10 +24,10 @@ public class SwampDragonModel extends ErsModel<DentisaurusLongirostrisEntity> {
 
     @Override
     public ResourceLocation getTextureResource(DentisaurusLongirostrisEntity animatable) {
-        String base = "textures/entity/dentisaurus_longirostris";
+        String base = "textures/entity/dentisaurus_longirostris/";
 
         if(animatable.isElite()){
-            base = base + "_elite";
+            base = base + "elite";
             if(animatable.hasCustomName()){
                 if(animatable.getCustomName().getString().equals("Ladon"))
                     return EcologicalReplenishmentStation.prefix(base + "_ladon.png");
@@ -35,14 +35,33 @@ public class SwampDragonModel extends ErsModel<DentisaurusLongirostrisEntity> {
                     return EcologicalReplenishmentStation.prefix(base + "_forsaken.png");
                 if(animatable.getCustomName().getString().equals("Acheron_Pollux"))
                     return EcologicalReplenishmentStation.prefix(base + "_acheron_pollux.png");
+                if(animatable.getCustomName().getString().equals("Nakishimo"))
+                    return EcologicalReplenishmentStation.prefix(base + "_nakishimo.png");
+                if(animatable.getCustomName().getString().equals("Carpodacus dubius"))
+                    return EcologicalReplenishmentStation.prefix(base + "_carpodacusdubius.png");
+                if(animatable.getCustomName().getString().equals("krsn_crow"))
+                    return EcologicalReplenishmentStation.prefix(base + "_krsn_crow.png");
+                if(animatable.getCustomName().getString().equals("sunfyre"))
+                    return EcologicalReplenishmentStation.prefix(base + "_sunfyre.png");
+                if(animatable.getCustomName().getString().equals("U3UUU"))
+                    return EcologicalReplenishmentStation.prefix(base + "_u3uuu.png");
             }
 
         }else if(!animatable.isMature()) {
-            base = base + "_baby";
+            base = base + "baby";
+            if(animatable.hasCustomName()){
+                if(animatable.getCustomName().getString().equals("krsn_crow"))
+                    return EcologicalReplenishmentStation.prefix(base + "_krsn_crow.png");
+            }
         }else{
+            base = base + "base";
             if(animatable.hasCustomName()){
                 if(animatable.getCustomName().getString().equals("profound"))
                     return EcologicalReplenishmentStation.prefix(base + "_profound.png");
+                if(animatable.getCustomName().getString().equals("krsn_crow"))
+                    return EcologicalReplenishmentStation.prefix(base + "_krsn_crow.png");
+                if(animatable.getCustomName().getString().equals("Nekorizu"))
+                    return EcologicalReplenishmentStation.prefix(base + "_nekorizu.png");
             }
         }
 
@@ -94,18 +113,18 @@ public class SwampDragonModel extends ErsModel<DentisaurusLongirostrisEntity> {
                 angle ++;
         }else if(animatable.getRotDirection().isRight()){
             if(animatable.isMature())
-                parser.setMemoizedValue(ErsMolang.V_TURN, () -> -40);
+                parser.setMemoizedValue(ErsMolang.V_TURN, () -> -55);
             else
-                parser.setMemoizedValue(ErsMolang.V_TURN, () -> 40);
+                parser.setMemoizedValue(ErsMolang.V_TURN, () -> 55);
             parser.setMemoizedValue(ErsMolang.W_TURN, () -> -100);
 
             angle = Math.max(-30, --angle);
 
         }else if(animatable.getRotDirection().isLeft()){
             if(animatable.isMature())
-                parser.setMemoizedValue(ErsMolang.V_TURN, () -> 40);
+                parser.setMemoizedValue(ErsMolang.V_TURN, () -> 55);
             else
-                parser.setMemoizedValue(ErsMolang.V_TURN, () -> -40);
+                parser.setMemoizedValue(ErsMolang.V_TURN, () -> -55);
             parser.setMemoizedValue(ErsMolang.W_TURN, () -> 100);
             angle = Math.min(30, ++ angle);
         }

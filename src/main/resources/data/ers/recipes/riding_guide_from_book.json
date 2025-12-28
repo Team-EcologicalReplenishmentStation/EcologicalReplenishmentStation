@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "type": "forge:nbt",
+      "item": "patchouli:guide_book",
+      "nbt": "{book:'ers:manual'}"
+    }
+  ],
+  "result": {
+    "item": "ers:riding_guide"
+  }
+}

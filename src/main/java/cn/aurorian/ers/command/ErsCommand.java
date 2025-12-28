@@ -3,7 +3,6 @@ package cn.aurorian.ers.command;
 
 import cn.aurorian.ers.entity.ErsTamable;
 import cn.aurorian.ers.entity.ErsTamableVehicle;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,6 +12,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.VariantHolder;
 
 public class ErsCommand {
@@ -49,12 +49,12 @@ public class ErsCommand {
     }
 
     private static int setElite(CommandContext<CommandSourceStack> context, Entity target) {
-        if (target instanceof DentisaurusLongirostrisEntity dentisaurusLongirostrisEntity) {
-            dentisaurusLongirostrisEntity.setCanBeElite(true);
-            if(dentisaurusLongirostrisEntity.getAgeInDays() >= 38) {
-                dentisaurusLongirostrisEntity.setElite(true);
+        if (target instanceof ErsTamableVehicle<?> vehicle) {
+            vehicle.setCanBeElite(true);
+            if(vehicle.getAgeInDays() >= 38) {
+                vehicle.setElite(true);
             }
-            dentisaurusLongirostrisEntity.updateFromAgeServer();
+            vehicle.updateFromAgeServer();
             context.getSource().sendSuccess(() ->
                 Component.translatable("commands.ers.elite.success", target.getName()),
                 true);
@@ -68,7 +68,7 @@ public class ErsCommand {
     }
 
     private static int setTame(CommandContext<CommandSourceStack> context, Entity target) throws CommandSyntaxException {
-        if (context.getSource().isPlayer() && target instanceof ErsTamable<?> tamable) {
+        if (context.getSource().isPlayer() && target instanceof TamableAnimal tamable) {
             tamable.tame(context.getSource().getPlayerOrException());
             return 1;
         }
@@ -95,15 +95,16 @@ public class ErsCommand {
     }
 
     private static int setAge(CommandContext<CommandSourceStack> context, Entity target, int days) {
-        if (target instanceof DentisaurusLongirostrisEntity dentisaurusLongirostrisEntity) {
-            dentisaurusLongirostrisEntity.setAgeInDays(days);
-            if(days < 38){
-                dentisaurusLongirostrisEntity.setElite(false);
+        if (target instanceof ErsTamable<?> ersTamable) {
+            ersTamable.setAgeInDays(days);
+            if(ersTamable instanceof ErsTamableVehicle<?> vehicle)
+             if(days < 38){
+                vehicle.setElite(false);
                 if(days < 20){
-                    dentisaurusLongirostrisEntity.setMature(false);
+                    vehicle.setMature(false);
                 }
-            }
-            dentisaurusLongirostrisEntity.updateFromAgeServer();
+             }
+            ersTamable.updateFromAgeServer();
             context.getSource().sendSuccess(() -> 
                 Component.translatable("commands.ers.age.success", target.getName(), days),
                 true);

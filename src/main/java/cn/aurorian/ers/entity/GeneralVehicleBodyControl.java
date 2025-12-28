@@ -25,7 +25,7 @@ public class GeneralVehicleBodyControl extends BodyRotationControl {
                 tickCount++;
 
             rideBefore = true;
-            if (vehicle.getAttackState().getType().canMove() && (Math.abs(driver.xxa) > 0 || Math.abs(driver.zza) > 0)) {
+            if (vehicle.getAttackState().getType().canMove() && (Math.abs(driver.xxa) > 0 || Math.abs(driver.zza) > 0) && (vehicle.onGround() || vehicle.isInWater())) {
                 float targetYaw = driver.yHeadRot - ErsUtils.getDirectionAngle(Math.signum(driver.xxa), Math.signum(driver.zza));
                 // 如果是新的转弯（之前没有在转弯）
                 if (!isTurning) {
@@ -101,7 +101,7 @@ public class GeneralVehicleBodyControl extends BodyRotationControl {
         return false;
     }
 
-    protected void aiTick(float maxHeadYRotDegree){
+    protected void aiTick(float maxHeadYRotDegree, float stillRotSpeed, float movingRotSpeed){
         if(vehicle.getControllingPassenger() == null){
             if(rideBefore){
                 this.vehicle.setRotDirection(MobRotDirection.of(MobRotDirection.RotDirection.NONE, false));
@@ -128,9 +128,9 @@ public class GeneralVehicleBodyControl extends BodyRotationControl {
             }
 
             if(this.vehicle.isMoving()){
-                this.vehicle.yBodyRot = Mth.approachDegrees(this.vehicle.yBodyRot,this.vehicle.getYRot(), vehicle.isInWater() ? 2.3f : 10f);
+                this.vehicle.yBodyRot = Mth.approachDegrees(this.vehicle.yBodyRot,this.vehicle.getYRot(), movingRotSpeed);
             }else {
-                this.vehicle.yBodyRot = Mth.approachDegrees(this.vehicle.yBodyRot, this.vehicle.getYRot(), 2);
+                this.vehicle.yBodyRot = Mth.approachDegrees(this.vehicle.yBodyRot, this.vehicle.getYRot(), stillRotSpeed);
             }
 
             this.vehicle.yHeadRot = Mth.rotateIfNecessary(this.vehicle.yHeadRot, this.vehicle.yBodyRot,

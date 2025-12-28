@@ -44,6 +44,9 @@ public class MobAttackPacket {
                     case 4:
                         tamable.executeTurnAttackType();
                         break;
+                    case 5:
+                        tamable.executeJumpAttackType();
+                        break;
                      default:
                          break;
                     }

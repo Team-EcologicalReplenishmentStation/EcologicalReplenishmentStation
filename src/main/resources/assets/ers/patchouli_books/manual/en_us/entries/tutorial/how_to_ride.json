@@ -1,0 +1,20 @@
+{
+    "name": "How to Ride",
+    "icon": "ers:swamp_dragon_saddle",
+    "category": "ers:tutorial",
+    "sortnum": 2,
+    "pages": [
+    {
+        "type": "text",
+        "text": "Congratulations on raising your pet to adulthood! Before you can ride it, you must equip it with a dedicated saddle—otherwise, you won’t be able to control it. You might think riding is so easy that no instruction is needed, but skipping this lesson may prevent you from unleashing your beloved companion’s full potential.Creatures possess a variety of abilities. "
+    },
+    {
+        "type": "text",
+        "text": "Generally, pressing $(k:key.ers.attack) allows them to use a normal attack. If available, pressing $(k:key.ers.attack2) or $(k:key.ers.attack3) activates their powerful special skills. Meanwhile, pressing $(k:key.ers.attack4) and $(k:key.ers.attack) together enables a spinning attack, which is particularly effective against enemies approaching from behind or nearby."
+    },
+    {
+        "type": "text",
+        "text": "Note that both running and attacking consume stamina, which can only be restored by stopping and resting for a short while. Be sure to manage your rhythm carefully during combat. Stamina recovers faster if the creature can sit down, and creatures poor in swimming cannot regenerate stamina while in water."
+    }
+    ]
+}

@@ -32,7 +32,7 @@ public class LimitedMoveControl extends MoveControl {
             f9 = (float)(Mth.atan2(d1, d0) * 57.2957763671875) - 90.0F;
             this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f9, 10.0F));
 
-            if(this.mob.isVehicle() || Mth.abs(Mth.degreesDifference(this.mob.getYRot(),this.mob.yBodyRot)) < 1)
+            if(this.mob.isVehicle() || Mth.abs(Mth.degreesDifference(this.mob.getYRot(),this.mob.yBodyRot)) < 1 || this.mob.isSprinting())
                 this.mob.setSpeed((float)(this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
             BlockPos blockpos = this.mob.blockPosition();
             BlockState blockstate = this.mob.level().getBlockState(blockpos);

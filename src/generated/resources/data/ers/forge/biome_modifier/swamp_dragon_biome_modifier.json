@@ -5,10 +5,18 @@
     "minecraft:swamp",
     "minecraft:mangrove_swamp"
   ],
-  "spawners": {
-    "type": "ers:dentisaurus_longirostris",
-    "maxCount": 1,
-    "minCount": 1,
-    "weight": 5
-  }
+  "spawners": [
+    {
+      "type": "ers:dentisaurus_longirostris",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 5
+    },
+    {
+      "type": "ers:latimeria_percoides",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 20
+    }
+  ]
 }

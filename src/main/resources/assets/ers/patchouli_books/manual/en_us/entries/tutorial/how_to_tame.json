@@ -1,0 +1,22 @@
+{
+    "name": "How to Tame",
+    "icon": "ers:carnivore_feed",
+    "category": "ers:tutorial",
+    "sortnum": 0,
+    "pages": [
+        {
+            "type": "text",
+            "text": "In this brand new world, you may encounter many different forms of creatures, some of which can be tamed while others cannot. Smaller creatures might be tamed by offering them their preferred food, while large carnivores are nearly impossible to control. Wise hunters start with the newly hatched young of these creatures, but even the young ones are extremely particular and require specially crafted delicious feed to appeal to their tastes."
+        },
+        {
+            "type": "crafting",
+            "recipe": "ers:carnivore_feed",
+            "text": "Creating the $(item)Carnivore Feed$()"
+        },
+        {
+            "type": "crafting",
+            "recipe": "ers:piscivores_feed",
+            "text": "Creating the $(item)Piscivores Feed$()"
+        }
+    ]
+}

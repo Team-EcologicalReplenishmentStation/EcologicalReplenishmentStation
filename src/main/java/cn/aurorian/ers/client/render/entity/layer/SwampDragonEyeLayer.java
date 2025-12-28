@@ -9,19 +9,21 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 @OnlyIn(Dist.CLIENT)
-public class SwampDragonEyeLayer<T extends DentisaurusLongirostrisEntity> extends AutoGlowingGeoLayer<T> {
-    public SwampDragonEyeLayer(GeoRenderer<T> renderer) {
+public class SwampDragonEyeLayer extends AutoGlowingGeoLayer<DentisaurusLongirostrisEntity> {
+    public SwampDragonEyeLayer(GeoRenderer<DentisaurusLongirostrisEntity> renderer) {
         super(renderer);
     }
 
     @Override
-    protected ResourceLocation getTextureResource(T animatable) {
-        String base = "textures/entity/dentisaurus_longirostris";
+    protected ResourceLocation getTextureResource(DentisaurusLongirostrisEntity animatable) {
+        String base = "textures/entity/dentisaurus_longirostris/";
 
         if(animatable.isElite()){
-            base = base + "_elite";
+            base = base + "elite";
         }else if(!animatable.isMature()) {
-            base = base + "_baby";
+            base = base + "baby";
+        }else {
+            base = base + "base";
         }
 
         switch (animatable.getVariant().getId()) {
@@ -30,6 +32,6 @@ public class SwampDragonEyeLayer<T extends DentisaurusLongirostrisEntity> extend
             case 9,10,11 -> base = base + "_white.png";
         }
 
-        return ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, base);
+        return EcologicalReplenishmentStation.prefix(base);
     }
 }

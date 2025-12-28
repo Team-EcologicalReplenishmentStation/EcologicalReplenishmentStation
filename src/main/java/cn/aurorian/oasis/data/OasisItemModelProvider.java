@@ -18,6 +18,7 @@ public class OasisItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         //Oasis
         this.simpleItem(OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get());
+        this.simpleItem(OasisItems.TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG.get());
         this.simpleItem(OasisItems.PYGOPODUS_ANNULATUM_SPAWN_EGG.get());
         this.simpleItem(OasisItems.TUBUNASUS_DUROVELA_LARGE_BUCKET.get());
         this.simpleItem(OasisItems.TUBUNASUS_SADDLE.get());
@@ -35,6 +36,9 @@ public class OasisItemModelProvider extends ItemModelProvider {
         this.simpleItem(OasisItems.ANNULATUM.get());
         this.simpleItem(OasisItems.COOKED_ANNULATUM.get());
         this.simpleItem(OasisItems.TEASELGOURD.get());
+
+        this.simpleItem(OasisItems.DUROVELA_SPECIMEN.get());
+//        this.simpleItem(OasisItems.CLYDEROTUNDA_SPECIMEN.get());
     }
 
     private void simpleItem(Item item) {

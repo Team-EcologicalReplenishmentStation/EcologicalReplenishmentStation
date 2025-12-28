@@ -2,7 +2,7 @@ package cn.aurorian.oasis.client.render;
 
 import cn.aurorian.ers.client.render.entity.ErsRenderer;
 import cn.aurorian.oasis.client.model.TubunasusDurovelaModel;
-import cn.aurorian.oasis.client.render.layer.DurovelaTubunasusHiddenLayer;
+import cn.aurorian.oasis.client.render.layer.DurovelaHiddenLayer;
 import cn.aurorian.oasis.entity.tubunasusdurovela.TubunasusDurovelaEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 public class TubunasusDurovelaRender extends ErsRenderer<TubunasusDurovelaEntity> {
     public TubunasusDurovelaRender(EntityRendererProvider.Context context) {
         super(context, new TubunasusDurovelaModel(), 7);
-        addRenderLayer(new DurovelaTubunasusHiddenLayer(this));
+        addRenderLayer(new DurovelaHiddenLayer(this));
     }
 
     @Override

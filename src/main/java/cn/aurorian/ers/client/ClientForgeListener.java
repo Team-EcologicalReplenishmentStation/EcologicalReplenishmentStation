@@ -1,7 +1,6 @@
 package cn.aurorian.ers.client;
 
 import cn.aurorian.ers.EcologicalReplenishmentStation;
-import cn.aurorian.ers.entity.ErsPlayerRideable;
 import cn.aurorian.ers.entity.ErsTamableVehicle;
 import cn.aurorian.ers.init.ErsKeyBindings;
 import cn.aurorian.ers.init.ErsNetwork;
@@ -50,6 +49,8 @@ public class ClientForgeListener {
                 packet1 = new MobAttackPacket(player.getVehicle().getId(), 2);
             } else if (key == ErsKeyBindings.ATTACK3_KEY.getKey().getValue()) {
                 packet1 = new MobAttackPacket(player.getVehicle().getId(), 3);
+            }else if( key == Minecraft.getInstance().options.keyJump.getKey().getValue()){
+                packet1 = new MobAttackPacket(player.getVehicle().getId(), 5);
             }
             MobAttackPacket packet = packet1;
 
@@ -66,7 +67,7 @@ public class ClientForgeListener {
     @SubscribeEvent
     public static void onDive(TickEvent.ClientTickEvent event) {
         Player player = Minecraft.getInstance().player;
-        if (player != null && player.getVehicle() instanceof ErsPlayerRideable) {
+        if (player != null && player.getVehicle() instanceof ErsTamableVehicle<?>) {
             boolean currentState = ErsKeyBindings.DIVE_KEY.isDown();
             if (currentState != lastDiveState) {
                 ErsNetwork.INSTANCE.sendToServer(

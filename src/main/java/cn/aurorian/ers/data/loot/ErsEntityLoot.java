@@ -75,7 +75,29 @@ public class ErsEntityLoot extends VanillaEntityLoot {
                         .add(LootItem.lootTableItem(ErsItems.CHLAMYDOSELACHOIDES.get()))
                         .apply(SmeltItemFunction.smelted().when(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, ENTITY_ON_FIRE))))
         );
-        this.add(ErsEntities.TERRIDENSAURUS_SAEVUS.get(), LootTable.lootTable());
+        this.add(ErsEntities.TERRIDENSAURUS_SAEVUS.get(), LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_MEAT.get()))
+                        .apply(SmeltItemFunction.smelted().when(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, ENTITY_ON_FIRE)))));
+
+        this.add(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(), LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ErsItems.SARCOPETERUS.get()))
+                        .apply(SmeltItemFunction.smelted().when(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, ENTITY_ON_FIRE)))));
+
+        this.add(ErsEntities.ARGENTUMNISCUS_ACICULAULAR.get(), LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ErsItems.ACICULABULAR.get()))
+                        .apply(SmeltItemFunction.smelted().when(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, ENTITY_ON_FIRE)))));
+
+        this.add(ErsEntities.MANDGEMARE_LABIUM.get(), LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ErsItems.LABIUM.get()))
+                        .apply(SmeltItemFunction.smelted().when(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, ENTITY_ON_FIRE)))));
     }
 
     @Override

@@ -19,17 +19,27 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.TACHYPLEUS_GLADIUS_SPAWN_EGG.get());
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES_SPAWN_EGG.get());
                 output.accept(ErsItems.LATIMERIA_SUCHOMIMUS_SPAWN_EGG.get());
-                output.accept(ErsItems.SWAMP_DRAGON_LARGE_BUCKET.get());
+                output.accept(ErsItems.TERRIDENSAURUS_SAEVUS_SPAWN_EGG.get());
+                output.accept(ErsItems.MAGNIDISCUMYZON_SARCOPTERUS_SPAWN_EGG.get());
+                output.accept(ErsItems.ARGENTUMNISCUS_ACICULAULAR_SPAWN_EGG.get());
+                output.accept(ErsItems.MANDGEMARE_LABIUM_SPAWN_EGG.get());
+                output.accept(ErsItems.DENTISARUS_LONGIROSTRIS_LARGE_BUCKET.get());
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES_LARGE_BUCKET.get());
                 output.accept(ErsItems.SUCHOMIMUS_LARGE_BUCKET.get());
+                output.accept(ErsItems.SARCOPTERUS_BUCKET.get());
                 output.accept(ErsItems.PERCH_BUCKET.get());
                 output.accept(ErsItems.TACHYPLEUS_GLADIUS_BUCKET.get());
+                output.accept(ErsItems.ACICULABULAR_BUCKET.get());
+                output.accept(ErsItems.LABIUM_BUCKET.get());
                 output.accept(ErsItems.LARGE_BUCKET.get());
                 output.accept(ErsItems.LARGE_WATER_BUCKET.get());
+                output.accept(ErsItems.GILDED_HORN.get());
+                output.accept(ErsItems.FILLED_GILDED_HORN.get());
                 output.accept(ErsItems.SWAMP_DRAGON_EGG.get());
                 output.accept(ErsItems.SAEVUS_EGG.get());
                 output.accept(ErsItems.SWAMP_DRAGON_SADDLE.get());
-                output.accept(ErsItems.SWAMP_DRAGON_FECES.get());
+                output.accept(ErsItems.SAEVUS_SADDLE.get());
+                output.accept(ErsItems.FECES.get());
                 output.accept(ErsItems.CLOVER.get());
                 output.accept(ErsItems.BAIT_BOX.get());
                 output.accept(ErsItems.BULLY_STICK.get());
@@ -39,6 +49,7 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.SOUL_CUBE_GIFT.get());
                 output.accept(ErsItems.FISH_FILLET.get());
                 output.accept(ErsItems.COOKED_FISH_FILLET.get());
+                output.accept(ErsItems.CARNIVORE_FEED.get());
                 output.accept(ErsItems.PISCIVORES_FEED.get());
                 output.accept(ErsItems.PERCH.get());
                 output.accept(ErsItems.COOKED_PERCH.get());
@@ -54,15 +65,27 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES.get());
                 output.accept(ErsItems.COOKED_CHLAMYDOSELACHOIDES.get());
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES_TOOTH.get());
+                output.accept(ErsItems.SARCOPETERUS.get());
+                output.accept(ErsItems.COOKED_SARCOPETERUS.get());
+                output.accept(ErsItems.SAEVUS_MEAT.get());
+                output.accept(ErsItems.COOKED_SAEVUS_MEAT.get());
+                output.accept(ErsItems.ACICULABULAR.get());
+                output.accept(ErsItems.COOKED_ACICULABULAR.get());
+                output.accept(ErsItems.LABIUM.get());
+                output.accept(ErsItems.COOKED_LABIUM.get());
+                output.accept(ErsItems.DRAGON_BONE.get());
                 //
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES_TOOTH_SWORD.get());
                 output.accept(ErsItems.DRAGON_CLAW_HARPOON.get());
+                output.accept(ErsItems.DRAGON_BONE_FLUTE.get());
+                output.accept(ErsItems.SOUL_FLUTE.get());
                 //
                 output.accept(ErsItems.TOURNIQUET.get());
                 //Block
                 output.accept(ErsItems.SOUL_CUBE.get());
                 output.accept(ErsItems.SWAMP_DRAGON_NEST.get());
-                output.accept(ErsItems.SWAMP_DRAGON_ARTIFICIAL_NEST.get());
+                output.accept(ErsItems.SAEVUS_NEST.get());
+                output.accept(ErsItems.ARTIFICIAL_NEST.get());
                 output.accept(ErsItems.EQUISETUM.get());
             }).build());
     public static void register(IEventBus eventBus) {

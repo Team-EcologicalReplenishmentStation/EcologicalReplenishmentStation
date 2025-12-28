@@ -6,14 +6,14 @@ import net.minecraft.world.phys.Vec3;
 public class MobAttack {
     public AttackType type;
     public int animatorTick;
-    ErsTamableVehicle<?> entity;
+    ErsTamable<?> entity;
     public LivingEntity judgementTarget;
     public Vec3 turningAttackDirection = Vec3.ZERO;
     public boolean triggered = false;
     public int triggerTime = 0;
     public boolean isSyncInstance = false;
 
-    public MobAttack(AttackType type, ErsTamableVehicle<?> entity) {
+    public MobAttack(AttackType type, ErsTamable<?> entity) {
         this.type = type;
         this.animatorTick = type.getAnimationLength();
         this.entity = entity;
@@ -28,8 +28,8 @@ public class MobAttack {
             return;
 
         if(!this.isEmpty()){
-            if(type.getStaminaCost() != 0){
-                entity.staminaCount = 0;
+            if(type.getStaminaCost() != 0 && entity instanceof ErsTamableVehicle<?> vehicle){
+                vehicle.staminaCount = 0;
             }
 
             if (type != AttackType.EMPTY) {
@@ -59,7 +59,7 @@ public class MobAttack {
     public AttackType getType() {
         return type;
     }
-    public ErsTamableVehicle<?> getEntity()
+    public ErsTamable<?> getEntity()
     {
         return this.entity;
     }

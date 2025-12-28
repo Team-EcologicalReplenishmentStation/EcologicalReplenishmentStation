@@ -5,10 +5,15 @@ import cn.aurorian.ers.client.ErsDataTickets;
 import cn.aurorian.ers.client.MountCameraManager;
 import cn.aurorian.ers.init.ErsNetwork;
 import cn.aurorian.ers.init.ErsSerializers;
+import cn.aurorian.ers.item.equipment.MountEquipment;
+import cn.aurorian.ers.packet.MobPositionRiderPacket;
 import cn.aurorian.ers.packet.MobTurnPacket;
+import cn.aurorian.ers.util.ErsUtils;
 import cn.aurorian.ers.util.TickHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,6 +24,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,35 +39,59 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import superlord.prehistoricfauna.init.PFBlocks;
 
 import java.util.List;
 
-public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends ErsTamable<T> implements ErsPlayerRideable,ErsSaddleable, ContainerListener {
+public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends ErsTamable<T> implements ContainerListener {
     protected ErsTamableVehicle(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         stableHead = false;
     }
 
     private static final EntityDataAccessor<MobRotDirection> ROT_DIRECTION = SynchedEntityData.defineId(ErsTamableVehicle.class, ErsSerializers.MOB_ROTATION_SERIALIZER.get());
+
     public static final EntityDataAccessor<Boolean> IS_DIVING = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
     private static final EntityDataAccessor<Integer> SWIM_STATE = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<MobAttack> ATTACK_STATE = SynchedEntityData.defineId(ErsTamableVehicle.class, ErsSerializers.MOB_ATTACK_SERIALIZER.get());
-    private static final EntityDataAccessor<Boolean> IS_IN_SCREEN = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
     private static final EntityDataAccessor<Integer> DATA_VARIANT = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.INT);
+
     private static final EntityDataAccessor<Float> STAMINA = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.FLOAT);
+
     private static final EntityDataAccessor<Boolean> DATA_SADDLED = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
+    private static final EntityDataAccessor<Boolean> ELITE = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
+    private static final EntityDataAccessor<Boolean> CAN_BE_ELITE = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
+    private static final EntityDataAccessor<Boolean> MATURE = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
+    private static final EntityDataAccessor<Float> RENDER_SIZE = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.FLOAT);
+
+    public static final EntityDataAccessor<Boolean> BLOODY = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
+    public static final EntityDataAccessor<Boolean> ARMORED = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BOOLEAN);
+
+    public static final EntityDataAccessor<BlockPos> RIDER_POS = SynchedEntityData.defineId(ErsTamableVehicle.class, EntityDataSerializers.BLOCK_POS);
+
     protected float rideSpeed;
+
     public ErsTamableVehicle<?> leader;
+
     protected SimpleContainer inventory;
+
     protected boolean stableHead;
 
     public MobRotDirection getRotDirection(){
         return entityData.get(ROT_DIRECTION);
     }
+
     public  void setRotDirection(MobRotDirection rotDirection) {
         setRotDirection(rotDirection, false);
     }
+
     public void setRotDirection(MobRotDirection rotDirection, boolean sync) {
         entityData.set(ROT_DIRECTION, rotDirection);
         if (sync)
@@ -76,23 +107,9 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
     public int getSwimState(){
         return entityData.get(SWIM_STATE);
     }
+
     public void setSwimState(int state){
         entityData.set(SWIM_STATE, state);
-    }
-    public void setAttackState(MobAttack mobAttack)
-    {
-        this.entityData.set(ATTACK_STATE, mobAttack);
-    }
-    public MobAttack getAttackState()
-    {
-        return this.entityData.get(ATTACK_STATE);
-    }
-    public boolean isInScreen() {
-        return this.entityData.get(IS_IN_SCREEN);
-    }
-
-    public void setIsInScreen(boolean isInScreen) {
-        entityData.set(IS_IN_SCREEN,isInScreen);
     }
 
     public float getStamina(){
@@ -100,33 +117,112 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
     }
 
     public void setStamina(float i){
-        entityData.set(STAMINA, Math.min(100f,i));
+        entityData.set(STAMINA, Math.max(Math.min(100f,i),0f));
     }
+
     public boolean getStableHead(){
         return stableHead;
     }
+
     public void setStableHead(boolean stableHead){
         this.stableHead = stableHead;
     }
+
+    public boolean canBeElite() {
+        return this.entityData.get(CAN_BE_ELITE);
+    }
+
+    public void setCanBeElite(boolean canBeElite) {
+        this.entityData.set(CAN_BE_ELITE, canBeElite);
+    }
+
+    public boolean isElite() {
+        return this.entityData.get(ELITE);
+    }
+
+    public void setElite(boolean elite) {
+        this.entityData.set(ELITE, elite);
+    }
+
+    public boolean isMature() {
+        return this.entityData.get(MATURE);
+    }
+
+    public void setMature(boolean mature) {
+        this.entityData.set(MATURE, mature);
+    }
+
+    public float getRenderSize()
+    {
+        return entityData.get(RENDER_SIZE);
+    }
+
+    public void setRenderSize(float renderSize){
+        entityData.set(RENDER_SIZE, renderSize);
+    }
+
+    public void setBloody(boolean bloody){
+        entityData.set(BLOODY, bloody);
+    }
+
+    public boolean isBloody(){
+        return entityData.get(BLOODY);
+    }
+
+    public boolean isArmored(){
+        return entityData.get(ARMORED);
+    }
+
+    public void setArmored(boolean armored){
+        entityData.set(ARMORED,armored);
+    }
+
+    public BlockPos getRiderPos(){
+        return entityData.get(RIDER_POS);
+    }
+
+    public void setRiderPos(BlockPos pos){
+        entityData.set(RIDER_POS,pos);
+    }
+
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(ROT_DIRECTION, MobRotDirection.of(MobRotDirection.RotDirection.NONE, false));
         this.entityData.define(IS_DIVING,false);
         this.entityData.define(SWIM_STATE, 0);
-        this.entityData.define(ATTACK_STATE, new MobAttack(AttackType.EMPTY,this));
-        this.entityData.define(IS_IN_SCREEN,false);
         this.entityData.define(DATA_VARIANT, 0);
         this.entityData.define(STAMINA,100f);
         this.entityData.define(DATA_SADDLED, false);
+        this.entityData.define(CAN_BE_ELITE, false);
+        this.entityData.define(ELITE, false);
+        this.entityData.define(MATURE,false);
+        this.entityData.define(RENDER_SIZE, 1.0f);
+        this.entityData.define(BLOODY,false);
+        this.entityData.define(ARMORED,false);
+        this.entityData.define(RIDER_POS, BlockPos.ZERO);
     }
 
     @Override
     public void tick() {
         super.tick();
         if(!this.level().isClientSide){
-            this.getAttackState().tick();
-            tickStamina(WATER_ANIMAL,RECOVER_WHEN_WALK);
+            tickStamina(WATER_ANIMAL, RECOVER_WHEN_WALK);
+
+            if(isBloody()){
+                if(tickCount - getLastHurtMobTimestamp() > 2400 || isInWater()){
+                    setBloody(false);
+                }
+            }
+
+            for (int i = 1; i <= 3; i++) {
+                ItemStack itemStack = this.inventory.getItem(i);
+                if(!itemStack.isEmpty()){
+                    if(itemStack.getItem() instanceof MountEquipment equipment){
+                        equipment.tickEquip(itemStack,this);
+                    }
+                }
+            }
         }
         else
             this.getAnimator().tick();
@@ -135,9 +231,13 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
     public int staminaCount = 0;
 
     public float SWIM_COST = 0.1f;
+
     public float SPRINT_COST = 0.15f;
+
     public float RECOVER = 0.075f;
+
     public boolean WATER_ANIMAL = false;
+
     public boolean RECOVER_WHEN_WALK = true;
 
     public void executeDefaultAttackType(){}
@@ -147,6 +247,8 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
     public void executeJudgementAttackType(){}
 
     public void executeTurnAttackType(){}
+
+    public void executeJumpAttackType(){}
 
     public void tickStamina(boolean waterAnimal,boolean recoverWhenWalk){
         if(this.getControllingPassenger() instanceof Player){
@@ -161,7 +263,7 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
             else{
                 if(!waterAnimal && isInWater())
                     return;
-                if(recoverWhenWalk && isMoving())
+                if(!recoverWhenWalk && rideSpeed != 0)
                     return;
 
                 staminaCount++;
@@ -171,8 +273,12 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
         }
         else{
             staminaCount++;
-            if(staminaCount > 40)
+            if(staminaCount > 40){
                 this.setStamina(this.getStamina() + RECOVER);
+                if(getCommand() == 1)
+                    this.setStamina(this.getStamina() + 0.4f);
+            }
+
         }
 
         if(getStamina() <= 0){
@@ -181,6 +287,7 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
 
     }
 
+    @Override
     public void startAttack(AttackType type) {
         if(type.getStaminaCost() > this.getStamina())
             return;
@@ -188,24 +295,69 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
         if(type.getStaminaCost() != 0)
             this.setStamina(getStamina() - type.getStaminaCost());
 
-        this.setAttackState(new MobAttack(type,this));
-        triggerAnim("attack", type.getAnimName());
+        super.startAttack(type);
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putInt("Variant", getVariantId());
-        pCompound.putFloat("Stamina", getStamina());
-        pCompound.putBoolean("saddled", this.isSaddled());
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Variant", getVariantId());
+        compound.putFloat("Stamina", getStamina());
+        compound.putBoolean("saddled", this.isSaddled());
+        compound.putBoolean("Armored", isArmored());
+        if(doAgeTick()){
+            compound.putBoolean("Elite", this.isElite());
+            compound.putBoolean("CanBeElite", this.canBeElite());
+            compound.putBoolean("Mature", this.isMature());
+            compound.putFloat("RenderSize", this.getRenderSize());
+        }
+
+        if(this.inventory != null){
+            ListTag itemsList = new ListTag();
+            for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+                ItemStack stack = this.inventory.getItem(i);
+                if (!stack.isEmpty()) {
+                    CompoundTag itemTag = new CompoundTag();
+                    itemTag.putInt("Slot", i);
+                    stack.save(itemTag);
+                    itemsList.add(itemTag);
+                }
+            }
+            compound.put("Items", itemsList);
+        }
+
+        if(hasCustomName())
+            compound.putString("CustomName", Component.Serializer.toJson(this.getCustomName()));
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.setVariantId(pCompound.getInt("Variant"));
-        this.setStamina(pCompound.getFloat("Stamina"));
-        this.setSaddled(pCompound.getBoolean("saddled"));
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.setVariantId(compound.getInt("Variant"));
+        this.setStamina(compound.getFloat("Stamina"));
+        this.setSaddled(compound.getBoolean("saddled"));
+        this.setArmored(compound.getBoolean("Armored"));
+        if(doAgeTick()){
+            this.setElite(compound.getBoolean("Elite"));
+            this.setCanBeElite(compound.getBoolean("CanBeElite"));
+            this.setMature(compound.getBoolean("Mature"));
+            this.setRenderSize(compound.getFloat("RenderSize"));
+        }
+        if(this.inventory != null){
+            this.inventory.clearContent();
+            ListTag itemsList = compound.getList("Items", 10);
+            for (int i = 0; i < itemsList.size(); i++) {
+                CompoundTag itemTag = itemsList.getCompound(i);
+                int slot = itemTag.getInt("Slot");
+                ItemStack stack = ItemStack.of(itemTag);
+                if (!stack.isEmpty() && slot >= 0 && slot < this.inventory.getContainerSize()) {
+                    this.inventory.setItem(slot, stack);
+                }
+            }
+        }
+
+        if(compound.contains("CustomName"))
+            this.setCustomName(Component.Serializer.fromJson(compound.getString("CustomName")));
     }
 
     public int getVariantId() {
@@ -274,9 +426,16 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
     {
         return entityData.get(DATA_SADDLED);
     }
+
     public void setSaddled(boolean saddled)
     {
         entityData.set(DATA_SADDLED, saddled);
+    }
+
+    public abstract void equipSaddle();
+
+    public boolean isSaddleable(){
+        return isAlive() && isTame();
     }
 
     @Override
@@ -322,9 +481,13 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
                         this.getX() + vector3d.x,
                         this.getY() + vector3d.y - 0.5f,
                         this.getZ() + vector3d.z);
+                ErsNetwork.INSTANCE.sendToServer(new MobPositionRiderPacket(getId(), new Vector3f((float)vector3d.x, (float)vector3d.y, (float)vector3d.z)));
             }
         } else {
-            super.positionRider(pPassenger, pCallback);
+            pCallback.accept(pPassenger,
+                    this.getX() + getRiderPos().getX(),
+                    this.getY() + getRiderPos().getY() - 0.5f,
+                    this.getZ() + getRiderPos().getZ());
         }
     }
 
@@ -419,6 +582,22 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
         }
     }
 
+    @Override
+    protected void dropCustomDeathLoot(@NotNull DamageSource pSource, int pLooting, boolean pRecentlyHit) {
+        if(isSoul())
+            return;
+
+        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
+
+        if(this.inventory != null){
+            for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+                ItemStack stack = this.inventory.getItem(i);
+                this.spawnAtLocation(stack);
+                this.inventory.setItem(i, ItemStack.EMPTY);
+            }
+        }
+    }
+
     protected void waterAiStep(float waterHeight){
         if(isInWater()){
             this.setNoGravity(true);
@@ -433,8 +612,7 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
                     setSwimState(1);
             }
 
-            if(wasEyeInWater && getSwimState() == 1 && !(this.level().getBlockState(this.getOnPos()).isSolidRender(this.level(),this.getOnPos()))
-                    && this.getDeltaMovement().y >= 0){
+            if(wasEyeInWater && getSwimState() == 1 && !(this.level().getBlockState(this.getOnPos()).isSolidRender(this.level(),this.getOnPos()))){
                 this.setDeltaMovement(this.getDeltaMovement().add(0,0.01,0));
             }
             else if(getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) < waterHeight && getSwimState() != 3){
@@ -451,5 +629,25 @@ public abstract class ErsTamableVehicle<T extends ErsTamableVehicle<?>> extends 
                 TickHelper.tickLater(this.level(),40,()-> setSwimState(0));
             }
         }
+    }
+
+    protected float calculateScale() {
+        int age = getAgeInDays();
+        if(this.isMature()){
+            age -= 20;
+        }
+        return ErsUtils.calculateRenderSize(age);
+    }
+
+    public boolean checkEquipment(Item equipment){
+        for (int i = 1; i <= 3; i++) {
+            ItemStack itemStack = getInventory().getItem(i);
+            if(!itemStack.isEmpty()){
+                if(itemStack.is(equipment)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

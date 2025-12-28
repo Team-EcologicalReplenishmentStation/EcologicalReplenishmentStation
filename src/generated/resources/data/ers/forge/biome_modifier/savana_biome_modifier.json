@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "minecraft:savanna",
+  "spawners": [
+    {
+      "type": "ers:terridensaurus_saevus",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 3
+    },
+    {
+      "type": "oasis:tubunasus_clyderotunda",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 5
+    }
+  ]
+}

@@ -1,7 +1,5 @@
 {
   "values": [
-    "ers:perch",
-    "ers:chlamydoselachoides",
-    "ers:suchomimus"
+    "#ers:known_fish"
   ]
 }

@@ -2,6 +2,8 @@ package cn.aurorian.oasis.init;
 
 
 import cn.aurorian.oasis.Oasis;
+import cn.aurorian.oasis.entity.tubunasusclyderotunda.TubunasusClyderotundaEntity;
+import cn.aurorian.oasis.entity.tubunasusclyderotunda.invertory.TubunasusClyderotundaContainerMenu;
 import cn.aurorian.oasis.entity.tubunasusdurovela.TubunasusDurovelaEntity;
 import cn.aurorian.oasis.entity.tubunasusdurovela.invertory.TubunasusDurovelaContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -13,13 +15,23 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class OasisContainers {
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Oasis.MODID);
-    public static final RegistryObject<MenuType<TubunasusDurovelaContainerMenu>> TUBUNASUS_CONTAINER =
-        CONTAINERS.register("tubunasus_container", () ->
+    public static final RegistryObject<MenuType<TubunasusDurovelaContainerMenu>> DUROVELA_CONTAINER =
+        CONTAINERS.register("durovela_container", () ->
             IForgeMenuType.create((windowId, inv, data) -> {
                 int entityId = data.readInt();
-                TubunasusDurovelaEntity sotek = (TubunasusDurovelaEntity) inv.player.level().getEntity(entityId);
+                TubunasusDurovelaEntity entity = (TubunasusDurovelaEntity) inv.player.level().getEntity(entityId);
 
-                return new TubunasusDurovelaContainerMenu(windowId, inv, sotek);
+                return new TubunasusDurovelaContainerMenu(windowId, inv, entity);
+            })
+        );
+
+    public static final RegistryObject<MenuType<TubunasusClyderotundaContainerMenu>> CLYDEROTUNDA_CONTAINER =
+        CONTAINERS.register("tubunasus_clyderotunda_container", () ->
+            IForgeMenuType.create((windowId, inv, data) -> {
+                int entityId = data.readInt();
+                TubunasusClyderotundaEntity entity = (TubunasusClyderotundaEntity) inv.player.level().getEntity(entityId);
+
+                return new TubunasusClyderotundaContainerMenu(windowId, inv, entity);
             })
         );
 

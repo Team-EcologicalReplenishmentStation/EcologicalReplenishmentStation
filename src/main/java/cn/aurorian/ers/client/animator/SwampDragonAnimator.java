@@ -20,10 +20,9 @@ public class SwampDragonAnimator extends GeneralAnimator<DentisaurusLongirostris
     @Override
     public void animate(GeoModel<DentisaurusLongirostrisEntity> model, AnimationState<DentisaurusLongirostrisEntity> animationState) {
         animTail(model,animationState);
-        if(!animationState.getAnimatable().isInScreen()){
+        if(!animationState.getAnimatable().getAnimator().isInScreen){
             animHead(model,animationState);
         }
-
     }
 
     protected void animTail(GeoModel<DentisaurusLongirostrisEntity> model, AnimationState<DentisaurusLongirostrisEntity> animationState){

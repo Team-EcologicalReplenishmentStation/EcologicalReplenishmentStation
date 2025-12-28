@@ -1,6 +1,7 @@
 package cn.aurorian.ers.entity.creatures.latimeriapercoides;
 
 import cn.aurorian.ers.client.animator.GeneralAnimator;
+import cn.aurorian.ers.client.animator.LatimeriaPercoidesAnimator;
 import cn.aurorian.ers.entity.ErsEntity;
 import cn.aurorian.ers.entity.GeneralBodyControl;
 import cn.aurorian.ers.init.ErsItems;
@@ -26,10 +27,11 @@ public class LatimeriaPercoidesEntity extends AbstractFish implements GeoEntity,
 
     public LatimeriaPercoidesEntity(EntityType<? extends AbstractFish> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        animator = new GeneralAnimator<>(this);
+        animator = new LatimeriaPercoidesAnimator(this);
     }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     private final GeneralAnimator<LatimeriaPercoidesEntity> animator;
 
     @Override
@@ -82,7 +84,8 @@ public class LatimeriaPercoidesEntity extends AbstractFish implements GeoEntity,
     @Override
     public void tick() {
         super.tick();
-        animator.tick();
+        if(level().isClientSide())
+            animator.tick();
     }
 
     @Override

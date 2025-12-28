@@ -17,6 +17,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -242,6 +244,24 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
                 0,
                 -targetTo.z * 2
         );
+    }
+
+    @Override
+    public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
+        if (pSource.is(DamageTypes.MOB_ATTACK) || pSource.is(DamageTypes.PLAYER_ATTACK)) {
+            if(!isWaiting()){
+                if(getLastHurtByMob() != null){
+                    crabEscape(getLastHurtByMob());
+                }else if(pSource.is(DamageTypes.PLAYER_ATTACK)){
+                    crabEscape(pSource.getEntity());
+                }
+
+            }
+            if(pSource.getEntity() instanceof LivingEntity living){
+                living.hurt(level().damageSources().thorns(this), 4);
+            }
+        }
+        return super.hurt(pSource, pAmount);
     }
 
     @Override

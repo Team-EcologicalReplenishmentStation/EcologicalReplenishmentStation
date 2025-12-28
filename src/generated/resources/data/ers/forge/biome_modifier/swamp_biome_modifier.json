@@ -22,6 +22,12 @@
       "maxCount": 2,
       "minCount": 1,
       "weight": 8
+    },
+    {
+      "type": "ers:magnidiscumyzon_sarcopterus",
+      "maxCount": 3,
+      "minCount": 2,
+      "weight": 8
     }
   ]
 }

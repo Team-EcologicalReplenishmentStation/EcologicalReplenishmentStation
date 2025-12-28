@@ -7,15 +7,12 @@ import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 
 public class DemersalMoveControl extends SmoothSwimmingMoveControl {
 
-
     public DemersalMoveControl(Mob pMob) {
-        super(pMob, 85, 10, 0.1f, 0.5f, true);
+        super(pMob, 85, 10, 1f, 1f, true);
     }
 
     public void tick() {
-        if (this.mob.isInWater()) {
-            this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0, -0.005, 0.0));
-        }
+        this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0, -0.001, 0.0));
 
         if (this.operation == Operation.MOVE_TO && !this.mob.getNavigation().isDone()) {
             double $$0 = this.wantedX - this.mob.getX();
@@ -31,7 +28,7 @@ public class DemersalMoveControl extends SmoothSwimmingMoveControl {
                 this.mob.yHeadRot = this.mob.getYRot();
                 float $$5 = (float)(this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED));
                 if (this.mob.isInWater()) {
-                    this.mob.setSpeed($$5 * 0.1f);
+                    this.mob.setSpeed($$5);
                     double $$6 = Math.sqrt($$0 * $$0 + $$2 * $$2);
                     float $$8;
                     if (Math.abs($$1) > 9.999999747378752E-6 || Math.abs($$6) > 9.999999747378752E-6) {
@@ -47,7 +44,7 @@ public class DemersalMoveControl extends SmoothSwimmingMoveControl {
                 } else {
                     float $$10 = Math.abs(Mth.wrapDegrees(this.mob.getYRot() - $$4));
                     float $$11 = getTurningSpeedFactor($$10);
-                    this.mob.setSpeed($$5 * 0.5f * $$11);
+                    this.mob.setSpeed($$5 * $$11);
                 }
 
             }

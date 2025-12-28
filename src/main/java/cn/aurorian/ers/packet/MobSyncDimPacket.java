@@ -1,6 +1,5 @@
 package cn.aurorian.ers.packet;
 
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +21,7 @@ public class MobSyncDimPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getDirection().getReceptionSide().isClient()) {
-                LivingEntity entity = (DentisaurusLongirostrisEntity) Minecraft.getInstance().level.getEntity(entityId);
+                LivingEntity entity = (LivingEntity) Minecraft.getInstance().level.getEntity(entityId);
                 if (entity != null) {
                     // 刷新实体维度
                     entity.refreshDimensions();

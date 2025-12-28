@@ -1,0 +1,13 @@
+{
+  "name": "TerridensaurusSaevus",
+  "icon": "ers:saevus_spawn_egg",
+  "category": "ers:atlas",
+  "pages": [
+    {
+      "type": "entity",
+      "entity": "ers:terridensaurus_saevus",
+      "rotate": false,
+      "scale": 0.6
+    }
+  ]
+}

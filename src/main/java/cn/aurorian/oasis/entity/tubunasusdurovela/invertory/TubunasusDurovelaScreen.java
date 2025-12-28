@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class TubunasusDurovelaScreen extends AbstractContainerScreen<TubunasusDurovelaContainerMenu> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Oasis.MODID, "textures/container/tubunasus_durovela_container.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Oasis.MODID, "textures/container/durovela_container.png");
 
     public TubunasusDurovelaScreen(TubunasusDurovelaContainerMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -21,9 +21,9 @@ public class TubunasusDurovelaScreen extends AbstractContainerScreen<TubunasusDu
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-        this.menu.entity.setIsInScreen(true);
+        this.menu.entity.getAnimator().isInScreen = true;
         InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 51, this.topPos + 60, 10, (float)(this.leftPos + 51) - pMouseX, (float)(this.topPos + 60 - 50) - pMouseY, this.menu.entity);
-        this.menu.entity.setIsInScreen(false);
+        this.menu.entity.getAnimator().isInScreen = false;
     }
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {

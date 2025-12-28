@@ -2,6 +2,7 @@ package cn.aurorian.ers.entity.creatures.dentisauruslongirostris;
 
 import cn.aurorian.ers.effect.ErsBleedingEffect;
 import cn.aurorian.ers.entity.AttackType;
+import cn.aurorian.ers.entity.ErsTamableVehicle;
 import cn.aurorian.ers.entity.MobAttack;
 import cn.aurorian.ers.init.ErsEntities;
 import cn.aurorian.ers.init.ErsItems;
@@ -14,8 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -35,10 +34,9 @@ public class DentisaurusLongirostrisAttackExecutor {
 
         if(attack.animatorTick == AttackType.SWAMP_DRAGON_ATTACK.getAnimationLength() - 9)
         {
-            float scale = ErsUtils.calculateRenderSize(mount.getAgeInDays());
-            double range = 2.5 * scale;
+            double range = 2.5 * mount.getRenderSize();
             double damage = mount.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            damage = checkEquipment(mount, ErsItems.BULLY_STICK.get()) ? damage * 1.4 : damage;
+            damage = mount.checkEquipment(ErsItems.BULLY_STICK.get()) ? damage * 1.4 : damage;
             // 获取FOOD骨骼的位置
             Vector3f foodPos = mount.getFoodPosition();
             double x = mount.getX() + foodPos.x;
@@ -57,7 +55,7 @@ public class DentisaurusLongirostrisAttackExecutor {
                 if (entity instanceof LivingEntity living) {
                     living.hurt(mount.level().damageSources().mobAttack(mount), (float)damage);
                     ErsBleedingEffect.giveBleedingEffect(living,4);
-                    mount.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY, true);
+                    mount.setBloody(true);
                 }
 
                 if (mount.level() instanceof ServerLevel serverLevel) {
@@ -78,11 +76,10 @@ public class DentisaurusLongirostrisAttackExecutor {
     }
 
     public void executeSwampDragonJudgement(MobAttack attack, DentisaurusLongirostrisEntity mount) {
-        if(attack.judgementTarget == null && !attack.triggered)
+        if(attack.judgementTarget == null)
         {
-            attack.triggered = true;
             float scale = ErsUtils.calculateRenderSize(mount.getAgeInDays());
-            double range = 6.2 * scale;
+            double range = 2 * scale;
 
             Vector3f foodPos = mount.getFoodPosition();
             double x = mount.getX() + foodPos.x;
@@ -153,8 +150,6 @@ public class DentisaurusLongirostrisAttackExecutor {
                 attack.animatorTick = 0;
         }
 
-
-
         if(attack.animatorTick >= 0 && attack.judgementTarget != null)
         {
             Vector3f foodPos = mount.getFoodPosition();
@@ -175,7 +170,7 @@ public class DentisaurusLongirostrisAttackExecutor {
                     player.hurt(mount.level().damageSources().mobAttack(mount), player.getMaxHealth());
                 }
                 attack.judgementTarget.hurt(mount.level().damageSources().mobAttack(mount), Float.MAX_VALUE);
-                mount.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY, true);
+                mount.setBloody(true);
                 if(mount.level() instanceof ServerLevel serverLevel)
                 {
                     mount.heal(10);
@@ -191,14 +186,12 @@ public class DentisaurusLongirostrisAttackExecutor {
             Vec3 pos = mount.position();
 
             float scale = ErsUtils.calculateRenderSize(mount.getAgeInDays());
-            double length =  4 * scale;
-
             double range = 4 * scale;
 
             // 从实体前方4格开始的位置
-            double startX = pos.x + lookVec.x * length;
+            double startX = pos.x + lookVec.x * range;
             double startY = pos.y + lookVec.y;
-            double startZ = pos.z + lookVec.z * length;
+            double startZ = pos.z + lookVec.z * range;
 
             AABB attackBox = new AABB(
                     startX - range, startY, startZ - range,
@@ -211,14 +204,13 @@ public class DentisaurusLongirostrisAttackExecutor {
                     entity -> entity instanceof LivingEntity);
 
             double damage = mount.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            damage = checkEquipment(mount, ErsItems.SCRATCHING_BOARD.get()) ? damage * 1.4 : damage;
+            damage = mount.checkEquipment(ErsItems.SCRATCHING_BOARD.get()) ? damage * 1.4 : damage;
             for (Entity target : entities) {
-                if(target.equals(mount.getControllingPassenger()))
+                if(target.equals(mount.getControllingPassenger()) || mount.isAlliedTo(target))
                     continue;
                 if (target instanceof LivingEntity livingEntity) {
                     livingEntity.hurt(mount.level().damageSources().mobAttack(mount), (float)damage);
                     ErsBleedingEffect.giveBleedingEffect(livingEntity,4);
-                    mount.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY, true);
                 }
             }
 
@@ -258,15 +250,15 @@ public class DentisaurusLongirostrisAttackExecutor {
 
             List<Entity> entities = mount.level().getEntities(mount, attackBox,
                     entity -> entity instanceof LivingEntity);
-            double damage = mount.getAttributeValue(Attributes.ATTACK_DAMAGE) + 5;
-            damage = checkEquipment(mount ,ErsItems.BULLY_STICK.get()) ? damage * 1.4 : damage;
+            double damage = mount.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.25;
+            damage = mount.checkEquipment(ErsItems.BULLY_STICK.get()) ? damage * 1.4 : damage;
             for (Entity target : entities) {
                 if (target.equals(mount.getControllingPassenger()))
                     continue;
                 if (target instanceof LivingEntity livingEntity) {
                     livingEntity.hurt(mount.level().damageSources().mobAttack(mount), (float) damage);
                     ErsBleedingEffect.giveBleedingEffect(livingEntity,4);
-                    mount.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY, true);
+                    mount.setBloody(true);
                 }
             }
         }
@@ -287,8 +279,7 @@ public class DentisaurusLongirostrisAttackExecutor {
 
         if(attack.animatorTick == AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL.getAnimationLength() - 470 && attack.judgementTarget == null && !attack.triggered){
             if(mount.level() instanceof ServerLevel serverLevel){
-                System.out.println(attack);
-                attack.judgementTarget = Objects.requireNonNull(ErsEntities.LATIMERIA_PERCOIDES.get().create(serverLevel));
+                attack.judgementTarget = Objects.requireNonNull(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get().create(serverLevel));
                 serverLevel.addFreshEntity(attack.judgementTarget);
                 attack.triggered = true;
             }
@@ -309,7 +300,7 @@ public class DentisaurusLongirostrisAttackExecutor {
             if(attack.animatorTick == AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL.getAnimationLength() - 558)
             {
                 attack.judgementTarget.hurt(mount.level().damageSources().mobAttack(mount), Float.MAX_VALUE);
-                mount.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY, true);
+                mount.setBloody(true);
                 if(mount.level() instanceof ServerLevel serverLevel)
                 {
                     mount.heal(10);
@@ -330,8 +321,9 @@ public class DentisaurusLongirostrisAttackExecutor {
 
         if(attack.animatorTick == AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE.getAnimationLength() - 470 && attack.judgementTarget == null && !attack.triggered){
             if(mount.level() instanceof ServerLevel serverLevel){
-                System.out.println(attack);
-                attack.judgementTarget = Objects.requireNonNull(ErsEntities.ACANTHODES_CHLAMYDOSELACHOIDES.get().create(serverLevel));
+                attack.judgementTarget = Objects.requireNonNull(List.of(
+                        ErsEntities.ARGENTUMNISCUS_ACICULAULAR.get(), ErsEntities.LATIMERIA_PERCOIDES.get())
+                        .get(mount.level().random.nextInt(2)).create(serverLevel));
                 serverLevel.addFreshEntity(attack.judgementTarget);
                 attack.triggered = true;
             }
@@ -352,7 +344,7 @@ public class DentisaurusLongirostrisAttackExecutor {
             if(attack.animatorTick == AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE.getAnimationLength() - 540)
             {
                 attack.judgementTarget.hurt(mount.level().damageSources().mobAttack(mount), Float.MAX_VALUE);
-                mount.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY, true);
+                mount.setBloody(true);
                 if(mount.level() instanceof ServerLevel serverLevel)
                 {
                     mount.heal(12);
@@ -367,15 +359,82 @@ public class DentisaurusLongirostrisAttackExecutor {
         }
     }
 
-    public boolean checkEquipment(DentisaurusLongirostrisEntity mount, Item equipment){
-        for (int i = 5; i <= 7; i++) {
-            ItemStack itemStack = mount.getInventory().getItem(i);
-            if(!itemStack.isEmpty()){
-                if(itemStack.is(equipment)){
-                    return true;
+    public void executeSwampDragonJumpAttack(MobAttack attack, DentisaurusLongirostrisEntity mount){
+        if(attack.animatorTick == AttackType.SWAMP_DRAGON_JUMP_ATTACK.getAnimationLength() - 16){
+            Vec3 pos = mount.position();
+
+            Vec3 lookVec = mount.getLookAngle();
+
+            float scale = ErsUtils.calculateRenderSize(mount.getAgeInDays());
+
+            double range = 5 * scale;
+
+            double startX = pos.x;
+            double startY = pos.y;
+            double startZ = pos.z;
+
+            AABB attackBox = new AABB(
+                    startX - range, startY, startZ - range,
+                    startX + range,
+                    startY + range,
+                    startZ + range
+            );
+
+            List<Entity> entities = mount.level().getEntities(mount, attackBox,
+                    entity -> entity instanceof LivingEntity);
+
+            double damage = mount.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.3f;
+            for (Entity target : entities) {
+                if(target.equals(mount.getControllingPassenger()) || mount.isAlliedTo(target))
+                    continue;
+                if (target instanceof LivingEntity livingEntity) {
+                    livingEntity.hurt(mount.level().damageSources().mobAttack(mount), (float)damage);
+                    livingEntity.addDeltaMovement(
+                            livingEntity.getDeltaMovement().add(
+                                    lookVec.x * 1.5,
+                                    0.5,
+                                    lookVec.z * 1.5
+                            ));
+
+                    if(livingEntity instanceof ErsTamableVehicle<?> tamable){
+                        if(!tamable.isAlive())
+                            return;
+                        if(tamable.isBaby() || (tamable.doAgeTick() && tamable.getAgeInDays() < 20)){
+                            livingEntity.addDeltaMovement(
+                                    livingEntity.getDeltaMovement().add(
+                                            lookVec.x * 1.5,
+                                            1,
+                                            lookVec.z * 1.5
+                                    )
+                            );
+                            return;
+                        }
+
+                        double volume = mount.getBoundingBox().getXsize() * mount.getBoundingBox().getYsize() *
+                                mount.getBoundingBox().getZsize();
+                        double targetVolume = tamable.getBoundingBox().getXsize() * tamable.getBoundingBox().getYsize() *
+                                tamable.getBoundingBox().getZsize();
+                        if(targetVolume < volume){
+                            if(ErsUtils.calculateFallDirection(mount, tamable))
+                                tamable.startAttack(AttackType.KNOCK_DOWN_RIGHT);
+                            else
+                                tamable.startAttack(AttackType.KNOCK_DOWN_LEFT);
+                        }
+                    }
                 }
             }
         }
-        return false;
+
+        if(attack.animatorTick < 5){
+            mount.startAttack(AttackType.SWAMP_DRAGON_AFTER_JUMP_LAND);
+        }
+    }
+
+    public void executeSwampDragonAfterJumpLand(MobAttack attack, DentisaurusLongirostrisEntity mount){
+        if(attack.animatorTick < AttackType.SWAMP_DRAGON_AFTER_JUMP_LAND.getAnimationLength() - 22 && mount.isInWater()){
+            mount.stopTriggeredAnimation("attack","jump_attack");
+            mount.getAnimatableInstanceCache().getManagerForId(mount.getId()).getAnimationControllers().get("attack").stop();
+            attack.animatorTick = 1;
+        }
     }
 }

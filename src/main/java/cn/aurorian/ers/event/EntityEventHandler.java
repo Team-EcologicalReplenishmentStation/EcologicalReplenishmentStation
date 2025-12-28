@@ -1,12 +1,11 @@
 package cn.aurorian.ers.event;
 
 import cn.aurorian.ers.EcologicalReplenishmentStation;
-import cn.aurorian.ers.effect.ErsBleedingEffect;
 import cn.aurorian.ers.entity.ErsTamable;
 import cn.aurorian.ers.entity.ErsTamableVehicle;
 import cn.aurorian.ers.entity.MobRotDirection;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
-import cn.aurorian.ers.entity.creatures.tachypleusgladius.TachypleusGladiusEntity;
+import cn.aurorian.ers.entity.creatures.terridensaurussaevus.TerridensaurusSaevusEntity;
 import cn.aurorian.ers.init.ErsBlocks;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.init.ErsMobEffects;
@@ -14,7 +13,6 @@ import cn.aurorian.ers.init.ErsParticleType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -22,8 +20,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.AbstractFish;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -32,7 +30,6 @@ import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -78,20 +75,20 @@ public class EntityEventHandler {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
-        if (event.getEntity() instanceof TachypleusGladiusEntity crab) {
-            if (event.getSource().is(DamageTypes.MOB_ATTACK) || event.getSource().is(DamageTypes.PLAYER_ATTACK)) {
-                if(!crab.isWaiting()){
-                    if(crab.getLastHurtByMob() != null){
-                        crab.crabEscape(crab.getLastHurtByMob());
-                    }else if(event.getSource().is(DamageTypes.PLAYER_ATTACK)){
-                        crab.crabEscape(event.getSource().getEntity());
+        if(event.getSource().is(DamageTypes.MOB_ATTACK) && event.getEntity() instanceof ServerPlayer player){
+            if(player.getVehicle() instanceof ErsTamableVehicle<?> tamable){
+                SimpleContainer inventory = tamable.getInventory();
+                if(inventory != null){
+                    for(int i = 1; i <= 3; i++){
+                        ItemStack itemStack = inventory.getItem(i);
+                        if(!itemStack.isEmpty()){
+                            if(itemStack.is(ErsItems.RIDING_GUIDE.get())){
+                                event.setCanceled(true);
+                                return;
+                            }
+                        }
                     }
-
                 }
-                if(event.getSource().getEntity() instanceof LivingEntity living){
-                    living.hurt(crab.level().damageSources().thorns(crab), 4);
-                }
-
             }
         }
 
@@ -99,14 +96,14 @@ public class EntityEventHandler {
             return;
         }
 
-        if (event.getEntity() instanceof DentisaurusLongirostrisEntity sotek) {
-            for (int i = 5; i <= 7; i++) {
-                ItemStack itemStack = sotek.getInventory().getItem(i);
+        if (event.getEntity() instanceof ErsTamableVehicle<?> vehicle && vehicle.getInventory() != null) {
+            for (int i = 1; i <= 3; i++) {
+                ItemStack itemStack = vehicle.getInventory().getItem(i);
                 if (!itemStack.isEmpty()) {
                     if (itemStack.is(Items.TOTEM_OF_UNDYING)) {
                         itemStack.shrink(1);
-                        sotek.setHealth(sotek.getMaxHealth());
-                        sotek.level().playSound(sotek, sotek.getOnPos(),
+                        vehicle.setHealth(vehicle.getMaxHealth());
+                        vehicle.level().playSound(vehicle, vehicle.getOnPos(),
                                 SoundEvents.TOTEM_USE, SoundSource.NEUTRAL,
                                 1.0F, 1.0F);
                         return;
@@ -115,7 +112,7 @@ public class EntityEventHandler {
             }
         }
 
-        if(event.getEntity() instanceof ErsTamable<?> pet && pet.isEnable()){
+        if(event.getEntity() instanceof ErsTamable<?> pet && pet.isRespawnEnable() && !pet.isSoul()){
             BlockPos pos = pet.getRespawnPos();
             ServerLevel respawnlevel = null;
             for (ServerLevel level : pet.getServer().getAllLevels()) {
@@ -140,38 +137,25 @@ public class EntityEventHandler {
                  pet.setHealth(1);
                  pet.removeAllEffects();
 
-                 if(pet instanceof DentisaurusLongirostrisEntity swampDragon){
-                     swampDragon.setCommand(1);
-                     swampDragon.setRotDirection(MobRotDirection.of(MobRotDirection.RotDirection.NONE, false));
-                     swampDragon.setAgeInTicks(swampDragon.getAgeInTicks() / 2);
-                     if(swampDragon.getAgeInDays() < 38){
-                         swampDragon.setElite(false);
-                         if(swampDragon.getAgeInDays() < 20){
-                             swampDragon.setMature(false);
+                 if(pet.doAgeTick()){
+                     pet.setCommand(1);
+                     pet.setAgeInTicks((int) (pet.getAgeInTicks() * 0.9));
+
+                     if(pet instanceof ErsTamableVehicle<?> vehicle){
+                         vehicle.setRotDirection(MobRotDirection.of(MobRotDirection.RotDirection.NONE, false));
+                         if(pet.getAgeInDays() < 38){
+                             vehicle.setElite(false);
+                             if(pet.getAgeInDays() < 20){
+                                 vehicle.setMature(false);
+                             }
                          }
+                         vehicle.updateFromAgeServer();
                      }
-                     swampDragon.updateFromAgeServer();
+                 }else {
+                     pet.setBaby(true);
                  }
                  event.setCanceled(true);
              }
-        }
-
-        if(event.getSource().is(DamageTypes.MOB_ATTACK) && event.getEntity() instanceof ServerPlayer player){
-            if(player.getVehicle() instanceof ErsTamableVehicle<?> tamable){
-                SimpleContainer inventory = tamable.getInventory();
-                if(inventory != null){
-                    for(int i = 4; i < inventory.getContainerSize(); i++){
-                        ItemStack itemStack = inventory.getItem(i);
-                        if(!itemStack.isEmpty()){
-                            if(itemStack.is(ErsItems.RIDING_GUIDE.get())){
-                                event.setCanceled(true);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
         }
     }
 
@@ -182,38 +166,11 @@ public class EntityEventHandler {
                 swampDragon.feed(8);
             swampDragon.feed(2);
         }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerUse(PlayerInteractEvent.EntityInteract event){
-        ItemStack itemStack = event.getItemStack();
-       if(itemStack.is(ErsItems.SOUL_CUBE_GIFT.get()) && event.getTarget() instanceof ErsTamable<?> pet) {
-           if(!pet.isTame())
-               return;
-           if(!pet.isOwnedBy(event.getEntity()))
-               return;
-
-           pet.setEnable(true);
-
-           CompoundTag tag = itemStack.getOrCreateTag();
-           pet.setDimension(event.getLevel().dimension().toString());
-           pet.setRespawnPos(new BlockPos(tag.getInt("X"),
-                   tag.getInt("Y"),
-                   tag.getInt("Z")));
-           itemStack.shrink(1);
-           event.getLevel().playSound(event.getEntity(),
-                   event.getTarget().getOnPos(),
-                   SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.NEUTRAL,
-                   1.0F, 1.0F);
-       }
-
-       if(itemStack.is(ErsItems.TOURNIQUET.get()) && event.getTarget() instanceof LivingEntity living) {
-            if (living.hasEffect(ErsMobEffects.BLEEDING.get())) {
-                ErsBleedingEffect.removeBleedingEffect(living);
-                itemStack.shrink(1);
-            }
-
-       }
+        if(event.getEntity() instanceof Animal && event.getSource().getEntity() instanceof TerridensaurusSaevusEntity saevus) {
+            if(!saevus.isTame())
+                saevus.feed(8);
+            saevus.feed(2);
+        }
     }
 
     @SubscribeEvent

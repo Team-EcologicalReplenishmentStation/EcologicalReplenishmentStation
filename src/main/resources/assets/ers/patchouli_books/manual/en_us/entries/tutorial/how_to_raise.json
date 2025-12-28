@@ -1,0 +1,12 @@
+{
+  "name": "How to Raise",
+  "icon": "ers:saevus_egg",
+  "category": "ers:tutorial",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "text",
+      "text": ""
+    }
+  ]
+}

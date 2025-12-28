@@ -1,0 +1,14 @@
+{
+	"name": "item.ers.book.name",
+	"landing_text": "item.ers.book.landing_text",
+	"version": 1,
+	"advancement_namespaces": [
+		"ers"
+	],
+	"creative_tab": "ers:main",
+	"advancements_tab": "ers",
+	"use_resource_pack": true,
+	"model": "ers:guide_book",
+	"show_progress": false,
+	"give_book_on_first_join": true
+}

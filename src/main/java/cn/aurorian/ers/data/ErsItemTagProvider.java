@@ -7,6 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -22,14 +23,21 @@ public class ErsItemTagProvider extends ItemTagsProvider{
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        this.tag(ItemTags.FISHES)
-                .add(ErsItems.PERCH.get())
-                .add(ErsItems.CHLAMYDOSELACHOIDES.get())
-                .add(ErsItems.SUCHOMIMUS.get());
-
         this.tag(ErsTagKeys.KNOWN_FISH)
                 .add(ErsItems.PERCH.get())
                 .add(ErsItems.CHLAMYDOSELACHOIDES.get())
-                .add(ErsItems.SUCHOMIMUS.get());
+                .add(ErsItems.SUCHOMIMUS.get())
+                .add(ErsItems.SARCOPETERUS.get())
+                .add(ErsItems.ACICULABULAR.get())
+                .add(ErsItems.LABIUM.get());
+
+        this.tag(ItemTags.FISHES)
+                .addTag(ErsTagKeys.KNOWN_FISH);
+
+        this.tag(ErsTagKeys.MEAT)
+                .add(ErsItems.SWAMP_DRAGON_MEAT.get())
+                .add(Items.MUTTON)
+                .add(Items.BEEF)
+                .add(Items.PORKCHOP);
     }
 }

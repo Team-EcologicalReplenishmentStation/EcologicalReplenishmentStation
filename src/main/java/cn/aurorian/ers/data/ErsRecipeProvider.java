@@ -3,6 +3,7 @@ package cn.aurorian.ers.data;
 import cn.aurorian.ers.EcologicalReplenishmentStation;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.init.ErsMobEffects;
+import cn.aurorian.ers.init.ErsTagKeys;
 import cn.aurorian.oasis.init.OasisItems;
 import net.minecraft.advancements.critereon.EffectsChangedTrigger;
 import net.minecraft.advancements.critereon.MobEffectsPredicate;
@@ -31,6 +32,12 @@ public class ErsRecipeProvider extends RecipeProvider {
         ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ErsItems.SWAMP_DRAGON_SADDLE.get())
                 .requires(Items.SADDLE)
                 .requires(Items.FISHING_ROD)
+                .unlockedBy("in_inventory", has(Items.SADDLE))
+                .save(pWriter);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ErsItems.SAEVUS_SADDLE.get())
+                .requires(Items.SADDLE)
+                .requires(Items.IRON_SWORD)
                 .unlockedBy("in_inventory", has(Items.SADDLE))
                 .save(pWriter);
 
@@ -115,10 +122,31 @@ public class ErsRecipeProvider extends RecipeProvider {
                 .requires(ErsItems.SUCHOMIMUS.get())
                 .unlockedBy("has_suchomimus", has(ErsItems.SUCHOMIMUS.get()))
                 .save(pWriter, "ers:fish_fillet_from_suchomimus");
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ErsItems.FISH_FILLET.get(), 3)
+                .requires(ErsItems.SARCOPETERUS.get())
+                .unlockedBy("has_sarcopterus", has(ErsItems.SARCOPETERUS.get()))
+                .save(pWriter, "ers:fish_fillet_from_sarcopterus");
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ErsItems.FISH_FILLET.get(), 3)
+                .requires(ErsItems.ACICULABULAR.get())
+                .unlockedBy("has_aciculabular", has(ErsItems.ACICULABULAR.get()))
+                .save(pWriter, "ers:fish_fillet_from_aciculabular");
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ErsItems.FISH_FILLET.get(), 3)
+                .requires(ErsItems.LABIUM.get())
+                .unlockedBy("has_labium", has(ErsItems.LABIUM.get()))
+                .save(pWriter, "ers:fish_fillet_from_labium");
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ErsItems.PISCIVORES_FEED.get())
                 .requires(ErsItems.FISH_FILLET.get(), 9)
                 .unlockedBy("ers:has_fish_fillet", has(ErsItems.FISH_FILLET.get()))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.FOOD, ErsItems.CARNIVORE_FEED.get())
+                .pattern("ABA")
+                .pattern("BBB")
+                .pattern("ABA")
+                .define('A', Items.BONE)
+                .define('B', ErsTagKeys.MEAT)
+                .unlockedBy("ers:has_meat", has(ErsTagKeys.MEAT))
                 .save(pWriter);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ErsItems.SOUL_CUBE.get())
@@ -161,7 +189,7 @@ public class ErsRecipeProvider extends RecipeProvider {
                 .unlockedBy("bleeding", EffectsChangedTrigger.TriggerInstance.hasEffects(MobEffectsPredicate.effects().and(ErsMobEffects.BLEEDING.get())))
                 .save(pWriter);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,ErsItems.SWAMP_DRAGON_ARTIFICIAL_NEST.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,ErsItems.ARTIFICIAL_NEST.get())
                 .pattern("ABA")
                 .pattern("BCB")
                 .pattern("ABA")
@@ -171,12 +199,46 @@ public class ErsRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
                 .save(pWriter);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ErsItems.GILDED_HORN.get())
+                .pattern("AAA")
+                .pattern("ABA")
+                .pattern("AAA")
+                .define('A', Items.GOLD_INGOT)
+                .define('B', Items.GOAT_HORN)
+                .unlockedBy("has_horn", has(Items.GOAT_HORN))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ErsItems.DRAGON_BONE_FLUTE.get())
+                .pattern(" BA")
+                .pattern("BA ")
+                .pattern("A  ")
+                .define('A', ErsItems.DRAGON_BONE.get())
+                .define('B', Items.FLINT)
+                .unlockedBy("has_dragon_bone", has(ErsItems.DRAGON_BONE.get()))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ErsItems.SOUL_FLUTE.get())
+                .pattern("EBC")
+                .pattern("BAB")
+                .pattern("CBD")
+                .define('A', ErsItems.DRAGON_BONE_FLUTE.get())
+                .define('B', Items.END_CRYSTAL)
+                .define('C', Items.ECHO_SHARD)
+                .define('D', Items.AMETHYST_SHARD)
+                .define('E', Items.TOTEM_OF_UNDYING)
+                .unlockedBy("has_flute", has(ErsItems.DRAGON_BONE_FLUTE.get()))
+                .save(pWriter);
+
         buildFoodProcessRecipes(pWriter, ErsItems.SWAMP_DRAGON_MEAT.get(), ErsItems.COOKED_SWAMP_DRAGON_MEAT.get(), 0.35f);
         buildFoodProcessRecipes(pWriter, ErsItems.HORSESHOE_CRAB_MEAT.get(), ErsItems.COOKED_HORSESHOE_CRAB_MEAT.get(), 0.35f);
         buildFoodProcessRecipes(pWriter, ErsItems.CHLAMYDOSELACHOIDES.get(), ErsItems.COOKED_CHLAMYDOSELACHOIDES.get(), 0.35f);
         buildFoodProcessRecipes(pWriter, ErsItems.SUCHOMIMUS.get(), ErsItems.COOKED_SUCHOMIMUS.get(), 0.35f);
         buildFoodProcessRecipes(pWriter, ErsItems.FISH_FILLET.get(), ErsItems.COOKED_FISH_FILLET.get(), 0.1f);
         buildFoodProcessRecipes(pWriter, ErsItems.PERCH.get(), ErsItems.COOKED_PERCH.get(), 0.1f);
+        buildFoodProcessRecipes(pWriter, ErsItems.SARCOPETERUS.get(), ErsItems.COOKED_SARCOPETERUS.get(), 0.1f);
+        buildFoodProcessRecipes(pWriter, ErsItems.SAEVUS_MEAT.get(), ErsItems.COOKED_SAEVUS_MEAT.get(), 0.35f);
+        buildFoodProcessRecipes(pWriter, ErsItems.ACICULABULAR.get(), ErsItems.COOKED_ACICULABULAR.get(), 0.35f);
+        buildFoodProcessRecipes(pWriter, ErsItems.LABIUM.get(), ErsItems.COOKED_LABIUM.get(), 0.2f);
 
         //Compat
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ErsItems.FISH_FILLET.get(), 1)
@@ -192,7 +254,6 @@ public class ErsRecipeProvider extends RecipeProvider {
                 .define('I', Items.IRON_INGOT)
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(pWriter);
-        buildFoodProcessRecipes(pWriter, OasisItems.KIDNEY.get(), OasisItems.COOKED_KIDNEY.get(), 0.6f);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, OasisItems.TUBUNASUS_SADDLE.get())
                 .pattern("A  ")
@@ -204,6 +265,14 @@ public class ErsRecipeProvider extends RecipeProvider {
                 .define('D', Items.IRON_INGOT)
                 .unlockedBy("has_leather", has(OasisItems.LEATHER.get()))
                 .save(pWriter);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, OasisItems.DUROVELA_SPECIMEN.get(),1)
+                .requires(OasisItems.BONE.get(),9)
+                .unlockedBy("has_oasis_bone", has(OasisItems.BONE.get()))
+                .save(pWriter);
+
+        buildFoodProcessRecipes(pWriter, OasisItems.KIDNEY.get(), OasisItems.COOKED_KIDNEY.get(), 0.6f);
+        buildFoodProcessRecipes(pWriter, OasisItems.ANNULATUM.get(), OasisItems.COOKED_ANNULATUM.get(), 0.2f);
     }
 
     public ConditionalRecipe.Builder buildCompatRecipe(ShapelessRecipeBuilder recipe, String path, String modId) {

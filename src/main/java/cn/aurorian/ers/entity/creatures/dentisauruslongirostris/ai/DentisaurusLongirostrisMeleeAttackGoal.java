@@ -5,7 +5,6 @@ import cn.aurorian.ers.entity.MobRotDirection;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,22 +41,22 @@ public class DentisaurusLongirostrisMeleeAttackGoal extends MeleeAttackGoal {
         double d0 = this.getAttackReachSqr(pEnemy);
         if (pDistToEnemySqr <= d0 && isTimeToAttack() && sotek.getAttackState().isEmpty()) {
             this.resetAttackCooldown();
-            if(pEnemy == sotek.getOwner() || (pEnemy instanceof TamableAnimal tamableAnimal && sotek.isTame() && tamableAnimal.getOwner() == sotek.getOwner())) {
+            if(sotek.isAlliedTo(pEnemy)){
                 return;
             }
 
-            if(sotek.getRandom().nextFloat() < 0.9)
+            if(sotek.getRandom().nextFloat() < 0.9 || !sotek.isMature())
                 sotek.startAttack(AttackType.SWAMP_DRAGON_ATTACK);
             else{
+                sotek.getNavigation().stop();
                 if(sotek.isInWater() && !sotek.onGround()){
                     sotek.startAttack(AttackType.SWAMP_DRAGON_SWIM_SPECIAL_ATTACK);
                 }else
                     sotek.startAttack(AttackType.SWAMP_DRAGON_SPECIAL_ATTACK);
             }
-
-
             this.mob.swing(InteractionHand.MAIN_HAND);
             this.mob.doHurtTarget(pEnemy);
+
             this.mob.getEntityData().set(DentisaurusLongirostrisEntity.BLOODY,true);
         }
     }

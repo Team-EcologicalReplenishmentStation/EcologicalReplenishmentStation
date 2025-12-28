@@ -1,0 +1,13 @@
+{
+  "name": "TachypleusGladius",
+  "icon": "ers:gladius_spawn_egg",
+  "category": "ers:atlas",
+  "pages": [
+    {
+      "type": "entity",
+      "entity": "ers:tachypleus_gladius",
+      "rotate": false,
+      "scale": 0.6
+    }
+  ]
+}

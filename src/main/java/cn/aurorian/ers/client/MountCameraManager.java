@@ -1,6 +1,6 @@
 package cn.aurorian.ers.client;
 
-import cn.aurorian.ers.entity.ErsPlayerRideable;
+import cn.aurorian.ers.entity.ErsTamableVehicle;
 import cn.aurorian.oasis.entity.tubunasusdurovela.TubunasusDurovelaEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
@@ -24,7 +24,7 @@ public class MountCameraManager
     }
     public static void setMountCameraAngles(Camera camera)
     {
-        if (Minecraft.getInstance().player.getVehicle() instanceof ErsPlayerRideable rideable)
+        if (Minecraft.getInstance().player.getVehicle() instanceof ErsTamableVehicle<?> rideable)
         {
             if(!Minecraft.getInstance().options.getCameraType().isFirstPerson()){
                 var offsets = getFixedCameraOffsets(Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK);

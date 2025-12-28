@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "ers:saevus_meat"
+  },
+  "result": "ers:cooked_saevus_meat"
+}

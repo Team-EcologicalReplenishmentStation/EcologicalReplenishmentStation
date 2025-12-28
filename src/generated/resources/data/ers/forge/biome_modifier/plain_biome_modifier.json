@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "minecraft:plains",
+  "spawners": [
+    {
+      "type": "oasis:pygopodus_annulatum",
+      "maxCount": 5,
+      "minCount": 3,
+      "weight": 5
+    },
+    {
+      "type": "oasis:tubunasus_clyderotunda",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 5
+    }
+  ]
+}

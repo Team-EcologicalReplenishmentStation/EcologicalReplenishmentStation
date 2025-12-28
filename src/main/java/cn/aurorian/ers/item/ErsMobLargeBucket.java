@@ -1,5 +1,6 @@
 package cn.aurorian.ers.item;
 
+import cn.aurorian.ers.entity.ErsTamable;
 import cn.aurorian.ers.init.ErsItems;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -79,20 +80,23 @@ public class ErsMobLargeBucket extends MobBucketItem{
         }
     }
 
-    public static <T extends LivingEntity & Bucketable> Optional<InteractionResult> bucketMobPickup(Player pPlayer, InteractionHand pHand, T pEntity) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        if (itemstack.getItem() == ErsItems.LARGE_WATER_BUCKET.get() && pEntity.isAlive()) {
-            pEntity.playSound(pEntity.getPickupSound(), 1.0F, 1.0F);
-            ItemStack itemstack1 = pEntity.getBucketItemStack();
-            pEntity.saveToBucketTag(itemstack1);
-            ItemStack itemstack2 = ItemUtils.createFilledResult(itemstack, pPlayer, itemstack1, false);
-            pPlayer.setItemInHand(pHand, itemstack2);
-            Level level = pEntity.level();
+    public static <T extends LivingEntity & Bucketable> Optional<InteractionResult> bucketMobPickup(Player player, InteractionHand interactionHand, T entity) {
+        ItemStack itemstack = player.getItemInHand(interactionHand);
+        if (itemstack.getItem() == ErsItems.LARGE_WATER_BUCKET.get() && entity.isAlive()) {
+            if(entity instanceof ErsTamable<?> tamable && tamable.isSoul()){
+                return Optional.empty();
+            }
+            entity.playSound(entity.getPickupSound(), 1.0F, 1.0F);
+            ItemStack itemstack1 = entity.getBucketItemStack();
+            entity.saveToBucketTag(itemstack1);
+            ItemStack itemstack2 = ItemUtils.createFilledResult(itemstack, player, itemstack1, false);
+            player.setItemInHand(interactionHand, itemstack2);
+            Level level = entity.level();
             if (!level.isClientSide) {
-                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer)pPlayer, itemstack1);
+                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer)player, itemstack1);
             }
 
-            pEntity.discard();
+            entity.discard();
             return Optional.of(InteractionResult.sidedSuccess(level.isClientSide));
         } else {
             return Optional.empty();

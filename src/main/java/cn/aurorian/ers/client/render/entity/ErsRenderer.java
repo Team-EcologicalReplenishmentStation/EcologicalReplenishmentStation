@@ -39,6 +39,8 @@ public class ErsRenderer<T extends Mob & ErsEntity<T> & GeoAnimatable> extends G
         super.applyRotations(animatable, poseStack, ageInTicks, rotationYaw, partialTick);
         GeneralAnimator<? extends T> animator = animatable.getAnimator();
 
-        poseStack.mulPose(Axis.XP.rotationDegrees(animator.getModelPitch(partialTick, XRotDegree)));
+        if(!animatable.getAnimator().isInScreen){
+            poseStack.mulPose(Axis.XP.rotationDegrees(animator.getModelPitch(partialTick, XRotDegree)));
+        }
     }
 }

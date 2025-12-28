@@ -2,6 +2,7 @@ package cn.aurorian.ers.data;
 
 import cn.aurorian.ers.data.loot.ErsBlockLoot;
 import cn.aurorian.ers.data.loot.ErsEntityLoot;
+import cn.aurorian.oasis.data.loot.OasisBlockLoot;
 import cn.aurorian.oasis.data.loot.OasisEntityLoot;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -15,7 +16,8 @@ public class ErsLootTableProvider extends LootTableProvider {
         super(pOutput, Set.of(), List.of(
                 new SubProviderEntry(ErsBlockLoot::new, LootContextParamSets.BLOCK),
                 new SubProviderEntry(ErsEntityLoot::new, LootContextParamSets.ENTITY),
-                new SubProviderEntry(OasisEntityLoot::new, LootContextParamSets.ENTITY)));
+                new SubProviderEntry(OasisEntityLoot::new, LootContextParamSets.ENTITY),
+                new SubProviderEntry(OasisBlockLoot::new, LootContextParamSets.BLOCK)));
     }
 
 }

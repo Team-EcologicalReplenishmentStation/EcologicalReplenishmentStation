@@ -1,12 +1,62 @@
 {
-  "durovela_tubunasus_call": {
+  "annulatum_look_around": {
     "sounds": [
-      "oasis:durovela_tubunasus_call"
+      "oasis:annulatum/look_around"
     ]
   },
-  "durovela_tubunasus_hurt": {
+  "annulatum_walk": {
     "sounds": [
-      "oasis:durovela_tubunasus_hurt"
+      "oasis:annulatum/walk"
+    ]
+  },
+  "durovela_call": {
+    "sounds": [
+      "oasis:durovela/call"
+    ]
+  },
+  "durovela_footstep": {
+    "sounds": [
+      "oasis:durovela/footstep"
+    ]
+  },
+  "durovela_hurt": {
+    "sounds": [
+      "oasis:durovela/hurt"
+    ]
+  },
+  "saevus_attack": {
+    "sounds": [
+      "ers:saevus/attack"
+    ]
+  },
+  "saevus_attack_turn": {
+    "sounds": [
+      "ers:saevus/attack_turn"
+    ]
+  },
+  "saevus_footstep": {
+    "sounds": [
+      "ers:saevus/footstep"
+    ]
+  },
+  "saevus_knockdown": {
+    "sounds": [
+      "ers:saevus/knockdown"
+    ]
+  },
+  "saevus_roar": {
+    "sounds": [
+      "ers:saevus/roar"
+    ]
+  },
+  "saevus_strike": {
+    "sounds": [
+      "ers:saevus/strike"
+    ]
+  },
+  "saevus_swim": {
+    "sounds": [
+      "ers:saevus/swim"
     ]
   },
   "tel_ring": {

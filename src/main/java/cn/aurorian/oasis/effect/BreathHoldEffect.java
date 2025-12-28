@@ -13,7 +13,8 @@ public class BreathHoldEffect extends MobEffect {
     @Override
     public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier) {
         if(pLivingEntity instanceof ServerPlayer player){
-            player.setAirSupply(player.getAirSupply() + 20);
+            player.setAirSupply(Math.min(player.getMaxAirSupply(),
+                    player.getAirSupply() + 20));
         }
     }
 

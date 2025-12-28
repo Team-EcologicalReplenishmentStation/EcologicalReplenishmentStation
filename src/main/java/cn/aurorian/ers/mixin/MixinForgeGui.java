@@ -1,5 +1,6 @@
 package cn.aurorian.ers.mixin;
 
+import cn.aurorian.ers.entity.ErsTamableVehicle;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,24 +10,24 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ForgeGui.class,remap = false)
 public abstract class MixinForgeGui {
     @Shadow public int rightHeight;
     @Shadow public abstract Minecraft getMinecraft();
+    @Unique
     private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
 
-    /**
-     * @author mlus
-     * @reason revamp showing way
-     */
-    @Overwrite
-    protected void renderHealthMount(int width, int height, GuiGraphics guiGraphics) {
+    @Inject(method = "renderHealthMount", at = @At("HEAD"), cancellable = true)
+    protected void renderHealthMount(int width, int height, GuiGraphics guiGraphics, CallbackInfo ci) {
         Player player = (Player) getMinecraft().getCameraEntity();
         Entity tmp = player.getVehicle();
-        if (tmp instanceof LivingEntity) {
+        if (tmp instanceof ErsTamableVehicle<?>) {
             int left_align = width / 2 + 91;
             getMinecraft().getProfiler().popPush("mountHealth");
             RenderSystem.enableBlend();
@@ -60,15 +61,9 @@ public abstract class MixinForgeGui {
                 guiGraphics.blit(GUI_ICONS_LOCATION, x, top, 97, 9, 9, 9); // 半颗心
             }
 
-//            String percentText = String.format("%d%%", (int)(healthPercent * 100));
-//            int textWidth = getMinecraft().font.width(percentText);
-//            int textX = left_align - totalHearts * 8 - textWidth - 5;
-//            int textY = top + 1;
-//
-//            guiGraphics.drawString(getMinecraft().font, percentText, textX, textY, 0xFFFFFF, true);
-
             this.rightHeight += 10;
             RenderSystem.disableBlend();
+            ci.cancel();
         }
     }
 }

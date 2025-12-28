@@ -47,8 +47,8 @@ public class SwampDragonFecesItem extends Item {
         }
 
             List<BlockItem> fecesBlocks =
-            List.of((BlockItem) ErsItems.SWAMP_DRAGON_BONE_FECES.get(), (BlockItem) ErsItems.SWAMP_DRAGON_LARGE_FECES.get(),
-                    (BlockItem) ErsItems.SWAMP_DRAGON_SMALL_FECES.get(),(BlockItem) ErsItems.SWAMP_DRAGON_GLASSES_FECES.get());
+            List.of((BlockItem) ErsItems.BONE_FECES.get(), (BlockItem) ErsItems.LARGE_FECES.get(),
+                    (BlockItem) ErsItems.SMALL_FECES.get(),(BlockItem) ErsItems.GLASSES_FECES.get());
         BlockItem selected = fecesBlocks.get(RandomSource.create().nextInt(fecesBlocks.size()));
         InteractionResult result = selected.place(new BlockPlaceContext(context));
         // 播放音效

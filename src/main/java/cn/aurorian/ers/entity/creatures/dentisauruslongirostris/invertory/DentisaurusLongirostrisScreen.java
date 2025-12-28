@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class DentisaurusLongirostrisScreen extends AbstractContainerScreen<DentisaurusLongirostrisContainerMenu> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "textures/container/swamp_dragon_container.png");
-    private static final ResourceLocation ELITE_TEXTURE = ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "textures/container/swamp_dragon_container_elite.png");
+    private static final ResourceLocation TEXTURE = EcologicalReplenishmentStation.prefix("textures/container/swamp_dragon_container.png");
+    private static final ResourceLocation ELITE_TEXTURE = EcologicalReplenishmentStation.prefix( "textures/container/swamp_dragon_container_elite.png");
 
     public DentisaurusLongirostrisScreen(DentisaurusLongirostrisContainerMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -26,9 +26,9 @@ public class DentisaurusLongirostrisScreen extends AbstractContainerScreen<Denti
             pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
         }
 
-        this.menu.sotek.setIsInScreen(true);
+        this.menu.sotek.getAnimator().isInScreen = true;
         InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 51, this.topPos + 60, 10, (float)(this.leftPos + 51) - pMouseX, (float)(this.topPos + 60 - 50) - pMouseY, this.menu.sotek);
-        this.menu.sotek.setIsInScreen(false);
+        this.menu.sotek.getAnimator().isInScreen = false;
     }
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {

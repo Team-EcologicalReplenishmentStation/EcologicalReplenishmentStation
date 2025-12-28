@@ -6,4 +6,12 @@ import software.bernie.geckolib.core.animatable.GeoAnimatable;
 
 public interface ErsEntity<T extends Mob & GeoAnimatable> {
     GeneralAnimator<T> getAnimator();
+
+    default float getVolume(){
+        return 1f;
+    }
+
+    default float getSoundRange(){
+        return 25f;
+    }
 }

@@ -19,14 +19,14 @@ public class TerridensaurusSaevusAnimator extends GeneralAnimator<Terridensaurus
     @Override
     public void animate(GeoModel<TerridensaurusSaevusEntity> model, AnimationState<TerridensaurusSaevusEntity> animationState) {
         animTail(model);
-        if(!animationState.getAnimatable().isInScreen()){
+        if(!animationState.getAnimatable().getAnimator().isInScreen){
             animHead(model,animationState);
         }
     }
 
     protected void animTail(GeoModel<TerridensaurusSaevusEntity> model){
         String[] tailBoneNames;
-        tailBoneNames = new String[]{"tail", "tail2", "tail3", "tail4", "tail5"};
+        tailBoneNames = new String[]{"tail", "tail2", "tail3", "tail4", "tail5", "tail6"};
         List<GeoBone> tailBones = getBonesByName(tailBoneNames, model);
         for(int i = 0; i < tailBones.size(); i++){
             GeoBone tail = tailBones.get(i);
@@ -36,12 +36,12 @@ public class TerridensaurusSaevusAnimator extends GeneralAnimator<Terridensaurus
             float pitchOfs = Mth.clamp(pitchTrail.get(partialTicks, 0, i + 1) * 0.13f, -angleLimit, angleLimit);
             float yawOfs = Mth.clamp(yawTrail.get(partialTicks, 0, i + 1) * 0.13f, -angleLimit, angleLimit);
 
-            float extraRotationFactor = 4.5f - (i * 0.3f);
+            float extraRotationFactor = 3.0f - (i * 0.35f);
 
-            if(i>=4 && !entity.isSprinting())
+            if(i >= 4 && !entity.isSprinting())
             {
-                pitchOfs *= 1.2f;
-                yawOfs *=  1.2f;
+                pitchOfs *= 3f;
+                yawOfs *=  3f;
             }
             pitchOfs *= extraRotationFactor;
             yawOfs *= extraRotationFactor;

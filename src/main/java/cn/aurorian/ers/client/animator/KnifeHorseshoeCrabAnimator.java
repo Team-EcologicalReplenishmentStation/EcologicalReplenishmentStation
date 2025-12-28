@@ -17,7 +17,9 @@ public class KnifeHorseshoeCrabAnimator extends GeneralAnimator<TachypleusGladiu
 
     @Override
     public void animate(GeoModel<TachypleusGladiusEntity> model, AnimationState<TachypleusGladiusEntity> animationState) {
-        animHead(model,animationState);
+        if(!animationState.getAnimatable().getAnimator().isInScreen){
+            animHead(model,animationState);
+        }
     }
 
     protected void animHead(GeoModel<TachypleusGladiusEntity> model, AnimationState<TachypleusGladiusEntity> animationState) {

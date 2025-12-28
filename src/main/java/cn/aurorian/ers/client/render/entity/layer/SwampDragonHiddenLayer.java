@@ -1,5 +1,6 @@
 package cn.aurorian.ers.client.render.entity.layer;
 
+import cn.aurorian.ers.EcologicalReplenishmentStation;
 import cn.aurorian.ers.client.ErsDataTickets;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -7,6 +8,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
@@ -22,7 +25,7 @@ public class SwampDragonHiddenLayer extends GeoRenderLayer<DentisaurusLongirostr
                           MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick,
                           int packedLight, int packedOverlay) {
 
-        boolean bloody = sotek.getEntityData().get(DentisaurusLongirostrisEntity.BLOODY);
+        boolean bloody = sotek.isBloody();
         bakedModel.getBone("blood1").ifPresent(bone -> bone.setHidden(!bloody));
         bakedModel.getBone("blood2").ifPresent(bone -> bone.setHidden(!bloody));
 
@@ -48,7 +51,7 @@ public class SwampDragonHiddenLayer extends GeoRenderLayer<DentisaurusLongirostr
             bone.setScaleZ(scale);
         });
 
-        boolean hasArmour = sotek.getEntityData().get(DentisaurusLongirostrisEntity.ARMORED);
+        boolean hasArmour = sotek.isArmored();
         for (int i = 1; i <= 12; i++) {
             bakedModel.getBone("Armour" + i).ifPresent(bone -> bone.setHidden(!hasArmour));
         }
@@ -56,7 +59,7 @@ public class SwampDragonHiddenLayer extends GeoRenderLayer<DentisaurusLongirostr
 
 
         // 如果没有鞍具，隐藏所有食物
-        if (sotek.getInventory().getItem(0).isEmpty() || sotek.getAgeInDays() > 400) {
+        if (!sotek.isSaddled() || sotek.getAgeInDays() > 400) {
             bakedModel.getBone("Food_A").ifPresent(bone -> bone.setHidden(true));
             bakedModel.getBone("Food_B").ifPresent(bone -> bone.setHidden(true));
             bakedModel.getBone("Food_C").ifPresent(bone -> bone.setHidden(true));
@@ -66,7 +69,7 @@ public class SwampDragonHiddenLayer extends GeoRenderLayer<DentisaurusLongirostr
             return;
         }
 
-        int filledSlots = sotek.getEntityData().get(DentisaurusLongirostrisEntity.FILLED_FISH);
+        int filledSlots = sotek.getFilledFish();
     
         // 根据填充数量显示对应的食物模型
         bakedModel.getBone("Food_A").ifPresent(bone -> bone.setHidden(filledSlots < 1));
@@ -88,5 +91,21 @@ public class SwampDragonHiddenLayer extends GeoRenderLayer<DentisaurusLongirostr
                 animatable.setAnimData(ErsDataTickets.SADDLE_POS, bone.getLocalPosition());
             }
         }
+    }
+
+    @Override
+    public void render(PoseStack poseStack, DentisaurusLongirostrisEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+        if(!animatable.isMature())
+            return;
+        RenderType armorRenderType = RenderType.armorCutoutNoCull(getTextureResource(animatable));
+        this.getRenderer().reRender(this.getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, armorRenderType, bufferSource.getBuffer(armorRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    @Override
+    protected ResourceLocation getTextureResource(DentisaurusLongirostrisEntity animatable) {
+        if(animatable.isElite())
+            return EcologicalReplenishmentStation.prefix("textures/entity/dentisaurus_longirostris/elite_layer.png");
+        else
+            return EcologicalReplenishmentStation.prefix("textures/entity/dentisaurus_longirostris/base_layer.png");
     }
 }

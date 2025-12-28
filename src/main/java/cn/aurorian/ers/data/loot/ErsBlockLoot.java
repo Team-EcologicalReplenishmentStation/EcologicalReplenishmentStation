@@ -16,11 +16,11 @@ import net.minecraftforge.registries.RegistryObject;
 public class ErsBlockLoot extends VanillaBlockLoot {
     @Override
     protected void generate() {
-        this.add(ErsBlocks.SWAMP_DRAGON_BONE_FECES.get(), block -> this.createSingleItemTable(ErsItems.SWAMP_DRAGON_FECES.get()));
-        this.add(ErsBlocks.SWAMP_DRAGON_GLASSES_FECES.get(), block -> this.createSingleItemTable(ErsItems.SWAMP_DRAGON_FECES.get()));
-        this.add(ErsBlocks.SWAMP_DRAGON_LARGE_FECES.get(), block -> this.createSingleItemTable(ErsItems.SWAMP_DRAGON_FECES.get()));
-        this.add(ErsBlocks.SWAMP_DRAGON_SMALL_FECES.get(), block -> this.createSingleItemTable(ErsItems.SWAMP_DRAGON_FECES.get()));
-        this.add(ErsBlocks.SWAMP_DRAGON_TEL_FECES.get(), block -> this.createLootTableWithRecord());
+        this.add(ErsBlocks.BONE_FECES.get(), block -> this.createSingleItemTable(ErsItems.FECES.get()));
+        this.add(ErsBlocks.GLASSES_FECES.get(), block -> this.createSingleItemTable(ErsItems.FECES.get()));
+        this.add(ErsBlocks.LARGE_FECES.get(), block -> this.createSingleItemTable(ErsItems.FECES.get()));
+        this.add(ErsBlocks.SMALL_FECES.get(), block -> this.createSingleItemTable(ErsItems.FECES.get()));
+        this.add(ErsBlocks.TEL_FECES.get(), block -> this.createLootTableWithRecord());
         this.add(ErsBlocks.SOUL_CUBE.get(), block -> this.createSingleItemTable(ErsItems.SOUL_CUBE.get()));
         this.add(ErsBlocks.SWAMP_DRAGON_NEST.get(),block -> LootTable.lootTable()
                 .withPool(LootPool.lootPool()
@@ -30,7 +30,14 @@ public class ErsBlockLoot extends VanillaBlockLoot {
                         .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(3)).when(LootItemRandomChanceCondition.randomChance(0.10f))))
                 )
         );
-        this.add(ErsBlocks.SWAMP_DRAGON_ARTIFICIAL_NEST.get(), block -> this.createSingleItemTable(ErsBlocks.SWAMP_DRAGON_ARTIFICIAL_NEST.get()));
+        this.add(ErsBlocks.SAEVUS_NEST.get(),block -> LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2)).when(LootItemRandomChanceCondition.randomChance(0.15f))))
+                )
+        );
+        this.add(ErsBlocks.ARTIFICIAL_NEST.get(), block -> this.createSingleItemTable(ErsBlocks.ARTIFICIAL_NEST.get()));
         this.add(ErsBlocks.EQUISETUM.get(), block -> this.createSingleItemTable(ErsBlocks.EQUISETUM.get()));
     }
 
@@ -59,7 +66,7 @@ public class ErsBlockLoot extends VanillaBlockLoot {
         return LootTable.lootTable()
                 .withPool(LootPool.lootPool()
                         .setRolls(ConstantValue.exactly(1))
-                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_FECES.get())))
+                        .add(LootItem.lootTableItem(ErsItems.FECES.get())))
                 .withPool(recordPool);
     }
 

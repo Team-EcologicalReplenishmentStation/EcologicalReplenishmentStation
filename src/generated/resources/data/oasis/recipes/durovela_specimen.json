@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    },
+    {
+      "item": "oasis:bone"
+    }
+  ],
+  "result": {
+    "item": "oasis:durovela_specimen"
+  }
+}

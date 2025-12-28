@@ -1,35 +1,40 @@
 package cn.aurorian.oasis.entity.pygopodusannulatum;
 
 import cn.aurorian.ers.client.animator.GeneralAnimator;
-import cn.aurorian.ers.entity.ErsEntity;
+import cn.aurorian.ers.entity.ErsTamable;
 import cn.aurorian.ers.entity.GeneralBodyControl;
 import cn.aurorian.ers.entity.ai.goal.MobAvodingEntityGoal;
+import cn.aurorian.ers.entity.ai.movecontrol.LimitedMoveControl;
 import cn.aurorian.ers.entity.ai.navigation.MMGroundPathNavigation;
 import cn.aurorian.ers.util.ErsUtils;
+import cn.aurorian.ers.util.SimpleAutoPlayingSoundKeyFrameHandler;
+import cn.aurorian.oasis.Oasis;
 import cn.aurorian.oasis.client.animator.PygopodusAnnulatumAnimator;
 import cn.aurorian.oasis.entity.pygopodusannulatum.ai.AnnulatumEatGoal;
+import cn.aurorian.oasis.init.OasisEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.goal.BreedGoal;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -37,29 +42,23 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class PygopodusAnnulatumEntity extends Animal implements GeoEntity, ErsEntity<PygopodusAnnulatumEntity> {
-    public PygopodusAnnulatumEntity(EntityType<? extends Animal> pEntityType, Level pLevel) {
+public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntity>{
+    public PygopodusAnnulatumEntity(EntityType<? extends ErsTamable> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-//        this.moveControl = new LimitedMoveControl(this);
+        this.moveControl = new LimitedMoveControl(this);
         this.animator = new PygopodusAnnulatumAnimator(this);
+        this.doHunger = true;
     }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GeneralAnimator<PygopodusAnnulatumEntity> animator;
     public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME = SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> HUNGER = SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Boolean> EATING = SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.BOOLEAN);
-
-    public float getHunger() {
-        return this.entityData.get(HUNGER);
+    private static final EntityDataAccessor<Boolean> EATING = SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.BOOLEAN);
+    public void setEating(boolean eating){
+        this.entityData.set(EATING,eating);
     }
-
-    public void setHunger(float hunger) {
-        entityData.set(HUNGER, java.lang.Math.max(java.lang.Math.min(hunger, 100),0));
-    }
-
-    public void feed(int foodAmount) {
-        setHunger(getHunger() + foodAmount);
+    public boolean isEating(){
+        return this.entityData.get(EATING);
     }
 
     @Override
@@ -80,35 +79,16 @@ public class PygopodusAnnulatumEntity extends Animal implements GeoEntity, ErsEn
         return new MMGroundPathNavigation(this, pLevel);
     }
 
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(@NotNull ServerLevel serverLevel, @NotNull AgeableMob ageableMob) {
-        return null;
-    }
-
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(HUNGER,100f);
         entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(100,300));
         entityData.define(EATING,false);
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putFloat("Hunger", this.getHunger());
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setHunger(compound.getFloat("Hunger"));
-    }
-
-    @Override
     protected @NotNull BodyRotationControl createBodyControl() {
-        return new GeneralBodyControl(this,5);
+        return new GeneralBodyControl(this,15);
     }
 
     @Override
@@ -128,12 +108,15 @@ public class PygopodusAnnulatumEntity extends Animal implements GeoEntity, ErsEn
                 }
             }
         }else {
-            float hunger = this.entityData.get(HUNGER);
+            float hunger = getHunger();
             if(tickCount % 200 == 0){
                 setHunger(hunger - 0.1f);
             }
-        }
 
+            if(hunger > 90f && getAge() == 0 && canFallInLove() && !isBaby()){
+                setInLove(null);
+            }
+        }
 
         if(ErsUtils.isMoving(this)){
             updateMount();
@@ -147,9 +130,26 @@ public class PygopodusAnnulatumEntity extends Animal implements GeoEntity, ErsEn
     }
 
     @Override
+    public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
+        if(isMoving() && !isBaby() && level().random.nextFloat() < 0.25f)
+        {
+            if(pSource.getEntity() instanceof LivingEntity livingEntity){
+                if(ErsUtils.calculateFallDirection(livingEntity,this)){
+                    triggerAnim("extra","dodge_right");
+                }else{
+                    triggerAnim("extra","dodge_left");
+                }
+            }
+            return false;
+        }
+        setHunger(Math.min(89.9f,getHunger()));
+        return super.hurt(pSource, pAmount);
+    }
+
+    @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new MobAvodingEntityGoal<>(this, Player.class, 8f, 1d,1.8d));
-        this.goalSelector.addGoal(1, new PanicGoal(this,2){
+        this.goalSelector.addGoal(1, new PanicGoal(this,2.4f){
             @Override
             public void start() {
                 super.start();
@@ -162,7 +162,8 @@ public class PygopodusAnnulatumEntity extends Animal implements GeoEntity, ErsEn
                 this.mob.setSprinting(false);
             }
         });
-        this.goalSelector.addGoal(2, new RandomStrollGoal(this,1,40));
+        this.goalSelector.addGoal(2, new BreedGoal(this,1));
+        this.goalSelector.addGoal(3, new RandomStrollGoal(this,1,40));
         this.goalSelector.addGoal(3, new AnnulatumEatGoal(this));
     }
 
@@ -181,26 +182,62 @@ public class PygopodusAnnulatumEntity extends Animal implements GeoEntity, ErsEn
                 if (isSprinting()) {
                     builder.thenLoop("animation.run");
                 } else if (state.isMoving() || ErsUtils.isMoving(this)) {
-                    if(getEntityData().get(EATING)){
+                    if(isEating()){
                         builder.thenLoop("animation.walk2");
-                    }else
-                        builder.thenLoop("animation.walk");
+                    }else{
+                        if(isBaby()){
+                            builder.thenLoop("animation.run");
+                        }else
+                            builder.thenLoop("animation.walk");
+                    }
                 } else {
                     builder.thenLoop("animation.idle");
                 }
             }
             return state.setAndContinue(builder);
-        });
+        }).setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
 
         AnimationController<PygopodusAnnulatumEntity> extra = new AnimationController<>(this, "extra",2, state -> PlayState.STOP)
                 .triggerableAnim("idle2", RawAnimation.begin().thenPlay("animation.idle2"))
-                .triggerableAnim("idle3", RawAnimation.begin().thenPlay("animation.idle3"));
+                .triggerableAnim("idle3", RawAnimation.begin().thenPlay("animation.idle3"))
+                .triggerableAnim("dodge_left", RawAnimation.begin().thenPlay("animation.dodge_left"))
+                .triggerableAnim("dodge_right", RawAnimation.begin().thenPlay("animation.dodge_right"))
+                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
 
         controllerRegistrar.add(main,extra);
     }
 
     @Override
+    public void spawnChildFromBreeding(@NotNull ServerLevel pLevel, @NotNull Animal pMate) {
+        super.spawnChildFromBreeding(pLevel, pMate);
+        this.setHunger(getHunger() - 10);
+    }
+
+    @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
+    }
+
+    @Override
+    public ErsTamable<?> getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob otherParent) {
+        return OasisEntities.PYGOPODUS_ANNULATUM.get().create(level);
+    }
+
+    @Override
+    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+        if (pSpawnData == null) {
+            pSpawnData = new AgeableMob.AgeableMobGroupData(0.2F);
+        }
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    }
+
+    @Override
+    public float getVolume() {
+        return 0.5f;
+    }
+
+    @Override
+    public float getSoundRange() {
+        return 16f;
     }
 }

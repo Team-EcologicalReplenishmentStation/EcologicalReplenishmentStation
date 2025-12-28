@@ -20,8 +20,8 @@ public class MobAttackSerializer implements EntityDataSerializer<MobAttack> {
         int animatorTick = buffer.readInt();
         int entityId = buffer.readInt();
         boolean triggered = buffer.readBoolean();
-        ErsTamableVehicle<?> entity = entityId != -1 ?
-            (ErsTamableVehicle<?>) Minecraft.getInstance().level.getEntity(entityId) : null;
+        ErsTamable<?> entity = entityId != -1 ?
+            (ErsTamable<?>) Minecraft.getInstance().level.getEntity(entityId) : null;
 
         MobAttack attack = new MobAttack(type, entity);
 

@@ -28,10 +28,10 @@ public class ErsNetwork {
             .decoder(MobAttackPacket::decode)
             .consumerMainThread(MobAttackPacket::handle)
             .add();
-        INSTANCE.messageBuilder(SwampDragonTrackFoodPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-            .encoder(SwampDragonTrackFoodPacket::encode)
-            .decoder(SwampDragonTrackFoodPacket::decode)
-            .consumerMainThread(SwampDragonTrackFoodPacket::handle)
+        INSTANCE.messageBuilder(ErsTamableTrackFoodPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
+            .encoder(ErsTamableTrackFoodPacket::encode)
+            .decoder(ErsTamableTrackFoodPacket::decode)
+            .consumerMainThread(ErsTamableTrackFoodPacket::handle)
             .add();
         INSTANCE.messageBuilder(MobSyncDimPacket.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
             .encoder(MobSyncDimPacket::encode)
@@ -48,10 +48,16 @@ public class ErsNetwork {
                 .decoder(VehicleSprintPacket::decode)
                 .consumerMainThread(VehicleSprintPacket::handle)
                 .add();
-        INSTANCE.messageBuilder(VehicleJumpPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(VehicleJumpPacket::encode)
-                .decoder(VehicleJumpPacket::decode)
-                .consumerMainThread(VehicleJumpPacket::handle)
+        INSTANCE.messageBuilder(VehicleJumpInWaterPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(VehicleJumpInWaterPacket::encode)
+                .decoder(VehicleJumpInWaterPacket::decode)
+                .consumerMainThread(VehicleJumpInWaterPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(MobPositionRiderPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(MobPositionRiderPacket::encode)
+                .decoder(MobPositionRiderPacket::decode)
+                .consumerMainThread(MobPositionRiderPacket::handle)
                 .add();
 
         INSTANCE.registerMessage(nextId(),

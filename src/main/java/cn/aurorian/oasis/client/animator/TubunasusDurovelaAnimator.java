@@ -18,10 +18,8 @@ public class TubunasusDurovelaAnimator extends GeneralAnimator<TubunasusDurovela
     private float lastStableHeadCompensate = 0.0f;
     @Override
     public void animate(GeoModel<TubunasusDurovelaEntity> model, AnimationState<TubunasusDurovelaEntity> animationState) {
-        if(entity.getDeadProgress() != 0)
-            return;
         animTail(model);
-        if(!animationState.getAnimatable().isInScreen())
+        if(!animationState.getAnimatable().getAnimator().isInScreen)
             animHead(model,animationState);
     }
 

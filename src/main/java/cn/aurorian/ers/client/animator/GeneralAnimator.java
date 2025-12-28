@@ -15,6 +15,7 @@ public class GeneralAnimator<T extends Mob & GeoAnimatable> {
     protected final CircularBuffer yawTrail = new CircularBuffer(64);//记录身体旋转的buffer
     protected final CircularBuffer pitchTrail = new CircularBuffer(16);
     private final CircularBuffer yTrail = new CircularBuffer(8);
+    public boolean isInScreen;
 
     protected T entity;
     protected float partialTicks;

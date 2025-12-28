@@ -1,6 +1,6 @@
 package cn.aurorian.ers.packet;
 
-import cn.aurorian.ers.entity.ErsPlayerRideable;
+import cn.aurorian.ers.entity.ErsTamableVehicle;
 import cn.aurorian.ers.entity.MobRotDirection;
 import cn.aurorian.ers.init.ErsNetwork;
 import net.minecraft.client.Minecraft;
@@ -45,13 +45,13 @@ public class MobTurnPacket {
         ctx.get().enqueueWork(() -> {
             if(ctx.get().getDirection().getReceptionSide().isClient()){
                 Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-                if (entity instanceof ErsPlayerRideable rideable) {
+                if (entity instanceof ErsTamableVehicle<?> rideable) {
                     rideable.setRotDirection(direction);
                 }
                 ctx.get().setPacketHandled(true);
             }else {
                 Entity entity = ctx.get().getSender().level().getEntity(entityId);
-                if(entity instanceof ErsPlayerRideable rideable){
+                if(entity instanceof ErsTamableVehicle<?> rideable){
                     rideable.setRotDirection(direction);
                 }
                 ErsNetwork.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new MobTurnPacket(entityId,direction));

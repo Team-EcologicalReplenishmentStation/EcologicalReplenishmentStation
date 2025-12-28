@@ -1,10 +1,18 @@
 {
   "type": "forge:add_spawns",
   "biomes": "#minecraft:is_ocean",
-  "spawners": {
-    "type": "ers:acanthodes_chlamydoselachoides",
-    "maxCount": 1,
-    "minCount": 1,
-    "weight": 1
-  }
+  "spawners": [
+    {
+      "type": "ers:acanthodes_chlamydoselachoides",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 1
+    },
+    {
+      "type": "ers:argentumniscus_aciculabular",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 4
+    }
+  ]
 }

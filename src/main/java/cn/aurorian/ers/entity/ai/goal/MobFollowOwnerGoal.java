@@ -1,7 +1,6 @@
 package cn.aurorian.ers.entity.ai.goal;
 
 import cn.aurorian.ers.entity.ErsTamable;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
@@ -51,7 +50,7 @@ public class MobFollowOwnerGoal extends Goal {
         LivingEntity currentOwner = mob.getOwner();
         if (currentOwner == null || currentOwner.isSpectator()) {
             return false;
-        } else if (mob instanceof DentisaurusLongirostrisEntity entity && entity.getCommand() != 2) {
+        } else if (mob.getCommand() != 2) {
             return false;
         } else if (mob.distanceToSqr(currentOwner) < startDistanceSqr) {
             return false;

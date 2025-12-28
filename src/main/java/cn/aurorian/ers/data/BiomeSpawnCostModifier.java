@@ -21,11 +21,14 @@ public class BiomeSpawnCostModifier implements BiomeModifier {
         if (phase == Phase.ADD) {
             if(biome.is(BiomeTags.IS_OCEAN)){
                 builder.getMobSpawnSettings().addMobCharge(ErsEntities.ACANTHODES_CHLAMYDOSELACHOIDES.get(), 0.7, 3);
+                builder.getMobSpawnSettings().addMobCharge(ErsEntities.ARGENTUMNISCUS_ACICULAULAR.get(), 0.7, 2);
             }
             if(biome.is(BiomeTags.IS_BEACH) || biome.is(Biomes.SWAMP) || biome.is(Biomes.MANGROVE_SWAMP)){
                 builder.getMobSpawnSettings().addMobCharge(ErsEntities.DENTISAURUS_LONGIROSTRIS.get(), 0.6,4);
                 if(biome.is(Biomes.SWAMP) || biome.is(Biomes.MANGROVE_SWAMP)){
+                    builder.getMobSpawnSettings().addMobCharge(ErsEntities.LATIMERIA_PERCOIDES.get(),0.7,1.8);
                     builder.getMobSpawnSettings().addMobCharge(ErsEntities.LATIMERIA_SUCHOMIMUS.get(),0.7,2.8);
+                    builder.getMobSpawnSettings().addMobCharge(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(), 0.7,1.7);
                 }
             }
             if(biome.is(BiomeTags.IS_BEACH)){
@@ -33,6 +36,24 @@ public class BiomeSpawnCostModifier implements BiomeModifier {
             }
             if(biome.is(Biomes.RIVER)){
                 builder.getMobSpawnSettings().addMobCharge(ErsEntities.LATIMERIA_SUCHOMIMUS.get(),0.7,3);
+                builder.getMobSpawnSettings().addMobCharge(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(), 0.7,1.7);
+            }
+            if(biome.is(Biomes.SAVANNA)){
+                builder.getMobSpawnSettings().addMobCharge(ErsEntities.TERRIDENSAURUS_SAEVUS.get(),0.7,5);
+                builder.getMobSpawnSettings().addMobCharge(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(),0.7,4);
+            }
+            if(biome.is(Biomes.SNOWY_PLAINS)) {
+                builder.getMobSpawnSettings().addMobCharge(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), 0.7, 4);
+            }
+            if(biome.is(Biomes.BADLANDS)){
+                builder.getMobSpawnSettings().addMobCharge(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(),0.7,4);
+            }
+            if(biome.is(Biomes.DESERT)){
+                builder.getMobSpawnSettings().addMobCharge(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(),0.7,4);
+            }
+            if(biome.is(Biomes.PLAINS)){
+                builder.getMobSpawnSettings().addMobCharge(OasisEntities.PYGOPODUS_ANNULATUM.get(),0.7,2);
+                builder.getMobSpawnSettings().addMobCharge(OasisEntities.TUBUNASUS_DUROVELA.get(),0.7,4);
             }
         }
     }

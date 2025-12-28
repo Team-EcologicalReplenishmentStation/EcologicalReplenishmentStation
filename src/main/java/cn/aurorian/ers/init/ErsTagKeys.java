@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 public class ErsTagKeys{
     //To override recipe for ItemTags.FISHES
     public static final TagKey<Item> KNOWN_FISH = create("known_fish");
+    public static final TagKey<Item> MEAT = create("meat");
 
     private static TagKey<Item> create(String name) {
         return ItemTags.create(EcologicalReplenishmentStation.prefix(name));

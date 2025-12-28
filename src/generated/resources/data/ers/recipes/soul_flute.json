@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "ers:dragon_bone_flute"
+    },
+    "B": {
+      "item": "minecraft:end_crystal"
+    },
+    "C": {
+      "item": "minecraft:echo_shard"
+    },
+    "D": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "E": {
+      "item": "minecraft:totem_of_undying"
+    }
+  },
+  "pattern": [
+    "EBC",
+    "BAB",
+    "CBD"
+  ],
+  "result": {
+    "item": "ers:soul_flute"
+  },
+  "show_notification": true
+}

@@ -3,6 +3,7 @@ package cn.aurorian.ers.util;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +36,7 @@ public class ErsUtils {
     }
 
     public static boolean isMoving(Mob mob) {
-        return mob.getX() != mob.xOld || mob.getZ() != mob.zOld;
+        return mob.getX() != mob.xOld || mob.getZ() != mob.zOld || mob.getY() != mob.yOld;
     }
 
     public static float rotlerp(float pSourceAngle, float pTargetAngle, float pMaximumChange) {
@@ -70,11 +71,51 @@ public class ErsUtils {
      * Returns an integer value from 0 (brightest) to 11 (darkest).
      * @return darkness
      */
-
     public static int updateSkyBrightness(Level level) {
         double d0 = 1.0 - (double)(level.getRainLevel(1.0F) * 5.0F) / 16.0;
         double d1 = 1.0 - (double)(level.getThunderLevel(1.0F) * 5.0F) / 16.0;
         double d2 = 0.5 + 2.0 * Mth.clamp(Mth.cos(level.getTimeOfDay(1.0F) * 6.2831855F), -0.25, 0.25);
         return (int)((1.0 - d2 * d0 * d1) * 11.0);
+    }
+
+    /***
+     * Calculates whether the target should fall to the left or right of the attacker.
+     */
+    public static boolean calculateFallDirection(LivingEntity attacker, LivingEntity target) {
+        Vec3 attackerPos = attacker.position();
+        Vec3 targetPos = target.position();
+
+        float targetYaw = target.getYRot();
+        Vec3 targetForward = Vec3.directionFromRotation(0, targetYaw);
+
+        Vec3 toAttacker = attackerPos.subtract(targetPos).normalize();
+
+        double crossY = targetForward.x * toAttacker.z - targetForward.z * toAttacker.x;
+
+        if(toAttacker.x * targetForward.x < 0 && toAttacker.z * targetForward.z < 0){
+            return crossY > 0;
+        }else
+            return crossY < 0;
+    }
+
+    public static float yRotationFromDirection(Vec3 direction) {
+        Vec3 normalized = direction.normalize();
+        double x = normalized.x;
+        double z = normalized.z;
+
+        float yaw = (float) Math.atan2(-x, z);
+        yaw = (float) Math.toDegrees(yaw);
+
+        return normalizeAngle(yaw);
+    }
+
+    public static float normalizeAngle(float angle) {
+        angle %= 360.0f;
+        if (angle > 180.0f) {
+            angle -= 360.0f;
+        } else if (angle < -180.0f) {
+            angle += 360.0f;
+        }
+        return angle;
     }
 }

@@ -2,9 +2,12 @@ package cn.aurorian.ers.init;
 
 import cn.aurorian.ers.EcologicalReplenishmentStation;
 import cn.aurorian.ers.entity.creatures.acanthodeschlamydoselachoides.AcanthodesChlamydoselachoidesEntity;
+import cn.aurorian.ers.entity.creatures.argentirhynchusgadiformis.ArgentumniscusAciculabularEntity;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import cn.aurorian.ers.entity.creatures.latimeriapercoides.LatimeriaPercoidesEntity;
 import cn.aurorian.ers.entity.creatures.latimeriasuchomimus.LatimeriaSuchomimusEntity;
+import cn.aurorian.ers.entity.creatures.magnidiscumyzonsarcopterus.MagnidiscumyzonSarcopterusEntity;
+import cn.aurorian.ers.entity.creatures.mandgemarelabium.MandgemareLabiumEntity;
 import cn.aurorian.ers.entity.creatures.tachypleusgladius.TachypleusGladiusEntity;
 import cn.aurorian.ers.entity.creatures.terridensaurussaevus.TerridensaurusSaevusEntity;
 import cn.aurorian.ers.entity.projectile.DragonClawHarpoonEntity;
@@ -26,12 +29,12 @@ public class ErsEntities {
 
     public static final RegistryObject<EntityType<LatimeriaPercoidesEntity>> LATIMERIA_PERCOIDES = ENTITIES.register("latimeria_percoides",
     () -> EntityType.Builder.of(LatimeriaPercoidesEntity::new, MobCategory.WATER_CREATURE)
-            .sized(1F, 1F)
+            .sized(1F, 0.9F)
             .build(EcologicalReplenishmentStation.prefix( "latimeria_percoides").toString()));
 
     public static final RegistryObject<EntityType<LatimeriaSuchomimusEntity>> LATIMERIA_SUCHOMIMUS = ENTITIES.register("latimeria_suchomimus",
     () -> EntityType.Builder.of(LatimeriaSuchomimusEntity::new, MobCategory.WATER_CREATURE)
-            .sized(1F, 1F)
+            .sized(2F, 0.95F)
             .build(EcologicalReplenishmentStation.prefix( "latimeria_suchomimus").toString()));
 
     public static final RegistryObject<EntityType<TachypleusGladiusEntity>> TACHYPLEUS_GLADIUS = ENTITIES.register("tachypleus_gladius",
@@ -46,7 +49,7 @@ public class ErsEntities {
 
     public static final RegistryObject<EntityType<TerridensaurusSaevusEntity>> TERRIDENSAURUS_SAEVUS = ENTITIES.register("terridensaurus_saevus",
     () -> EntityType.Builder.of(TerridensaurusSaevusEntity::new, MobCategory.CREATURE)
-            .sized(2.5F,4.2F)
+            .sized(2.75F,4.35F)
             .build(EcologicalReplenishmentStation.prefix("terridensaurus_saevus").toString()));
 
     public static final RegistryObject<EntityType<DragonClawHarpoonEntity>> DRAGON_CLAW_HARPOON = ENTITIES.register("dragon_claw_harpoon",
@@ -56,6 +59,19 @@ public class ErsEntities {
             .updateInterval(20)
             .build(EcologicalReplenishmentStation.prefix( "dragon_claw_harpoon").toString()));
 
+    public static final RegistryObject<EntityType<MagnidiscumyzonSarcopterusEntity>> MAGNIDISCUMYZON_SARCOPTERUS = ENTITIES.register("magnidiscumyzon_sarcopterus",
+    () -> EntityType.Builder.of(MagnidiscumyzonSarcopterusEntity::new, MobCategory.WATER_CREATURE)
+            .sized(0.4F, 0.4F)
+            .build(EcologicalReplenishmentStation.prefix("magnidiscumyzon_sarcopterus").toString()));
+
+    public static final RegistryObject<EntityType<ArgentumniscusAciculabularEntity>> ARGENTUMNISCUS_ACICULAULAR = ENTITIES.register("argentumniscus_aciculabular",
+    () -> EntityType.Builder.of(ArgentumniscusAciculabularEntity::new, MobCategory.WATER_CREATURE)
+            .sized(1F, 0.65F)
+            .build(EcologicalReplenishmentStation.prefix("argentumniscus_aciculabular").toString()));
+    public static final RegistryObject<EntityType<MandgemareLabiumEntity>> MANDGEMARE_LABIUM = ENTITIES.register("mandgemare_labium",
+    () -> EntityType.Builder.of(MandgemareLabiumEntity::new, MobCategory.WATER_CREATURE)
+            .sized(0.6F, 0.6F)
+            .build(EcologicalReplenishmentStation.prefix("mandgemare_labium").toString()));
     public static void register(IEventBus eventBus) {
         ENTITIES.register(eventBus);
     }

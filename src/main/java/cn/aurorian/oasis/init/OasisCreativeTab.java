@@ -15,6 +15,7 @@ public class OasisCreativeTab {
             .icon(() -> OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get().getDefaultInstance())
             .displayItems((par, output) -> {
                 output.accept(OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get());
+                output.accept(OasisItems.TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG.get());
                 output.accept(OasisItems.PYGOPODUS_ANNULATUM_SPAWN_EGG.get());
                 output.accept(OasisItems.TUBUNASUS_DUROVELA_LARGE_BUCKET.get());
                 output.accept(OasisItems.TUBUNASUS_SADDLE.get());
@@ -32,6 +33,8 @@ public class OasisCreativeTab {
                 output.accept(OasisItems.ANNULATUM.get());
                 output.accept(OasisItems.COOKED_ANNULATUM.get());
                 output.accept(OasisItems.TEASELGOURD.get());
+                output.accept(OasisItems.DUROVELA_SPECIMEN.get());
+//                output.accept(OasisItems.CLYDEROTUNDA_SPECIMEN.get());
             })
             .build());
     public static void register(IEventBus eventBus) {

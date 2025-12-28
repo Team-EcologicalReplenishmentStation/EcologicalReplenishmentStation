@@ -1,13 +1,15 @@
 package cn.aurorian.oasis.init;
 
 import cn.aurorian.ers.item.ErsMobLargeBucket;
+import cn.aurorian.ers.item.ErsSaddleItem;
 import cn.aurorian.oasis.Oasis;
+import cn.aurorian.oasis.entity.tubunasusdurovela.TubunasusDurovelaEntity;
 import cn.aurorian.oasis.item.CookedAnnulatumItem;
-import cn.aurorian.oasis.item.TubunasusSaddle;
 import cn.aurorian.oasis.item.equipment.HorseShoe;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -22,6 +24,14 @@ public class OasisItems {
     public static final RegistryObject<Item> TUBUNASUS_DUROVELA_SPAWN_EGG = OasisItems.ITEMS.register("durovela_spawn_egg",
             () -> new ForgeSpawnEggItem(
                     OasisEntities.TUBUNASUS_DUROVELA,
+                    0xFFFFFF,
+                    0x000000,
+                    new Item.Properties()
+            ));
+
+    public static final RegistryObject<Item> TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG = OasisItems.ITEMS.register("clyderotunda_spawn_egg",
+            () -> new ForgeSpawnEggItem(
+                    OasisEntities.TUBUNASUS_CLYDEROTUNDA,
                     0xFFFFFF,
                     0x000000,
                     new Item.Properties()
@@ -44,7 +54,12 @@ public class OasisItems {
             ));
 
     public static final RegistryObject<Item> TUBUNASUS_SADDLE = OasisItems.ITEMS.register("tubunasus_saddle",
-            () -> new TubunasusSaddle(new Item.Properties()));
+            () -> new ErsSaddleItem(new Item.Properties().stacksTo(1)){
+                @Override
+                protected boolean canEquip(cn.aurorian.ers.entity.ErsTamableVehicle<?> entity) {
+                    return entity instanceof TubunasusDurovelaEntity;
+                }
+            });
 
     public static final RegistryObject<Item> HORSESHOE = OasisItems.ITEMS.register("horseshoe",
             () -> new HorseShoe(new Item.Properties()));
@@ -71,15 +86,18 @@ public class OasisItems {
             () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationMod(1f)
                     .effect(() -> new MobEffectInstance(OasisMobEffects.APHRODISIAC.get(),72000),1).build())));
     public static final RegistryObject<Item> ANNULATUM = ITEMS.register("annulatum",
-            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationMod(0.5f).build())));
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).meat().saturationMod(0.5f).build())));
     public static final RegistryObject<Item> COOKED_ANNULATUM = ITEMS.register("cooked_annulatum",
-            () -> new CookedAnnulatumItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationMod(0.8f)
+            () -> new CookedAnnulatumItem(new Item.Properties().food(new FoodProperties.Builder().meat().nutrition(6).saturationMod(0.8f)
                     .build())));
 
     public static final RegistryObject<Item> TEASELGOURD = ITEMS.register("teaselgourd",
             () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationMod(0.4f).build())));
 
-
+    public static final RegistryObject<Item> DUROVELA_SPECIMEN = ITEMS.register("durovela_specimen",
+            () -> new BlockItem(OasisBlocks.DUROVELA_SPECIMEN.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CLYDEROTUNDA_SPECIMEN = ITEMS.register("clyderotunda_specimen",
+            () -> new BlockItem(OasisBlocks.CLYDEROTUNDA_SPECIMEN.get(), new Item.Properties()));
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

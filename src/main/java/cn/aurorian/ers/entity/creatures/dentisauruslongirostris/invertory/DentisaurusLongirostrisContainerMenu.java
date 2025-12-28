@@ -40,8 +40,26 @@ public class DentisaurusLongirostrisContainerMenu extends AbstractContainerMenu 
             }
         });
 
-        if(sotek.isElite()){
-            // 第4个槽位只能放置黄金马凯
+        this.addSlot(new Slot(container, 1, 98, 39 - 18) {
+            @Override
+            public boolean mayPlace(@NotNull ItemStack stack) {
+                return isEquipment(stack);
+            }
+        });
+
+        this.addSlot(new Slot(container, 2, 98 + 18, 39 - 18) {
+            @Override
+            public boolean mayPlace(@NotNull ItemStack stack) {
+                return isEquipment(stack);
+            }
+        });
+        if(sotek.isElite()) {
+            this.addSlot(new Slot(container, 3, 98 + 36, 39 - 18) {
+                @Override
+                public boolean mayPlace(@NotNull ItemStack stack) {
+                    return isEquipment(stack);
+                }
+            });
             this.addSlot(new Slot(container, 4, 8, 54) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {return stack.is(Items.GOLDEN_HORSE_ARMOR);}
@@ -50,47 +68,25 @@ public class DentisaurusLongirostrisContainerMenu extends AbstractContainerMenu 
             });
         }
 
-        // 第1、2、3槽位只能放置鱼类物品
-        this.addSlot(new Slot(container, 1, 98, 39) {
+        this.addSlot(new Slot(container, 5, 98, 39) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.is(ErsItems.PISCIVORES_FEED.get());
             }
         });
         
-        this.addSlot(new Slot(container, 2, 98+18, 39) {
+        this.addSlot(new Slot(container, 6, 98 + 18, 39) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
                 return stack.is(ErsItems.PISCIVORES_FEED.get());
             }
         });
+
         if(sotek.isElite()) {
-            this.addSlot(new Slot(container, 3, 98 + 36, 39) {
+            this.addSlot(new Slot(container, 7, 98 + 36, 39) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     return stack.is(ErsItems.PISCIVORES_FEED.get());
-                }
-            });
-        }
-        //第5、6、7槽位
-        this.addSlot(new Slot(container, 5, 98, 39-18) {
-            @Override
-            public boolean mayPlace(@NotNull ItemStack stack) {
-                return isEquipment(stack);
-            }
-        });
-
-        this.addSlot(new Slot(container, 6, 98+18, 39-18) {
-            @Override
-            public boolean mayPlace(@NotNull ItemStack stack) {
-                return isEquipment(stack);
-            }
-        });
-        if(sotek.isElite()) {
-            this.addSlot(new Slot(container, 7, 98 + 36, 39 - 18) {
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return isEquipment(stack);
                 }
             });
         }
@@ -136,11 +132,11 @@ public class DentisaurusLongirostrisContainerMenu extends AbstractContainerMenu 
             itemstack = slotStack.copy();
             
             // 定义各个槽位范围
-            int sotekSlotCount = 5; // Sotek物品栏有5个槽位
+            int sotekSlotCount = this.sotek.isElite() ? 8 : 5;
             int playerInvEnd = sotekSlotCount + 27; // 玩家物品栏结束位置
             int playerHotbarEnd = playerInvEnd + 9; // 玩家快捷栏结束位置
             
-            // 如果点击的是Sotek物品栏的槽位
+            // 如果点击的是物品栏的槽位
             if (pIndex < sotekSlotCount) {
                 // 尝试放入玩家物品栏或快捷栏
                 if (!this.moveItemStackTo(slotStack, sotekSlotCount, playerHotbarEnd, true)) {
@@ -158,15 +154,21 @@ public class DentisaurusLongirostrisContainerMenu extends AbstractContainerMenu 
                         return ItemStack.EMPTY;
                     }
                 }
+                // 如果是装备，尝试放入装备槽
+                else if (isEquipment(currentItem)) {
+                    if (!this.moveItemStackTo(slotStack, 1, sotek.isElite() ? 4 : 3, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                }
                 //如果是马铠，尝试放入铠甲槽
-                else if (currentItem.is(Items.GOLDEN_HORSE_ARMOR)) {
+                else if (currentItem.is(Items.GOLDEN_HORSE_ARMOR) && sotek.isElite()) {
                     if (!this.moveItemStackTo(slotStack, 4, 5, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
                 // 如果是鱼类，尝试放入鱼类槽
-                else if (currentItem.is(net.minecraft.tags.ItemTags.FISHES)) {
-                    if (!this.moveItemStackTo(slotStack, 1, 4, false)) {
+                else if (currentItem.is(ErsItems.PISCIVORES_FEED.get())) {
+                    if (!this.moveItemStackTo(slotStack, sotek.isElite() ? 5 : 3, sotek.isElite() ? 7 : 4, false)) {
                         return ItemStack.EMPTY;
                     }
                 }

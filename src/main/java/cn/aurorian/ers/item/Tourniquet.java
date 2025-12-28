@@ -1,10 +1,12 @@
 package cn.aurorian.ers.item;
 
+import cn.aurorian.ers.effect.ErsBleedingEffect;
 import cn.aurorian.ers.init.ErsMobEffects;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -42,6 +44,17 @@ public class Tourniquet extends Item {
 
         level.gameEvent(entity, GameEvent.ITEM_INTERACT_FINISH, entity.getEyePosition());
         return item;
+    }
+
+    @Override
+    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack itemStack, @NotNull Player player, @NotNull LivingEntity target, @NotNull InteractionHand pUsedHand) {
+        if (target.hasEffect(ErsMobEffects.BLEEDING.get())) {
+            ErsBleedingEffect.removeBleedingEffect(target);
+            itemStack.shrink(1);
+            return InteractionResult.CONSUME;
+        }
+
+       return InteractionResult.PASS;
     }
 
     @Override

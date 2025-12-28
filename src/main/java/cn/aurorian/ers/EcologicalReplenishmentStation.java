@@ -2,6 +2,7 @@ package cn.aurorian.ers;
 
 import cn.aurorian.ers.client.ErsDataTickets;
 import cn.aurorian.ers.client.gui.VehicleStaminaRenderer;
+import cn.aurorian.ers.config.ErsServerConfig;
 import cn.aurorian.ers.init.*;
 import cn.aurorian.oasis.init.*;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -31,6 +32,7 @@ public class EcologicalReplenishmentStation {
         initRegister(context.getModEventBus());
         context.getModEventBus().addListener(this::commonSetup);
         context.getModEventBus().addListener(this::setupClient);
+        ErsServerConfig.register(context);
 
         if (FMLEnvironment.dist.isClient()) {
             context.getModEventBus().addListener(VehicleStaminaRenderer::registerStaminaOverlay);
@@ -53,6 +55,8 @@ public class EcologicalReplenishmentStation {
         ErsBiomeModifierSerializers.register(eventBus);
 
         OasisEntities.register(eventBus);
+        OasisBlocks.register(eventBus);
+        OasisBlockEntities.register(eventBus);
         OasisContainers.register(eventBus);
         OasisItems.register(eventBus);
         OasisCreativeTab.register(eventBus);

@@ -1,0 +1,13 @@
+{
+    "name": "LatimeriaPercoides",
+    "icon": "ers:percoides_spawn_egg",
+    "category": "ers:atlas",
+    "pages": [
+        {
+            "type": "entity",
+            "entity": "ers:latimeria_percoides",
+            "rotate": false,
+            "scale": 0.6
+        }
+    ]
+}

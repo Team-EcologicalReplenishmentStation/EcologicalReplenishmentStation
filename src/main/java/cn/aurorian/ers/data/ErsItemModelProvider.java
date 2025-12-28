@@ -16,19 +16,28 @@ public class ErsItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         this.simpleItem(ErsItems.SWAMP_DRAGON_SADDLE.get());
+        this.simpleItem(ErsItems.SAEVUS_SADDLE.get());
         this.simpleItem(ErsItems.DENTISAURUS_LONGIROSTRIS_SPAWN_EGG.get());
         this.simpleItem(ErsItems.LATIMERIA_PERCOIDES_SPAWN_EGG.get());
         this.simpleItem(ErsItems.TACHYPLEUS_GLADIUS_SPAWN_EGG.get());
         this.simpleItem(ErsItems.CHLAMYDOSELACHOIDES_SPAWN_EGG.get());
         this.simpleItem(ErsItems.LATIMERIA_SUCHOMIMUS_SPAWN_EGG.get());
+        this.simpleItem(ErsItems.TERRIDENSAURUS_SAEVUS_SPAWN_EGG.get());
+        this.simpleItem(ErsItems.MAGNIDISCUMYZON_SARCOPTERUS_SPAWN_EGG.get());
+        this.simpleItem(ErsItems.ARGENTUMNISCUS_ACICULAULAR_SPAWN_EGG.get());
+        this.simpleItem(ErsItems.MANDGEMARE_LABIUM_SPAWN_EGG.get());
         this.simpleItem(ErsItems.PERCH_BUCKET.get());
         this.simpleItem(ErsItems.TACHYPLEUS_GLADIUS_BUCKET.get());
-        this.simpleItem(ErsItems.SWAMP_DRAGON_LARGE_BUCKET.get());
+        this.simpleItem(ErsItems.DENTISARUS_LONGIROSTRIS_LARGE_BUCKET.get());
         this.simpleItem(ErsItems.CHLAMYDOSELACHOIDES_LARGE_BUCKET.get());
         this.simpleItem(ErsItems.SUCHOMIMUS_LARGE_BUCKET.get());
+        this.simpleItem(ErsItems.SARCOPTERUS_BUCKET.get());
+        this.simpleItem(ErsItems.ACICULABULAR_BUCKET.get());
+        this.simpleItem(ErsItems.LABIUM_BUCKET.get());
 
         this.simpleItem(ErsItems.SWAMP_DRAGON_NEST.get());
-        this.simpleItem(ErsItems.SWAMP_DRAGON_ARTIFICIAL_NEST.get());
+        this.simpleItem(ErsItems.SAEVUS_NEST.get());
+        this.simpleItem(ErsItems.ARTIFICIAL_NEST.get());
         this.simpleItem(ErsItems.SWAMP_DRAGON_EGG.get());
         this.simpleItem(ErsItems.SAEVUS_EGG.get());
 
@@ -36,6 +45,8 @@ public class ErsItemModelProvider extends ItemModelProvider {
 
         this.simpleItem(ErsItems.LARGE_BUCKET.get());
         this.simpleItem(ErsItems.LARGE_WATER_BUCKET.get());
+        this.simpleItem(ErsItems.GILDED_HORN.get());
+        this.simpleItem(ErsItems.FILLED_GILDED_HORN.get());
         this.simpleItem(ErsItems.BAIT_BOX.get());
         this.simpleItem(ErsItems.BULLY_STICK.get());
         this.simpleItem(ErsItems.CLOVER.get());
@@ -55,13 +66,27 @@ public class ErsItemModelProvider extends ItemModelProvider {
         this.simpleItem(ErsItems.PERCH.get());
         this.simpleItem(ErsItems.SUCHOMIMUS.get());
         this.simpleItem(ErsItems.COOKED_SUCHOMIMUS.get());
+        this.simpleItem(ErsItems.CARNIVORE_FEED.get());
         this.simpleItem(ErsItems.PISCIVORES_FEED.get());
         this.simpleItem(ErsItems.CHLAMYDOSELACHOIDES.get());
         this.simpleItem(ErsItems.COOKED_CHLAMYDOSELACHOIDES.get());
         this.simpleItem(ErsItems.CHLAMYDOSELACHOIDES_TOOTH.get());
+        this.simpleItem(ErsItems.SARCOPETERUS.get());
+        this.simpleItem(ErsItems.COOKED_SARCOPETERUS.get());
+        this.simpleItem(ErsItems.SAEVUS_MEAT.get());
+        this.simpleItem(ErsItems.COOKED_SAEVUS_MEAT.get());
+        this.simpleItem(ErsItems.DRAGON_BONE.get());
+        this.simpleItem(ErsItems.DRAGON_BONE_FLUTE.get());
+        this.simpleItem(ErsItems.SOUL_FLUTE.get());
+        this.simpleItem(ErsItems.ACICULABULAR.get());
+        this.simpleItem(ErsItems.COOKED_ACICULABULAR.get());
+        this.simpleItem(ErsItems.LABIUM.get());
+        this.simpleItem(ErsItems.COOKED_LABIUM.get());
         this.simpleItem(ErsItems.DRAGON_CLAW_HARPOON_INVENTORY.get());
         this.simpleItem(ErsItems.TOURNIQUET.get());
         this.simpleItem(ErsItems.SCRATCHING_BOARD.get());
+
+        this.simpleItem(ErsItems.FECES.get());
     }
 
     private void simpleItem(Item item) {

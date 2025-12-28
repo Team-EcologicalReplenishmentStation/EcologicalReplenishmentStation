@@ -1,33 +1,30 @@
 package cn.aurorian.ers;
 
-import cn.aurorian.ers.block.SwampDragonArtificialNestBlock;
-import cn.aurorian.ers.block.be.SwampDragonArtificialNestBlockEntity;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
-import cn.aurorian.oasis.entity.pygopodusannulatum.PygopodusAnnulatumEntity;
+import cn.aurorian.ers.block.ArtificialNestBlock;
+import cn.aurorian.ers.block.be.ArtificialNestBlockEntity;
+import cn.aurorian.ers.entity.ErsTamable;
+import cn.aurorian.ers.entity.HasGender;
+import cn.aurorian.ers.item.egg.ErsEgg;
+import cn.aurorian.oasis.Oasis;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 
-// Jade插件注解，确保Jade能找到这个类
 @WailaPlugin(EcologicalReplenishmentStation.MODID)
 public class ErsJadePlugin implements IWailaPlugin {
-    public static final ResourceLocation AGE = ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "age");
-    public static final ResourceLocation FOOD = ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "food");
-    public static final ResourceLocation HATCH = ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "hatch");
+    public static final ResourceLocation AGE = EcologicalReplenishmentStation.prefix("age");
+    public static final ResourceLocation FOOD = EcologicalReplenishmentStation.prefix("food");
+    public static final ResourceLocation HATCH = EcologicalReplenishmentStation.prefix("hatch");
+    public static final ResourceLocation GENDER = Oasis.prefix("gender");
 
     @Override
     public void registerClient(IWailaClientRegistration registration) {
         // 注册实体组件提供者
-        registration.registerEntityComponent(AgeProvider.INSTANCE, DentisaurusLongirostrisEntity.class);
-        registration.registerEntityComponent(LongirostrisFoodProvider.INSTANCE, DentisaurusLongirostrisEntity.class);
-        registration.registerEntityComponent(AnnulatumFoodProvider.INSTANCE, PygopodusAnnulatumEntity.class);
-        registration.registerBlockComponent(HatchProvider.INSTANCE, SwampDragonArtificialNestBlock.class);
-        
-        // 添加配置选项
-        registration.addConfig(AGE, true);
-        registration.addConfig(FOOD, true);
-        registration.addConfig(HATCH, true);
+        registration.registerEntityComponent(AgeProvider.INSTANCE, ErsTamable.class);
+        registration.registerEntityComponent(FoodProvider.INSTANCE, ErsTamable.class);
+        registration.registerEntityComponent(GenderProvider.INSTANCE, ErsTamable.class);
+        registration.registerBlockComponent(HatchProvider.INSTANCE, ArtificialNestBlock.class);
     }
 
     private enum AgeProvider implements IEntityComponentProvider {
@@ -35,11 +32,8 @@ public class ErsJadePlugin implements IWailaPlugin {
 
         @Override
         public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-            // 检查配置是否启用
-            if (!config.get(ErsJadePlugin.AGE)) return;
-            
-            if (accessor.getEntity() instanceof DentisaurusLongirostrisEntity sotek) {
-                int ageInDays = sotek.getAgeInDays();
+            if (accessor.getEntity() instanceof ErsTamable<?> entity && entity.doAgeTick()) {
+                int ageInDays = entity.getAgeInDays();
                 tooltip.add(Component.translatable("tooltip.ers.age", ageInDays));
             }
         }
@@ -50,36 +44,14 @@ public class ErsJadePlugin implements IWailaPlugin {
         }
     }
 
-    private enum LongirostrisFoodProvider implements IEntityComponentProvider {
+    private enum FoodProvider implements IEntityComponentProvider {
         INSTANCE;
 
         @Override
         public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-            if (!config.get(ErsJadePlugin.FOOD)) return;
-            
-            if (accessor.getEntity() instanceof DentisaurusLongirostrisEntity entity) {
+            if (accessor.getEntity() instanceof ErsTamable<?> entity && entity.doHunger()) {
                 float hunger = entity.getHunger();
                 
-                tooltip.add(Component.translatable("tooltip.ers.food", hunger));
-            }
-        }
-
-        @Override
-        public ResourceLocation getUid() {
-            return FOOD;
-        }
-    }
-
-    private enum AnnulatumFoodProvider implements IEntityComponentProvider {
-        INSTANCE;
-
-        @Override
-        public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-            if (!config.get(ErsJadePlugin.FOOD)) return;
-
-            if (accessor.getEntity() instanceof PygopodusAnnulatumEntity entity) {
-                float hunger = entity.getHunger();
-
                 tooltip.add(Component.translatable("tooltip.ers.food", hunger));
             }
         }
@@ -95,12 +67,11 @@ public class ErsJadePlugin implements IWailaPlugin {
 
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-            if (!config.get(ErsJadePlugin.FOOD)) return;
-
-            if (accessor.getBlockEntity() instanceof SwampDragonArtificialNestBlockEntity entity) {
-                if(!entity.hasEgg())
+            if (accessor.getBlockEntity() instanceof ArtificialNestBlockEntity entity) {
+                if(entity.getEgg().isEmpty())
                     return;
-                int timer = entity.getHatchingTime() / 480;
+                ErsEgg eggItem = (ErsEgg) entity.getEgg().getItem();
+                int timer = entity.getHatchingTime() * 100 / eggItem.getHatchTime();
 
                 tooltip.add(Component.translatable("tooltip.ers.hatch","§a" + timer));
             }
@@ -109,7 +80,24 @@ public class ErsJadePlugin implements IWailaPlugin {
         public ResourceLocation getUid() {
             return HATCH;
         }
+    }
 
+    private enum GenderProvider implements IEntityComponentProvider{
+        INSTANCE;
 
+        @Override
+        public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+            if (accessor.getEntity() instanceof HasGender hasGender) {
+                if(hasGender.getGender())
+                    tooltip.add(Component.translatable("tooltip.oasis.gender.male"));
+                else
+                    tooltip.add(Component.translatable("tooltip.oasis.gender.female"));
+            }
+        }
+
+        @Override
+        public ResourceLocation getUid() {
+            return GENDER;
+        }
     }
 }

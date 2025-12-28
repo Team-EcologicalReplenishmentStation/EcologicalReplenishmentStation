@@ -11,20 +11,7 @@ public class TubunasusDurovelaModel extends OasisModel<TubunasusDurovelaEntity> 
     public ResourceLocation getModelResource(TubunasusDurovelaEntity entity) {
         if(entity.isBaby()){
             return Oasis.prefix("geo/entity/tubunasus_durovela_baby.geo.json");
-        }
-        if(entity.getDeadProgress() != 0){
-            switch (entity.getDeadProgress()){
-                case 1 ->  {
-                    return Oasis.prefix("geo/entity/tubunasus_durovela_dead.geo.json");
-                }
-                case 2,3,4,5,6 -> {
-                    return Oasis.prefix("geo/entity/tubunasus_durovela_body.geo.json");
-                }
-                default -> {
-                    return Oasis.prefix("geo/entity/tubunasus_durovela_skeleton.geo.json");
-                }
-            }
-        }else
+        } else
             return super.getModelResource(entity);
     }
 
@@ -32,17 +19,15 @@ public class TubunasusDurovelaModel extends OasisModel<TubunasusDurovelaEntity> 
     public ResourceLocation getTextureResource(TubunasusDurovelaEntity entity) {
         String base = "textures/entity/tubunasus_durovela";
 
-        if(entity.getDeadProgress() != 0 && !entity.isBaby()){
-            switch (entity.getDeadProgress()){
-                case 1 -> base = base + "_dead.png";
-                case 2,3,4,5,6 -> base = base + "_body.png";
-                default -> base = base + "_skeleton.png";
-            }
-            return Oasis.prefix(base);
-        }
-
         if(entity.isBaby()){
             base = base + "_baby";
+        }else {
+            if(entity.hasCustomName()){
+                if(entity.getCustomName().getString().equals("dark"))
+                    return Oasis.prefix(base + "_dark.png");
+                if(entity.getCustomName().getString().equals("D3WOJDIWLANLAND"))
+                    return Oasis.prefix(base + "_D3WOJDIWLANLAND.png");
+            }
         }
 
         switch (entity.getVariant().getId()) {

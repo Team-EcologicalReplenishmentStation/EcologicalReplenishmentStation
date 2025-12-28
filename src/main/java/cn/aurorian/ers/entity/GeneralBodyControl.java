@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.control.BodyRotationControl;
 
 public class GeneralBodyControl extends BodyRotationControl {
     Mob mob;
-    int maxBodyRot;
+    int maxBodyRotStep;
     public GeneralBodyControl(Mob pMob) {
         this(pMob, 5);
     }
@@ -15,18 +15,14 @@ public class GeneralBodyControl extends BodyRotationControl {
     public GeneralBodyControl(Mob pMob, int maxRotationStep) {
         super(pMob);
         this.mob = pMob;
-        this.maxBodyRot = maxRotationStep;
+        this.maxBodyRotStep = maxRotationStep;
     }
 
     @Override
     public void clientTick() {
+        this.mob.yBodyRot = Mth.approachDegrees(this.mob.yBodyRot,this.mob.getYRot(), maxBodyRotStep);
         if (ErsUtils.isMoving(mob)) {
-            if(Math.abs(Mth.degreesDifference(this.mob.yBodyRot,this.mob.getYRot())) < maxBodyRot)
-                this.mob.yBodyRot = this.mob.getYRot();
-            this.mob.yBodyRot = Mth.approachDegrees(this.mob.yBodyRot,this.mob.getYRot(),maxBodyRot);
             this.mob.yHeadRot = Mth.rotateIfNecessary(this.mob.yHeadRot, this.mob.yBodyRot, (float)this.mob.getMaxHeadYRot());
-        } else {
-           super.clientTick();
         }
     }
 }

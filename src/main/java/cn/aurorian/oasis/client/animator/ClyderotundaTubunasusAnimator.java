@@ -15,13 +15,10 @@ public class ClyderotundaTubunasusAnimator extends GeneralAnimator<TubunasusClyd
     public ClyderotundaTubunasusAnimator(TubunasusClyderotundaEntity entity) {
         super(entity);
     }
-    private float lastStableHeadCompensate = 0.0f;
     @Override
     public void animate(GeoModel<TubunasusClyderotundaEntity> model, AnimationState<TubunasusClyderotundaEntity> animationState) {
-        if(entity.getDeadProgress() != 0)
-            return;
         animTail(model);
-        if(!animationState.getAnimatable().isInScreen())
+        if(!animationState.getAnimatable().getAnimator().isInScreen)
             animHead(model,animationState);
     }
 
@@ -31,26 +28,11 @@ public class ClyderotundaTubunasusAnimator extends GeneralAnimator<TubunasusClyd
         List<GeoBone> bones = getBonesByName(boneNames,model);
 
         float netHeadYaw = (float) Math.toRadians(modelData.netHeadYaw());
-        float headPitch = (float) Math.toRadians(modelData.headPitch());
 
-        float[] amplifier = {0.5f, 0.6f};
+        float[] amplifier = {0.4f, 0.4f};
 
         for (GeoBone bone : bones) {
-            if(bone.getName().equals("neck2")){
-                float targetCompensation = (float) Math.toRadians(getModelPitch(animationState.getPartialTick()));
-                if(entity.getStableHead()){
-                    bone.setRotX(bone.getRotX() - targetCompensation);
-                    lastStableHeadCompensate = targetCompensation;
-                }
-                else
-                {
-                    float currentCompensation = Mth.approach(lastStableHeadCompensate,0, 0.01f);
-                    bone.setRotX(bone.getRotX() - currentCompensation);
-                    lastStableHeadCompensate = currentCompensation;
-                }
-            }
             bone.setRotY(netHeadYaw * amplifier[bones.indexOf(bone)]);
-            bone.setRotX(headPitch * 0.5f);
         }
     }
 

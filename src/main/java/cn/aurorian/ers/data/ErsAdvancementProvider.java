@@ -43,6 +43,13 @@ public class ErsAdvancementProvider extends ForgeAdvancementProvider {
             createAdvancement("tame_swamp_dragon", swamp_dragon_egg, ErsItems.SWAMP_DRAGON_SADDLE.get(), FrameType.TASK, true, true, true)
                     .addCriterion("tamed_swamp_dragon", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(ErsEntities.DENTISAURUS_LONGIROSTRIS.get()).build()))
                     .save(consumer, EcologicalReplenishmentStation.MODID + ":tame_swamp_dragon");
+
+            Advancement saevus_egg = createAdvancement("saevus_egg", enterWorld, ErsItems.SAEVUS_EGG.get(), FrameType.TASK, true, true, true)
+                    .addCriterion("has_saevus_egg", net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance.hasItems(ErsItems.SAEVUS_EGG.get()))
+                    .save(consumer, EcologicalReplenishmentStation.MODID + ":saevus_egg");
+            createAdvancement("tame_saevus", saevus_egg, ErsItems.SAEVUS_SADDLE.get(), FrameType.TASK, true, true, true)
+                    .addCriterion("tamed_saevus", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(ErsEntities.TERRIDENSAURUS_SAEVUS.get()).build()))
+                    .save(consumer, EcologicalReplenishmentStation.MODID + ":tame_saevus");
         }
     }
 
