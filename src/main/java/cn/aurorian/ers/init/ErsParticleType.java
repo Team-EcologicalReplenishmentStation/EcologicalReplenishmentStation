@@ -14,11 +14,17 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-@Mod.EventBusSubscriber(modid = EcologicalReplenishmentStation.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(
+        modid = EcologicalReplenishmentStation.MODID,
+        bus = Mod.EventBusSubscriber.Bus.MOD,
+        value = Dist.CLIENT)
 public class ErsParticleType {
-    public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, EcologicalReplenishmentStation.MODID);
-    public static final RegistryObject<SimpleParticleType> BLOOD = PARTICLE_TYPES.register("blood", () -> new SimpleParticleType(Boolean.FALSE));
-    public static final RegistryObject<SimpleParticleType> DRIPPING_BLOOD = PARTICLE_TYPES.register("dripping_blood", () -> new SimpleParticleType(Boolean.FALSE));
+    public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
+            DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, EcologicalReplenishmentStation.MODID);
+    public static final RegistryObject<SimpleParticleType> BLOOD =
+            PARTICLE_TYPES.register("blood", () -> new SimpleParticleType(Boolean.FALSE));
+    public static final RegistryObject<SimpleParticleType> DRIPPING_BLOOD =
+            PARTICLE_TYPES.register("dripping_blood", () -> new SimpleParticleType(Boolean.FALSE));
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent

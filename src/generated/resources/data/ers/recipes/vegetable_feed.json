@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:carrot"
+    },
+    "B": {
+      "item": "minecraft:beetroot"
+    },
+    "C": {
+      "item": "minecraft:pumpkin"
+    }
+  },
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "result": {
+    "item": "ers:vegetable_feed"
+  },
+  "show_notification": true
+}

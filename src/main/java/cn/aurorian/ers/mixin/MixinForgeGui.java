@@ -16,12 +16,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = ForgeGui.class,remap = false)
+@Mixin(value = ForgeGui.class, remap = false)
 public abstract class MixinForgeGui {
-    @Shadow public int rightHeight;
-    @Shadow public abstract Minecraft getMinecraft();
+    @Shadow
+    public int rightHeight;
+
+    @Shadow
+    public abstract Minecraft getMinecraft();
+
     @Unique
-    private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
+    private static final ResourceLocation GUI_ICONS_LOCATION =
+            ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
 
     @Inject(method = "renderHealthMount", at = @At("HEAD"), cancellable = true)
     protected void renderHealthMount(int width, int height, GuiGraphics guiGraphics, CallbackInfo ci) {

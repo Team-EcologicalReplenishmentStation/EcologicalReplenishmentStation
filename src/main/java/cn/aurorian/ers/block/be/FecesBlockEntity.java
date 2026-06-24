@@ -16,29 +16,29 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class FecesBlockEntity extends BlockEntity implements GeoBlockEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public FecesBlockEntity(BlockPos pPos, BlockState pState) {
         super(getBlockEntityType(pState), pPos, pState);
     }
 
     private static BlockEntityType<FecesBlockEntity> getBlockEntityType(BlockState pState) {
         BlockEntityType<FecesBlockEntity> type;
-        if(pState.is(ErsBlocks.BONE_FECES.get())){
+        if (pState.is(ErsBlocks.BONE_FECES.get())) {
             type = ErsBlockEntities.BONE_FECES_BLOCK_ENTITY.get();
-        }else if(pState.is(ErsBlocks.SMALL_FECES.get())) {
+        } else if (pState.is(ErsBlocks.SMALL_FECES.get())) {
             type = ErsBlockEntities.SMALL_FECES_BLOCK_ENTITY.get();
-        }else if(pState.is(ErsBlocks.LARGE_FECES.get())){
+        } else if (pState.is(ErsBlocks.LARGE_FECES.get())) {
             type = ErsBlockEntities.LARGE_FECES_BLOCK_ENTITY.get();
-        }else if(pState.is(ErsBlocks.GLASSES_FECES.get())){
+        } else if (pState.is(ErsBlocks.GLASSES_FECES.get())) {
             type = ErsBlockEntities.GLASSES_FECES_BLOCK_ENTITY.get();
-        }else{
+        } else {
             type = ErsBlockEntities.TEL_FECES_BLOCK_ENTITY.get();
         }
         return type;
     }
 
     @Override
-    public void registerControllers(ControllerRegistrar controllers) {
-    }
+    public void registerControllers(ControllerRegistrar controllers) {}
 
     public void clientTick(BlockEntity blockEntity, Level level, BlockPos pos) {
         if (blockEntity.getType() == ErsBlockEntities.TEL_FECES_BLOCK_ENTITY.get() && level.getGameTime() % 90 == 0) {

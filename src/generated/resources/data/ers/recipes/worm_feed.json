@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:spider_eye"
+    },
+    "B": {
+      "item": "minecraft:hanging_roots"
+    }
+  },
+  "pattern": [
+    "AAA",
+    "ABA",
+    "AAA"
+  ],
+  "result": {
+    "item": "ers:worm_feed"
+  },
+  "show_notification": true
+}

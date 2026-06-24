@@ -2,10 +2,7 @@ package cn.aurorian.oasis.entity.tubunasusdurovela;
 
 import cn.aurorian.ers.client.ErsDataTickets;
 import cn.aurorian.ers.client.animator.GeneralAnimator;
-import cn.aurorian.ers.entity.AttackType;
-import cn.aurorian.ers.entity.ErsTamable;
-import cn.aurorian.ers.entity.ErsTamableVehicle;
-import cn.aurorian.ers.entity.HasGender;
+import cn.aurorian.ers.entity.*;
 import cn.aurorian.ers.entity.ai.goal.MobAlertLeaderGoal;
 import cn.aurorian.ers.entity.ai.goal.MobFollowLeaderGoal;
 import cn.aurorian.ers.entity.ai.goal.MobFollowParentGoal;
@@ -20,15 +17,19 @@ import cn.aurorian.ers.item.equipment.MountEquipment;
 import cn.aurorian.ers.util.ErsUtils;
 import cn.aurorian.ers.util.SimpleAutoPlayingSoundKeyFrameHandler;
 import cn.aurorian.ers.util.TickHelper;
+import cn.aurorian.oasis.Oasis;
 import cn.aurorian.oasis.client.animator.TubunasusDurovelaAnimator;
 import cn.aurorian.oasis.entity.ai.OasisBreedGoal;
+import cn.aurorian.oasis.entity.imperiovenatorregius.ImperiovenatorRegiusEntity;
 import cn.aurorian.oasis.entity.tubunasusdurovela.ai.TubunasusDurovelaSailGoal;
 import cn.aurorian.oasis.entity.tubunasusdurovela.ai.TubunasusMeleeAttackGoal;
-import cn.aurorian.oasis.entity.tubunasusdurovela.invertory.TubunasusDurovelaMenuProvider;
+import cn.aurorian.oasis.entity.tubunasusdurovela.inventory.TubunasusDurovelaMenuProvider;
 import cn.aurorian.oasis.init.OasisEntities;
 import cn.aurorian.oasis.init.OasisItems;
 import cn.aurorian.oasis.init.OasisSounds;
 import com.mojang.serialization.Codec;
+import java.util.UUID;
+import java.util.function.IntFunction;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -83,19 +84,22 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.function.IntFunction;
-
-public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovelaEntity> implements HasGender, HasCustomInventoryScreen, Bucketable, VariantHolder<TubunasusDurovelaEntity.Variant>{
+public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovelaEntity>
+        implements HasGender, HasCustomInventoryScreen, Bucketable, VariantHolder<TubunasusDurovelaEntity.Variant> {
     private final GeneralAnimator<TubunasusDurovelaEntity> animator;
     private int rushTimer = 0;
     private boolean crush = false;
-    public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME = SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> SAIL = SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Float> SCALE = SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME =
+            SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> SAIL =
+            SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> SCALE =
+            SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> FROM_BUCKET =
+            SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> GENDER =
+            SynchedEntityData.defineId(TubunasusDurovelaEntity.class, EntityDataSerializers.BOOLEAN);
+
     public TubunasusDurovelaEntity(EntityType<? extends ErsTamableVehicle> type, Level level) {
         super(type, level);
         animator = new TubunasusDurovelaAnimator(this);
@@ -114,8 +118,8 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
             moveControl = new LimitedMoveControl(this);
             navigation = new MMGroundPathNavigation(this, level());
         } else {
-            moveControl = new AquaticMoveControl(this,1).applyGravity(false);
-            navigation = new AmphibiousPathNavigation(this,level());
+            moveControl = new AquaticMoveControl(this, 1).applyGravity(false);
+            navigation = new AmphibiousPathNavigation(this, level());
         }
     }
 
@@ -131,10 +135,15 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
 
     @Override
     public void executeTurnAttackType() {
-        if(isSprinting())
-            return;
-        if(getAttackState().animatorTick == 0 && onGround())
-            startAttack(AttackType.TUBUNASUS_ATTACK_TURN);
+        if (isSprinting()) return;
+        if (getAttackState().animatorTick == 0 && onGround()) startAttack(AttackType.TUBUNASUS_ATTACK_TURN);
+    }
+
+    @Override
+    public void executeJumpAttackType() {
+        if (onGround()) {
+            startAttack(AttackType.TUBUNASUS_STRUGGLE);
+        }
     }
 
     @Override
@@ -145,27 +154,32 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     public int getRushTimer() {
         return rushTimer;
     }
+
     @Override
     public GeneralAnimator<TubunasusDurovelaEntity> getAnimator() {
         return animator;
     }
-    public boolean isSailUp(){
+
+    public boolean isSailUp() {
         return entityData.get(SAIL);
     }
-    public void setSailUp(boolean sail){
+
+    public void setSailUp(boolean sail) {
         entityData.set(SAIL, sail);
     }
-    public float getScale(){
+
+    public float getScale() {
         return entityData.get(SCALE);
     }
-    public void setScale(float scale){
+
+    public void setScale(float scale) {
         entityData.set(SCALE, Math.clamp(scale, 0.8f, 1.1f));
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(200,400));
+        entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(200, 400));
         entityData.define(SAIL, true);
         entityData.define(SCALE, 1.0f);
         entityData.define(FROM_BUCKET, false);
@@ -182,22 +196,19 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setVariant(Variant.byId(compound.getInt("Variant")));
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setVariant(Variant.byId(compoundTag.getInt("Variant")));
 
-        setScale(compound.getFloat("Scale"));
-        setGender(compound.getBoolean("Gender"));
+        setScale(compoundTag.getFloat("Scale"));
+        setGender(compoundTag.getBoolean("Gender"));
     }
 
     @Override
     public void openCustomInventoryScreen(@NotNull Player player) {
         if (!level().isClientSide() && isOwnedBy(player) && !isSoul()) {
             NetworkHooks.openScreen(
-                    (ServerPlayer) player,
-                    new TubunasusDurovelaMenuProvider(this),
-                    buf -> buf.writeInt(this.getId())
-            );
+                    (ServerPlayer) player, new TubunasusDurovelaMenuProvider(this), buf -> buf.writeInt(this.getId()));
         }
     }
 
@@ -208,117 +219,124 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new TubunasusMeleeAttackGoal(this, 2,true));
-        this.goalSelector.addGoal(2, new OasisBreedGoal(this,1));
-        this.goalSelector.addGoal(3, new MobWanderGoal(this,1.1,40){
-            @Override
-            public boolean canUse(){
-                return super.canUse() && !TubunasusDurovelaEntity.this.isBaby();
-            }
-        }.setWaterVerticalRange(0));
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, TubunasusDurovelaEntity.class, 10, 1.1, 2.1){
+        this.goalSelector.addGoal(1, new TubunasusMeleeAttackGoal(this, 2, true));
+        this.goalSelector.addGoal(2, new OasisBreedGoal(this, 1));
+        this.goalSelector.addGoal(
+                3,
+                new MobWanderGoal(this, 1.1, 40) {
+                    @Override
+                    public boolean canUse() {
+                        return super.canUse() && !TubunasusDurovelaEntity.this.isBaby();
+                    }
+                }.setWaterVerticalRange(0));
+        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, TubunasusDurovelaEntity.class, 10, 1.1, 2.1) {
             @Override
             public boolean canUse() {
                 return super.canUse() && !TubunasusDurovelaEntity.this.isBaby();
             }
         });
-        this.goalSelector.addGoal(4, new MobFollowLeaderGoal(this,2.1,14,10));
-        this.goalSelector.addGoal(4, new MobFollowParentGoal(this,1));
+        this.goalSelector.addGoal(4, new MobFollowLeaderGoal(this, 2.1, 14, 10));
+        this.goalSelector.addGoal(4, new MobFollowParentGoal(this, 1));
         this.goalSelector.addGoal(5, new TubunasusDurovelaSailGoal(this));
 
-        this.goalSelector.addGoal(1, new MobAlertLeaderGoal(this).setAlertOthers());
-        this.goalSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, true,
-                (mob) -> leader != null && leader.getTarget() == mob
-        ));
+        this.targetSelector.addGoal(1, new MobAlertLeaderGoal(this).setAlertOthers());
+        this.targetSelector.addGoal(
+                2,
+                new NearestAttackableTargetGoal<>(
+                        this, Mob.class, true, (mob) -> leader != null && leader.getTarget() == mob));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        AnimationController<TubunasusDurovelaEntity> main = new AnimationController<>(this, "main", 2 , state -> {
-            RawAnimation builder = RawAnimation.begin();
-            if(isInWater() && !onGround()){
-                if(isSprinting() || (isBaby() && ErsUtils.isMoving(this))){
-                    builder.thenLoop("animation.swim");
-                }
-                else if(ErsUtils.isMoving(this) && !isBaby()){
-                    builder.thenLoop("animation.swim2");
-                }else {
-                    builder.thenLoop("animation.swim_idle");
-                }
-            }else {
-                if (isSprinting()) {
-                    if(this.rushTimer < 75){
-                        builder.thenLoop("animation.run");
-                    }
-                    else if(this.rushTimer < 167){
-                        builder.thenLoop("animation.run2");
-                    }
-                    else{
-                        builder.thenLoop("animation.run3");
-                    }
-                } else if (state.isMoving() || ErsUtils.isMoving(this)) {
-                    builder.thenLoop("animation.walk");
-                } else if (!this.getRotDirection().isNone()) {
-                    if (this.getRotDirection().isLeft()) {
-                        builder.thenLoop("animation.turn_-left");
+        AnimationController<TubunasusDurovelaEntity> main = new AnimationController<>(this, "main", 2, state -> {
+                    RawAnimation builder = RawAnimation.begin();
+                    if (isInWater() && !onGround() && getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) > 2f) {
+                        if (isSprinting() || (isBaby() && ErsUtils.isMoving(this))) {
+                            builder.thenLoop("animation.swim");
+                        } else if (ErsUtils.isMoving(this) && !isBaby()) {
+                            builder.thenLoop("animation.swim2");
+                        } else {
+                            builder.thenLoop("animation.swim_idle");
+                        }
                     } else {
-                        builder.thenLoop("animation.turn_+right");
+                        if (isSprinting()) {
+                            if (this.rushTimer < 75) {
+                                builder.thenLoop("animation.run");
+                            } else if (this.rushTimer < 167) {
+                                builder.thenLoop("animation.run2");
+                            } else {
+                                builder.thenLoop("animation.run3");
+                            }
+                        } else if (state.isMoving() || ErsUtils.isMoving(this)) {
+                            builder.thenLoop("animation.walk");
+                        } else if (!this.getRotDirection().isNone()) {
+                            if (this.getRotDirection().isLeft()) {
+                                builder.thenLoop("animation.turn_-left");
+                            } else {
+                                builder.thenLoop("animation.turn_+right");
+                            }
+                        } else {
+                            builder.thenLoop("animation.idle");
+                        }
                     }
-                } else {
-                    builder.thenLoop("animation.idle");
-                }
-            }
-            return state.setAndContinue(builder);
-        });
+                    return state.setAndContinue(builder);
+                })
+                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
 
-        AnimationController<TubunasusDurovelaEntity> extra = new AnimationController<>(this, "extra",2, state -> PlayState.STOP)
+        AnimationController<TubunasusDurovelaEntity> extra = new AnimationController<>(
+                        this, "extra", 2, state -> PlayState.STOP)
                 .triggerableAnim("idle2", RawAnimation.begin().thenPlay("animation.idle_eat"))
                 .triggerableAnim("idle3", RawAnimation.begin().thenPlay("animation.idle_lookAround"))
-                .triggerableAnim("taming", RawAnimation.begin().thenPlay("animation.taming"))
-                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>());
+                .triggerableAnim("struggle", RawAnimation.begin().thenPlay("animation.struggle"))
+                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
 
-        AnimationController<TubunasusDurovelaEntity> attack = new AnimationController<>(this, "attack", 4, state -> PlayState.STOP)
+        AnimationController<TubunasusDurovelaEntity> attack = new AnimationController<>(
+                        this, "attack", 4, state -> PlayState.STOP)
                 .triggerableAnim("attack", RawAnimation.begin().thenPlay("animation.attack"))
                 .triggerableAnim("attack_turn", RawAnimation.begin().thenPlay("animation.attack_turn"))
                 .triggerableAnim("knockdown_left", RawAnimation.begin().thenPlay("animation.knockdown_left"))
-                .triggerableAnim("knockdown_right", RawAnimation.begin().thenPlay("animation.knockdown_right"));
+                .triggerableAnim("knockdown_right", RawAnimation.begin().thenPlay("animation.knockdown_right"))
+                .triggerableAnim("struggle", RawAnimation.begin().thenPlay("animation.struggle"));
 
         AnimationController<TubunasusDurovelaEntity> control = new AnimationController<>(this, "control", 0, state -> {
             RawAnimation builder = RawAnimation.begin();
-            if(isBaby())
-                return PlayState.STOP;
+            if (isBaby()) return PlayState.STOP;
 
-            if(isSailUp()){
+            if (isSailUp()) {
                 builder.thenPlayAndHold("animation.open");
-            }else {
+            } else {
                 builder.thenPlayAndHold("animation.close");
             }
             return state.setAndContinue(builder);
         });
 
-        controllerRegistrar.add(main,extra,attack,control);
+        controllerRegistrar.add(main, extra, attack, control);
     }
 
     @Override
     protected void ageBoundaryReached() {
         super.ageBoundaryReached();
-        if(isBaby()){
+        if (isBaby()) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(50);
-        }
-        else
+            this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.12);
+        } else {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(350);
+            this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.15);
+        }
     }
 
     @Override
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand pHand) {
-        if(player.getMainHandItem().getItem() == ErsItems.LARGE_WATER_BUCKET.get() && this.isTame() && this.isOwnedBy(player))
-        {
+        if (player.getMainHandItem().getItem() == ErsItems.LARGE_WATER_BUCKET.get()
+                && this.isTame()
+                && this.isOwnedBy(player)) {
             return ErsMobLargeBucket.bucketMobPickup(player, pHand, this).orElse(InteractionResult.PASS);
         }
 
         if (!player.isCrouching() && !isBaby() && !isFood(player.getItemInHand(pHand))) {
-            if((this.isTame() || !isInLove()) && !this.isOwnedBy(player) && getPassengers().isEmpty())
-                return InteractionResult.PASS;
+            if ((this.isTame() || !isInLove())
+                    && !this.isOwnedBy(player)
+                    && getPassengers().isEmpty()) return InteractionResult.PASS;
             player.setYRot(getYRot());
             player.setXRot(getXRot());
             player.startRiding(this);
@@ -343,29 +361,44 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
             }
             float d0 = 0;
 
-            if(!isSaddled())
-                d0 = -0.1f;
+            if (!isSaddled()) d0 = -0.1f;
 
             Vec3 vec3 = (new Vec3(f, 0.0, 0.0)).yRot(-this.getYRot() * 0.017453292F - 1.5707964F);
 
             Vector3d vector3d = this.getAnimData(ErsDataTickets.SADDLE_POS);
             if (vector3d != null) {
-                pCallback.accept(pPassenger,
+                pCallback.accept(
+                        pPassenger,
                         this.getX() + vector3d.x + vec3.x,
                         this.getY() + vector3d.y - 0.5f + d0,
                         this.getZ() + vector3d.z + vec3.z);
             }
         } else {
-            pCallback.accept(pPassenger,
+            pCallback.accept(
+                    pPassenger,
                     this.getX() + getRiderPos().getX(),
-                    this.getY() + getRiderPos().getY() - 0.5f,
+                    this.getY() + getRiderPos().getY() + 2f,
                     this.getZ() + getRiderPos().getZ());
         }
     }
 
     @Override
-    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        this.playSound(OasisSounds.DUROVELA_FOOTSTEP.get(), 0.15F, 1.0F);
+    public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity pLivingEntity) {
+        Vec3 vec3 = getCollisionHorizontalEscapeVector(
+                this.getBbWidth() * 1.5f,
+                pLivingEntity.getBbWidth() * 1.5f,
+                this.getYRot() + (pLivingEntity.getMainArm() == HumanoidArm.RIGHT ? 90.0F : -90.0F));
+        Vec3 vec31 = this.getDismountLocationInDirection(vec3, pLivingEntity);
+        if (vec31 != null) {
+            return vec31;
+        } else {
+            Vec3 vec32 = getCollisionHorizontalEscapeVector(
+                    this.getBbWidth() * 1.5f,
+                    pLivingEntity.getBbWidth() * 1.5f,
+                    this.getYRot() + (pLivingEntity.getMainArm() == HumanoidArm.LEFT ? 90.0F : -90.0F));
+            Vec3 vec33 = this.getDismountLocationInDirection(vec32, pLivingEntity);
+            return vec33 != null ? vec33 : this.position();
+        }
     }
 
     @Override
@@ -376,18 +409,18 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     public static AttributeSupplier.@NotNull Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 350)
-                .add(Attributes.ARMOR,6)
+                .add(Attributes.ARMOR, 6)
                 .add(Attributes.ATTACK_DAMAGE, 8)
-                .add(Attributes.KNOCKBACK_RESISTANCE,1)
-                .add(Attributes.FOLLOW_RANGE,48)
-                .add(ForgeMod.SWIM_SPEED.get(),4)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1)
+                .add(Attributes.FOLLOW_RANGE, 48)
+                .add(ForgeMod.SWIM_SPEED.get(), 4)
                 .add(Attributes.MOVEMENT_SPEED, 0.15);
     }
 
     @Override
     protected boolean canAddPassenger(@NotNull Entity pPassenger) {
 
-        return this.getPassengers().size() < 2 && !isSprinting();
+        return this.getPassengers().size() < 2 && !isSprinting() || pPassenger instanceof ImperiovenatorRegiusEntity;
     }
 
     @Override
@@ -397,29 +430,29 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
 
     @Override
     public boolean canCollideWith(@NotNull Entity pEntity) {
-        if(pEntity instanceof TubunasusDurovelaEntity)
-            return false;
+        if (pEntity instanceof TubunasusDurovelaEntity) return false;
         return super.canCollideWith(pEntity);
     }
 
     @Nullable
     @Override
     public LivingEntity getControllingPassenger() {
-        LivingEntity passenger = (LivingEntity) getFirstPassenger();
-        if(passenger == null)
-            return null;
-        return this.isOwnedBy(passenger) ? passenger : null;
+        Entity passenger = getFirstPassenger();
+        if (passenger == null) return null;
+        if (passenger instanceof LivingEntity livingEntity) {
+            return this.isOwnedBy(livingEntity) ? livingEntity : null;
+        }
+        return null;
     }
 
     @Override
     protected @NotNull Vec3 getRiddenInput(@NotNull Player pPlayer, @NotNull Vec3 pTravelVector) {
-        if(this.isInFluidType() && !this.onGround()){
+        if (this.isInFluidType() && !this.onGround()) {
             float y = 0;
 
-            if(pPlayer.jumping && getSwimState() == 2){
+            if (pPlayer.jumping && getSwimState() == 2) {
                 y = 0.4f;
-                if(!wasEyeInWater)
-                    setSwimState(1);
+                if (!wasEyeInWater) setSwimState(1);
             }
 
             if (rideSpeed != 0 && getSwimState() == 1) {
@@ -428,16 +461,14 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
                 }
             }
 
-            if(isSailUp()){
+            if (isSailUp()) {
                 this.getAttribute(ForgeMod.SWIM_SPEED.get()).setBaseValue(10);
-            }else {
+            } else {
                 this.getAttribute(ForgeMod.SWIM_SPEED.get()).setBaseValue(4);
             }
 
             return new Vec3(0, y, this.rideSpeed);
-        }
-        else
-        {
+        } else {
             return new Vec3(0, 0, this.rideSpeed);
         }
     }
@@ -447,48 +478,52 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     private int buckingTimer = -1;
 
     @Override
-    protected void tickRidden(@NotNull Player driver, @NotNull Vec3 move)
-    {
+    protected void tickRidden(@NotNull Player driver, @NotNull Vec3 move) {
         tickStableHead();
-        if(this.getAttackState().getType().canMove() && this.isSaddled()){
-            if(((!this.getRotDirection().isLargeTurn() || isInWater()) && (Math.abs(driver.zza) > 0 || Math.abs(driver.xxa) > 0)) || this.isSprinting())
-            {
-                float baseSpeed = (float) this.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
+        if (this.getAttackState().getType().canMove() && this.isSaddled()) {
+            if (((!this.getRotDirection().isLargeTurn() || isInWater())
+                            && (Math.abs(driver.zza) > 0 || Math.abs(driver.xxa) > 0))
+                    || this.isSprinting()) {
+                float baseSpeed =
+                        (float) this.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
 
-                if(rushTimer > 75){
+                if (rushTimer > 75) {
                     baseSpeed *= 1.2f;
-                    if(rushTimer > 167){
+                    if (rushTimer > 167) {
                         baseSpeed *= 1.2f;
                     }
-                    level().addParticle(ParticleTypes.POOF, this.getRandomX(0.5), this.getRandomY(), this.getRandomZ(0.5), 0, 0, 0);
+                    level().addParticle(
+                                    ParticleTypes.POOF,
+                                    this.getRandomX(0.5),
+                                    this.getRandomY(),
+                                    this.getRandomZ(0.5),
+                                    0,
+                                    0,
+                                    0);
                 }
 
-                if(isSprinting() && !isInWater() && !isSailUp())
-                    baseSpeed += 0.03f;
+                if (isSprinting() && !isInWater() && !isSailUp()) baseSpeed += 0.03f;
 
-                this.rideSpeed = Mth.approach(this.rideSpeed, isSprinting() ? baseSpeed * 2.2f : baseSpeed, ACCELERATION);
-            }else{
+                this.rideSpeed =
+                        Mth.approach(this.rideSpeed, isSprinting() ? baseSpeed * 2.2f : baseSpeed, ACCELERATION);
+            } else {
                 this.rideSpeed = Mth.approach(this.rideSpeed, 0, ACCELERATION * 2);
             }
         }
     }
 
-    public void tickStableHead(){
+    public void tickStableHead() {
         float pitch = this.getAnimator().getModelPitch(this.getAnimator().getPartialTick());
-        if(this.isInWater())
-        {
+        if (this.isInWater()) {
             setStableHead(pitch < 20);
-        }
-        else if(this.onGround())
-        {
+        } else if (this.onGround()) {
             setStableHead(true);
         }
     }
 
     @Override
     protected float getRiddenSpeed(@NotNull Player pPlayer) {
-        return isOwnedBy(pPlayer) ? this.rideSpeed + 0.1f :
-                (float)this.getAttributeValue(Attributes.MOVEMENT_SPEED);
+        return isOwnedBy(pPlayer) ? this.rideSpeed + 0.1f : (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
     }
 
     @Override
@@ -504,10 +539,8 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     @Override
     public void aiStep() {
         super.aiStep();
-        if(!isBaby())
-            waterAiStep(2.4f);
-        else
-            waterAiStep(1.1f);
+        if (!isBaby()) waterAiStep(2.4f);
+        else waterAiStep(1.1f);
         breakBlock();
         checkAndBreakBlocksAhead();
     }
@@ -516,14 +549,15 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     public void tick() {
         super.tick();
 
-        if(level().isClientSide){
+        if (level().isClientSide) {
             if (!isBaby() && this.tickCount > this.entityData.get(NEXT_CHANGE_TIME)) {
-                this.entityData.set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200,400));
+                this.entityData.set(
+                        NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200, 400));
                 int newState = RandomSource.create().nextInt(3);
-                if(newState != 0 && !ErsUtils.isMoving(this) && !isInWater()){
-                    if(newState == 1) {
+                if (newState != 0 && !ErsUtils.isMoving(this) && !isInWater()) {
+                    if (newState == 1) {
                         triggerAnim("extra", "idle2");
-                    }else {
+                    } else {
                         triggerAnim("extra", "idle3");
                     }
                 }
@@ -533,56 +567,49 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
         boolean hasHorseShoe = false;
         for (int i = 4; i <= 6; i++) {
             ItemStack itemStack = this.inventory.getItem(i);
-            if(!itemStack.isEmpty()){
-                if(itemStack.getItem() instanceof MountEquipment equipment){
-                    equipment.tickEquip(itemStack,this);
+            if (!itemStack.isEmpty()) {
+                if (itemStack.getItem() instanceof MountEquipment equipment) {
+                    equipment.tickEquip(itemStack, this);
                 }
-                if(itemStack.is(OasisItems.HORSESHOE.get()))
-                    hasHorseShoe = true;
+                if (itemStack.is(OasisItems.HORSESHOE.get())) hasHorseShoe = true;
             }
         }
 
-        if(isSprinting() && !isInWater() && !isBaby()){
+        if (isSprinting() && !isInWater() && !isBaby()) {
             rushTimer++;
-        }else {
+        } else {
             rushTimer = 0;
         }
 
-
-        if(isSprinting()){
+        if (isSprinting()) {
             float damage = rushTimer > 75 ? 6f : 3f;
-            if(rushTimer > 167)
-                damage = 21;
-            if(hasHorseShoe)
-                damage += 4;
+            if (rushTimer > 167) damage = 21;
+            if (hasHorseShoe) damage += 4;
             stompEffect(3f, 3f, damage);
         }
 
-        if(crush){
+        if (crush) {
             this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
-            if(this.getControllingPassenger() != null)
+            if (this.getControllingPassenger() != null)
                 this.getControllingPassenger().setSprinting(false);
-            if(tickCount % 80 == 0){
+            if (tickCount % 80 == 0) {
                 crush = false;
                 this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.15);
             }
-
         }
 
-        if(!level().isClientSide()){
-            if(tickCount % 200 == 0){
+        if (!level().isClientSide()) {
+            if (tickCount % 200 == 0) {
                 heal(1);
                 updateLeader();
             }
 
-            if(isTame())
-                return;
-            
-            Player player = null;
-            if(getFirstPassenger() instanceof Player)
-                player = (Player) this.getFirstPassenger();
+            if (isTame()) return;
 
-            if(player != null  && !this.isOwnedBy(player)){
+            Player player = null;
+            if (getFirstPassenger() instanceof Player) player = (Player) this.getFirstPassenger();
+
+            if (player != null && !this.isOwnedBy(player)) {
                 if (buckingTimer == -1) {
                     buckingTimer = Mth.randomBetweenInclusive(this.random, 100, 200);
                 }
@@ -590,42 +617,42 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
                 buckingTimer--;
 
                 if (buckingTimer % 20 == 0) {
-                    if (this.random.nextFloat() < 0.05){
+                    if (this.random.nextFloat() < 0.05) {
                         this.tame(player);
-                        this.level().broadcastEntityEvent(this, (byte)7);
+                        this.level().broadcastEntityEvent(this, (byte) 7);
                     }
                 }
 
                 if (buckingTimer <= 0 && !isTame()) {
                     player.stopRiding();
                     this.setTarget(player);
-                    player.setDeltaMovement(0,10,0);
-                    TickHelper.tickLater(level(),3, ()-> this.triggerAnim("extra","taming"));
+                    player.setDeltaMovement(0, 10, 0);
+                    TickHelper.tickLater(level(), 3, () -> this.triggerAnim("extra", "struggle"));
 
                     this.playSound(SoundEvents.HORSE_ANGRY, 1.0f, 1.0f);
-                    if(leader != this){
-                        TickHelper.tickLater(level(),20, ()-> {
-                            if(leader != null)
-                                this.setTarget(null);
+                    if (leader != this) {
+                        TickHelper.tickLater(level(), 20, () -> {
+                            if (leader != null) this.setTarget(null);
                         });
                     }
                     buckingTimer = -1;
                 }
-            }else {
+            } else {
                 buckingTimer = -1;
             }
         }
 
-        if(ErsUtils.isMoving(this)){
+        if (ErsUtils.isMoving(this)) {
             updateMount();
         }
     }
 
     @Override
     public void updateMount() {
-        this.getEntityData().set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200,400));
-        stopTriggeredAnimation("extra","idle2");
-        stopTriggeredAnimation("extra","idle3");
+        this.getEntityData()
+                .set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200, 400));
+        stopTriggeredAnimation("extra", "idle2");
+        stopTriggeredAnimation("extra", "idle3");
     }
 
     @Override
@@ -638,15 +665,17 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     protected void stompDamage(float damage, LivingEntity living) {
         if (living.hurt(this.damageSources().mobAttack(this), damage)) {
 
-            Vec3 vec31 = (new Vec3(this.getX() - living.getX(), 0.0D, this.getZ() - living.getZ())).normalize().scale(0.5F);
-            if(rushTimer > 167)
-                living.addEffect(new MobEffectInstance(ErsMobEffects.FRACTURE.get(),600));
+            Vec3 vec31 = (new Vec3(this.getX() - living.getX(), 0.0D, this.getZ() - living.getZ()))
+                    .normalize()
+                    .scale(0.5F);
+            if (rushTimer > 167) living.addEffect(new MobEffectInstance(ErsMobEffects.FRACTURE.get(), 600));
 
             living.setDeltaMovement(
                     living.getDeltaMovement().x / 2.0D - vec31.x,
-                    living.onGround() ? Math.min(0.4D, living.getDeltaMovement().y / 2.0D + (double) 0.5F) : living.getDeltaMovement().y,
-                    living.getDeltaMovement().z / 2.0D - vec31.z
-            );
+                    living.onGround()
+                            ? Math.min(0.4D, living.getDeltaMovement().y / 2.0D + (double) 0.5F)
+                            : living.getDeltaMovement().y,
+                    living.getDeltaMovement().z / 2.0D - vec31.z);
         }
     }
 
@@ -657,7 +686,7 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        if(source.type().msgId().equals("sweetBerryBush")) {
+        if (source.type().msgId().equals("sweetBerryBush")) {
             return true;
         }
         return super.isInvulnerableTo(source);
@@ -665,11 +694,9 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
 
     private void checkAndBreakBlocksAhead() {
         if (level().isClientSide) return;
-        if (!ForgeEventFactory.getMobGriefingEvent(this.level(), this))
-            return;
+        if (!ForgeEventFactory.getMobGriefingEvent(this.level(), this)) return;
 
-        if(rushTimer < 75)
-            return;
+        if (rushTimer < 75) return;
 
         Direction facing = this.getDirection();
         BlockPos centerPos = this.blockPosition().relative(facing, 2);
@@ -682,19 +709,17 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
                 BlockPos checkPos = centerPos.offset(
                         facing.getAxis() == Direction.Axis.X ? 0 : xOffset,
                         yOffset,
-                        facing.getAxis() == Direction.Axis.Z ? 0 : xOffset
-                );
+                        facing.getAxis() == Direction.Axis.Z ? 0 : xOffset);
 
                 BlockState state = level().getBlockState(checkPos);
                 Block block = state.getBlock();
 
                 float destroyTime = state.getDestroySpeed(level(), checkPos);
 
-                if (destroyTime < stoneDestroyTime && destroyTime > 0 &&
-                        block.getExplosionResistance() <= 1200.0F) {
-                    if(ForgeEventFactory.getMobGriefingEvent(this.level(), this)){
+                if (destroyTime < stoneDestroyTime && destroyTime > 0 && block.getExplosionResistance() <= 1200.0F) {
+                    if (ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
                         shouldStop = level().destroyBlock(checkPos, true, this);
-                    }else {
+                    } else {
                         shouldStop = true;
                     }
                 }
@@ -708,51 +733,55 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     }
 
     @Override
-    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public @NotNull SpawnGroupData finalizeSpawn(
+            @NotNull ServerLevelAccessor pLevel,
+            @NotNull DifficultyInstance pDifficulty,
+            @NotNull MobSpawnType pReason,
+            @Nullable SpawnGroupData pSpawnData,
+            @Nullable CompoundTag pDataTag) {
         if (pReason == MobSpawnType.BUCKET) {
-            if (pDataTag != null && pDataTag.contains("UUID")) {
-                setUUID(UUID.fromString(pDataTag.getString("UUID")));
+            if (pDataTag != null && pDataTag.contains("StringUUID")) {
+                setUUID(UUID.fromString(pDataTag.getString("StringUUID")));
             }
             return pSpawnData;
         } else {
             RandomSource random = pLevel.getRandom();
             var throwedSpawnData = pSpawnData;
-            if(random.nextFloat() < 0.05f){
-                throwedSpawnData = new DuravelaTubunasusGroupData(Variant.getRareSpawnVariant(random));
-            }else {
-                throwedSpawnData = new DuravelaTubunasusGroupData(
-                        Variant.getCommonSpawnVariant(random),
-                        Variant.getCommonSpawnVariant(random),
-                        Variant.getCommonSpawnVariant(random)
-                );
+            if (random.nextFloat() < 0.05f) {
+                throwedSpawnData = new ErsGroupData<>(1f, SpawnVariant.getRareSpawnVariant(Variant.values(), random));
+            } else {
+                throwedSpawnData = new ErsGroupData<>(
+                        1f,
+                        SpawnVariant.getCommonSpawnVariant(Variant.values(), random),
+                        SpawnVariant.getCommonSpawnVariant(Variant.values(), random),
+                        SpawnVariant.getCommonSpawnVariant(Variant.values(), random));
             }
 
             if (pSpawnData == null) {
-              pSpawnData = throwedSpawnData;
+                pSpawnData = throwedSpawnData;
             }
 
-            this.setVariant(((DuravelaTubunasusGroupData)throwedSpawnData).getVariant(random));
+            this.setVariant(((ErsGroupData<Variant>) throwedSpawnData).getVariant(random));
         }
 
-        if(this.random.nextFloat() < 0.2f)
-            this.setGender(true);
+        if (this.random.nextFloat() < 0.2f) this.setGender(true);
 
-        if(getGender())
-            this.setScale(Mth.randomBetween(this.random, 1f, 1.1f));
-        else
-            this.setScale(Mth.randomBetween(this.random, 0.8f, 1f));
+        if (getGender()) this.setScale(Mth.randomBetween(this.random, 1f, 1.1f));
+        else this.setScale(Mth.randomBetween(this.random, 0.8f, 1f));
         this.refreshDimensions();
 
-        if(this.random.nextFloat() < 0.002f){
-            var customNameList = new String[]{"dark", "D3WOJDIWLANLAND"};
+        if (this.random.nextFloat() < 0.002f) {
+            var customNameList = new String[] {"dark", "D3WOJDIWLANLAND"};
             this.setCustomName(Component.literal(customNameList[this.random.nextInt(customNameList.length)]));
         }
 
         SpawnGroupData returnValue = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
-        if(isBaby()){
+        if (isBaby()) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(50);
+            this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.12);
             this.setHealth(this.getMaxHealth());
         }
+
         return returnValue;
     }
 
@@ -780,21 +809,23 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     @Override
     public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
         float scale = getScale();
-        if(isBaby())
-            scale *= 0.5f;
+        if (isBaby()) scale *= 0.5f;
         return this.getType().getDimensions().scale(scale);
     }
 
     public boolean fromBucket() {
         return this.entityData.get(FROM_BUCKET);
     }
+
     public void setFromBucket(boolean pFromBucket) {
         this.entityData.set(FROM_BUCKET, pFromBucket);
     }
+
     @Override
     public void saveToBucketTag(ItemStack pStack) {
         this.addAdditionalSaveData(pStack.getOrCreateTag());
     }
+
     @Override
     public void loadFromBucketTag(@NotNull CompoundTag pTag) {
         this.readAdditionalSaveData(pTag);
@@ -831,19 +862,19 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
         boolean armorBoost = false;
         for (int i = 1; i <= 3; i++) {
             ItemStack itemStack = this.inventory.getItem(i);
-            if(!itemStack.isEmpty()){
-                if(itemStack.is(Items.ENCHANTED_GOLDEN_APPLE)){
+            if (!itemStack.isEmpty()) {
+                if (itemStack.is(Items.ENCHANTED_GOLDEN_APPLE)) {
                     healthBoost = true;
                 }
-                if(itemStack.is(Items.SHIELD)){
+                if (itemStack.is(Items.SHIELD)) {
                     armorBoost = true;
                 }
             }
         }
 
-        if(healthBoost){
+        if (healthBoost) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(350 + 20);
-        }else {
+        } else {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(350);
         }
 
@@ -873,7 +904,7 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
 
     @Override
     public void setGender(boolean gender) {
-        this.entityData.set(GENDER,gender);
+        this.entityData.set(GENDER, gender);
     }
 
     @Override
@@ -882,23 +913,23 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
     }
 
     @Override
-    public boolean canMate(@NotNull Animal pOtherAnimal) {
-        if (pOtherAnimal == this) {
-            return false;
-        } else if (pOtherAnimal.getClass() != this.getClass()) {
-            return false;
-        } else {
-            return this.isInLove() && pOtherAnimal.isInLove() && this.getGender() != ((TubunasusDurovelaEntity) pOtherAnimal).getGender();
-        }
+    public float getVolume() {
+        return 0.1f;
     }
 
-    public enum Variant implements StringRepresentable {
+    @Override
+    public float getSoundRange() {
+        return 16f;
+    }
+
+    public enum Variant implements StringRepresentable, SpawnVariant {
         ORIGINAL(0, "original", true),
         BLUE(1, "blue", true),
         GREEN(2, "green", true),
         WHITE(3, "white", false);
 
-        private static final IntFunction<Variant> BY_ID = ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        private static final IntFunction<Variant> BY_ID =
+                ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
         private final int id;
         private final String name;
@@ -918,37 +949,17 @@ public class TubunasusDurovelaEntity extends ErsTamableVehicle<TubunasusDurovela
             return this.name;
         }
 
+        @Override
+        public boolean isCommon() {
+            return this.common;
+        }
+
         public @NotNull String getSerializedName() {
             return this.name;
         }
 
         public static Variant byId(int pId) {
             return BY_ID.apply(pId);
-        }
-
-        public static Variant getCommonSpawnVariant(RandomSource pRandom) {
-            return getSpawnVariant(pRandom, true);
-        }
-
-        public static Variant getRareSpawnVariant(RandomSource pRandom) {
-            return getSpawnVariant(pRandom, false);
-        }
-
-        private static Variant getSpawnVariant(RandomSource pRandom, boolean pCommon) {
-           Variant[] $$2 = Arrays.stream(values()).filter((p_149252_) -> p_149252_.common == pCommon).toArray(Variant[]::new);
-            return Util.getRandom($$2, pRandom);
-        }
-    }
-    public static class DuravelaTubunasusGroupData extends AgeableMobGroupData {
-        public final Variant[] types;
-
-        public DuravelaTubunasusGroupData(Variant... pTypes) {
-            super(1f);
-            this.types = pTypes;
-        }
-
-        public Variant getVariant(RandomSource pRandom) {
-            return this.types[pRandom.nextInt(this.types.length)];
         }
     }
 }

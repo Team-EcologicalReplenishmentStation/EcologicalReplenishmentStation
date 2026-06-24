@@ -10,14 +10,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import vazkii.patchouli.client.book.page.PageEntity;
 
-@Mixin(value = PageEntity.class,remap = false)
+@Mixin(value = PageEntity.class, remap = false)
 public class MixinPageEntity {
     @Shadow
     transient Entity entity;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lvazkii/patchouli/client/book/page/PageEntity;renderEntity(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/Entity;FFFFF)V"))
+    @Inject(
+            method = "render",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lvazkii/patchouli/client/book/page/PageEntity;renderEntity(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/Entity;FFFFF)V"))
     private void beforeRenderEntity(GuiGraphics graphics, int mouseX, int mouseY, float pticks, CallbackInfo ci) {
-        if(entity instanceof ErsEntity<?> ersEntity){
+        if (entity instanceof ErsEntity<?> ersEntity) {
             ersEntity.getAnimator().isInScreen = true;
         }
     }

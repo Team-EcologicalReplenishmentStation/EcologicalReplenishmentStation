@@ -22,21 +22,58 @@ public class ErsBlockLoot extends VanillaBlockLoot {
         this.add(ErsBlocks.SMALL_FECES.get(), block -> this.createSingleItemTable(ErsItems.FECES.get()));
         this.add(ErsBlocks.TEL_FECES.get(), block -> this.createLootTableWithRecord());
         this.add(ErsBlocks.SOUL_CUBE.get(), block -> this.createSingleItemTable(ErsItems.SOUL_CUBE.get()));
-        this.add(ErsBlocks.SWAMP_DRAGON_NEST.get(),block -> LootTable.lootTable()
+        this.add(ErsBlocks.SWAMP_DRAGON_NEST.get(), block -> LootTable.lootTable()
                 .withPool(LootPool.lootPool()
                         .setRolls(ConstantValue.exactly(1))
-                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
-                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2)).when(LootItemRandomChanceCondition.randomChance(0.25f))))
-                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(3)).when(LootItemRandomChanceCondition.randomChance(0.10f))))
-                )
-        );
-        this.add(ErsBlocks.SAEVUS_NEST.get(),block -> LootTable.lootTable()
+                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.25f))))
+                        .add(LootItem.lootTableItem(ErsItems.SWAMP_DRAGON_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(3))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.10f))))));
+        this.add(ErsBlocks.SAEVUS_NEST.get(), block -> LootTable.lootTable()
                 .withPool(LootPool.lootPool()
                         .setRolls(ConstantValue.exactly(1))
-                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
-                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_EGG.get()).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2)).when(LootItemRandomChanceCondition.randomChance(0.15f))))
-                )
-        );
+                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+                        .add(LootItem.lootTableItem(ErsItems.SAEVUS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.15f))))));
+        this.add(ErsBlocks.DINOSAURIFORMIS_NEST.get(), block -> LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(ErsItems.DINOSAURIFORMIS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+                        .add(LootItem.lootTableItem(ErsItems.DINOSAURIFORMIS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.25f))))
+                        .add(LootItem.lootTableItem(ErsItems.DINOSAURIFORMIS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(3))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.10f))))));
+        this.add(ErsBlocks.ANTIQUUS_NEST.get(), block -> LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(ErsItems.ANTIQUUS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+                        .add(LootItem.lootTableItem(ErsItems.ANTIQUUS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.25f))))
+                        .add(LootItem.lootTableItem(ErsItems.ANTIQUUS_EGG.get())
+                                .setWeight(1)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(3))
+                                        .when(LootItemRandomChanceCondition.randomChance(0.10f))))));
         this.add(ErsBlocks.ARTIFICIAL_NEST.get(), block -> this.createSingleItemTable(ErsBlocks.ARTIFICIAL_NEST.get()));
         this.add(ErsBlocks.EQUISETUM.get(), block -> this.createSingleItemTable(ErsBlocks.EQUISETUM.get()));
     }
@@ -69,5 +106,4 @@ public class ErsBlockLoot extends VanillaBlockLoot {
                         .add(LootItem.lootTableItem(ErsItems.FECES.get())))
                 .withPool(recordPool);
     }
-
 }

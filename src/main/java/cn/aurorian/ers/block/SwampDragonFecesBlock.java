@@ -36,9 +36,12 @@ public class SwampDragonFecesBlock extends BaseEntityBlock {
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
     }
 
-
     @Override
-    public @NotNull VoxelShape getCollisionShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
+    public @NotNull VoxelShape getCollisionShape(
+            @NotNull BlockState pState,
+            @NotNull BlockGetter pLevel,
+            @NotNull BlockPos pPos,
+            @NotNull CollisionContext pContext) {
         return Shapes.empty();
     }
 
@@ -72,7 +75,12 @@ public class SwampDragonFecesBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void setPlacedBy(Level level, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
+    public void setPlacedBy(
+            Level level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @Nullable LivingEntity placer,
+            @NotNull ItemStack stack) {
         if (!level.isClientSide) {
             Direction facing = state.getValue(FACING);
             BlockPos presetPos2 = pos.relative(facing.getCounterClockWise());
@@ -86,16 +94,24 @@ public class SwampDragonFecesBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            @NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
         return (level1, blockPos, blockState, t) -> {
-            if (t instanceof FecesBlockEntity tickable && t.getType() == ErsBlockEntities.TEL_FECES_BLOCK_ENTITY.get()) {
+            if (t instanceof FecesBlockEntity tickable
+                    && t.getType() == ErsBlockEntities.TEL_FECES_BLOCK_ENTITY.get()) {
                 tickable.clientTick(tickable, level1, blockPos);
             }
-            if (level1.getGameTime() % 20000 == 0){
+            if (level1.getGameTime() % 20000 == 0) {
                 level1.removeBlock(blockPos, false);
-                if(level1.getBlockState(blockPos.below()) instanceof net.minecraft.world.level.block.BonemealableBlock growable) {
-                    if (growable.isValidBonemealTarget(level1, blockPos.below(), level1.getBlockState(blockPos.below()), level1.isClientSide)) {
-                        growable.performBonemeal((ServerLevel) level1, level1.random, blockPos.below(), level1.getBlockState(blockPos.below()));
+                if (level1.getBlockState(blockPos.below())
+                        instanceof net.minecraft.world.level.block.BonemealableBlock growable) {
+                    if (growable.isValidBonemealTarget(
+                            level1, blockPos.below(), level1.getBlockState(blockPos.below()), level1.isClientSide)) {
+                        growable.performBonemeal(
+                                (ServerLevel) level1,
+                                level1.random,
+                                blockPos.below(),
+                                level1.getBlockState(blockPos.below()));
                     }
                 }
             }

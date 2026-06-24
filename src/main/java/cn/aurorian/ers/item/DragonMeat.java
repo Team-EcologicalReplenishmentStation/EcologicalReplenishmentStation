@@ -14,8 +14,9 @@ public class DragonMeat extends Item {
     }
 
     @Override
-    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pLivingEntity) {
-        if(pLivingEntity instanceof Player player){
+    public @NotNull ItemStack finishUsingItem(
+            @NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pLivingEntity) {
+        if (pLivingEntity instanceof Player player) {
             player.addItem(new ItemStack(ErsItems.DRAGON_BONE.get()));
         }
         return super.finishUsingItem(pStack, pLevel, pLivingEntity);

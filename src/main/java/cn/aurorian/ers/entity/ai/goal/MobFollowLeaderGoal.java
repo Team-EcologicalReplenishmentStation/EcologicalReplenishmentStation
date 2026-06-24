@@ -1,10 +1,9 @@
 package cn.aurorian.ers.entity.ai.goal;
 
 import cn.aurorian.ers.entity.ErsTamableVehicle;
+import java.util.EnumSet;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-
-import java.util.EnumSet;
 
 public class MobFollowLeaderGoal extends Goal {
     private final ErsTamableVehicle<?> mob;
@@ -17,7 +16,8 @@ public class MobFollowLeaderGoal extends Goal {
     private LivingEntity leader;
     private int timeToRecalcPath;
 
-    public MobFollowLeaderGoal(ErsTamableVehicle<?> mob, double sprintModifier, float startDistance, float stopDistance) {
+    public MobFollowLeaderGoal(
+            ErsTamableVehicle<?> mob, double sprintModifier, float startDistance, float stopDistance) {
         this.mob = mob;
         this.speedModifier = 1.2;
         this.sprintModifier = sprintModifier;
@@ -32,17 +32,14 @@ public class MobFollowLeaderGoal extends Goal {
         this.mob.updateLeader();
         ErsTamableVehicle<?> currentLeader = this.mob.leader;
 
-        if(this.mob.isVehicle() || this.mob.isBaby())
-            return false;
+        if (this.mob.isVehicle() || this.mob.isBaby()) return false;
         if (currentLeader == null || currentLeader == this.mob) {
             return false;
         } else if (this.mob.getRandom().nextInt(reducedTickDelay(70)) != 0) {
             return false;
-        }
-        else if (mob.distanceToSqr(currentLeader) < startDistanceSqr) {
+        } else if (mob.distanceToSqr(currentLeader) < startDistanceSqr) {
             return false;
-        }else
-            this.leader = currentLeader;
+        } else this.leader = currentLeader;
         return true;
     }
 
@@ -52,7 +49,7 @@ public class MobFollowLeaderGoal extends Goal {
             return false;
         }
         double yDistanceSqr = Math.abs(mob.getY() - leader.getY());
-        if(yDistanceSqr > stopDistanceSqr && mob.distanceToSqr(leader) - yDistanceSqr < stopDistanceSqr){
+        if (yDistanceSqr > stopDistanceSqr && mob.distanceToSqr(leader) - yDistanceSqr < stopDistanceSqr) {
             return false;
         }
         return mob.distanceToSqr(leader) > stopDistanceSqr;
@@ -82,11 +79,10 @@ public class MobFollowLeaderGoal extends Goal {
         if (mob.distanceToSqr(leader) >= sprintDistanceSqr) {
             shouldSprint = true;
             mob.setSprinting(true);
-        }else {
+        } else {
             mob.setSprinting(false);
         }
 
         mob.getNavigation().moveTo(leader, shouldSprint ? sprintModifier : speedModifier);
     }
-
 }

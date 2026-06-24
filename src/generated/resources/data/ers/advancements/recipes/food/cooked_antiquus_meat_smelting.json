@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_antiquus_meat": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ers:antiquus_meat"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:cooked_antiquus_meat_smelting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_antiquus_meat",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:cooked_antiquus_meat_smelting"
+    ]
+  },
+  "sends_telemetry_event": false
+}

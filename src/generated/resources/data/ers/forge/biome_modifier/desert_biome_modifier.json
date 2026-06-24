@@ -1,10 +1,18 @@
 {
   "type": "forge:add_spawns",
   "biomes": "minecraft:desert",
-  "spawners": {
-    "type": "oasis:tubunasus_clyderotunda",
-    "maxCount": 4,
-    "minCount": 2,
-    "weight": 5
-  }
+  "spawners": [
+    {
+      "type": "ers:eosuchosaurus_antiquus",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 5
+    },
+    {
+      "type": "oasis:tubunasus_clyderotunda",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 5
+    }
+  ]
 }

@@ -6,35 +6,60 @@ import cn.aurorian.oasis.init.OasisEntities;
 import cn.aurorian.oasis.init.OasisItems;
 import cn.aurorian.oasis.init.OasisMobEffects;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ErsChineseLanguangeProvider extends LanguageProvider {
     public ErsChineseLanguangeProvider(PackOutput output) {
         super(output, EcologicalReplenishmentStation.MODID, "zh_cn");
     }
+
     @Override
     protected void addTranslations() {
         add(ErsItems.SWAMP_DRAGON_SADDLE.get(), "泽龙鞍");
-        add(ErsItems.SAEVUS_SADDLE.get(),"恐齿龙鞍");
+        add(ErsItems.DINOSAURIFORMIS_SADDLE.get(), "水角龙鞍");
+        add(ErsItems.SAEVUS_SADDLE.get(), "恐齿龙鞍");
+        add(ErsItems.ANTIQUUS_SADDLE.get(), "始鳄龙鞍");
+        add(ErsItems.PTEROCHIRUS_DUX_SADDLE.get(), "领航蝠翼龙鞍");
+        add(ErsItems.CRISTATODROMEUS_BRACHYPTERUS_SADDLE.get(), "短翅冠龙鞍");
         add(ErsEntities.DENTISAURUS_LONGIROSTRIS.get(), "裳尾泽龙");
+        add(ErsEntities.AQUICORNIS_DINOSAURIFORMIS.get(), "水角龙");
         add(ErsEntities.LATIMERIA_PERCOIDES.get(), "肉鳍鳜");
         add(ErsEntities.LATIMERIA_SUCHOMIMUS.get(), "肉鳍鳄䲢");
-        add(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(),"大攀鳅");
-        add(ErsEntities.ARGENTUMNISCUS_ACICULAULAR.get(),"银光鱵鳕");
-        add(ErsEntities.MANDGEMARE_LABIUM.get(),"迷宫宝石鲷");
+        add(ErsEntities.MAGNIDISCUMYZON_SARCOPTERUS.get(), "大攀鳅");
+        add(ErsEntities.ARGENTUMNISCUS_ACICULAULAR.get(), "银光鱵鳕");
+        add(ErsEntities.MANDGEMARE_LABIUM.get(), "迷宫宝石鲷");
+        add(ErsEntities.BENTHOSUCHUS_PLANIDENS.get(), "平齿恐鰧");
         add(ErsEntities.TACHYPLEUS_GLADIUS.get(), "匕首鲎");
+        add(ErsEntities.TACHYCARIS_GUSTATUS.get(), "鲜美鲎虾");
         add(ErsEntities.ACANTHODES_CHLAMYDOSELACHOIDES.get(), "绞口棘鱼");
-        add(ErsEntities.TERRIDENSAURUS_SAEVUS.get(),"恐齿龙");
+        add(ErsEntities.EOSUCHOSAURUS_ANTIQUUS.get(), "始鳄龙");
+        add(ErsEntities.TERRIDENSAURUS_SAEVUS.get(), "恐齿龙");
+        add(ErsEntities.ECHINOMORPHUS_CONVERGENS.get(), "伪海胆");
+        add(ErsEntities.PTEROCHIRUS_DUX.get(), "领航蝠翼龙");
+        add(ErsEntities.REMIPES_SICARIUS.get(), "巨镰浆足虫");
+        add(ErsEntities.PLESIOCHELYS_LONGICOLLIS.get(), "长颈龟龙");
+        add(ErsEntities.CRISTATODROMEUS_BRACHYPTERUS.get(), "短翅冠龙");
         add(ErsEntities.DRAGON_CLAW_HARPOON.get(), "龙爪鱼叉");
         add(ErsItems.DENTISAURUS_LONGIROSTRIS_SPAWN_EGG.get(), "泽龙生成蛋");
-        add(ErsItems.LATIMERIA_PERCOIDES_SPAWN_EGG.get(),"肉鳍鳜生成蛋");
+        add(ErsItems.AQUICORNIS_DINOSAURIFORMIS_SPAWN_EGG.get(), "水角龙生成蛋");
+        add(ErsItems.LATIMERIA_PERCOIDES_SPAWN_EGG.get(), "肉鳍鳜生成蛋");
         add(ErsItems.TACHYPLEUS_GLADIUS_SPAWN_EGG.get(), "匕首鲎生成蛋");
+        add(ErsItems.TACHYCARIS_GUSTATUS_SPAWN_EGG.get(), "鲜美鲎虾生成蛋");
         add(ErsItems.CHLAMYDOSELACHOIDES_SPAWN_EGG.get(), "绞口棘鱼生成蛋");
         add(ErsItems.LATIMERIA_SUCHOMIMUS_SPAWN_EGG.get(), "肉鳍鳄䲢生成蛋");
-        add(ErsItems.TERRIDENSAURUS_SAEVUS_SPAWN_EGG.get(),"恐齿龙生成蛋");
-        add(ErsItems.MAGNIDISCUMYZON_SARCOPTERUS_SPAWN_EGG.get(),"大攀鳅生成蛋");
-        add(ErsItems.ARGENTUMNISCUS_ACICULAULAR_SPAWN_EGG.get(),"银光鱵鳕生成蛋");
-        add(ErsItems.MANDGEMARE_LABIUM_SPAWN_EGG.get(),"迷宫宝石鲷生成蛋");
+        add(ErsItems.TERRIDENSAURUS_SAEVUS_SPAWN_EGG.get(), "恐齿龙生成蛋");
+        add(ErsItems.MAGNIDISCUMYZON_SARCOPTERUS_SPAWN_EGG.get(), "大攀鳅生成蛋");
+        add(ErsItems.ARGENTUMNISCUS_ACICULAULAR_SPAWN_EGG.get(), "银光鱵鳕生成蛋");
+        add(ErsItems.MANDGEMARE_LABIUM_SPAWN_EGG.get(), "迷宫宝石鲷生成蛋");
+        add(ErsItems.BENTHOSUCHUS_PLANIDENS_SPAWN_EGG.get(), "平齿恐鰧生成蛋");
+        add(ErsItems.EOSUCHOSAURUS_ANTIQUUS_SPAWN_EGG.get(), "始鳄龙生成蛋");
+        add(ErsItems.ECHINOMORPHUS_CONVERGENS_SPAWN_EGG.get(), "伪海胆生成蛋");
+        add(ErsItems.PTEROCHIRUS_DUX_SPAWN_EGG.get(), "领航蝠翼龙生成蛋");
+        add(ErsItems.REMIPES_SICARIUS_SPAWN_EGG.get(), "巨镰浆足虫生成蛋");
+        add(ErsItems.PLESIOCHELYS_LONGICOLLIS_SPAWN_EGG.get(), "长颈龟龙生成蛋");
+        add(ErsItems.CRISTATODROMEUS_BRACHYPTERUS_SPAWN_EGG.get(), "短翅冠龙生成蛋");
         add(ErsCreativeTab.ERS_TAB.get().getDisplayName().getString(), "生态补给站");
         add(ErsKeyBindings.DIVE_KEY.getName(), "坐骑 下潜");
         add(ErsKeyBindings.ATTACK_KEY.getName(), "攻击技能");
@@ -43,13 +68,19 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add(ErsKeyBindings.ATTACK4_KEY.getName(), "转向攻击技能");
         add(ErsKeyBindings.CATEGORY, "生态补给站");
         add(ErsItems.DENTISARUS_LONGIROSTRIS_LARGE_BUCKET.get(), "泽龙大桶");
+        add(ErsItems.AQUICORNIS_DINOSAURIFORMIS_LARGE_BUCKET.get(), "水角龙大桶");
         add(ErsItems.CHLAMYDOSELACHOIDES_LARGE_BUCKET.get(), "绞口棘鱼大桶");
         add(ErsItems.SUCHOMIMUS_LARGE_BUCKET.get(), "肉鳍鳄䲢大桶");
-        add(ErsItems.SARCOPTERUS_BUCKET.get(),"大攀鳅桶");
+        add(ErsItems.SARCOPTERUS_BUCKET.get(), "大攀鳅桶");
         add(ErsItems.PERCH_BUCKET.get(), "肉鳍鳜桶");
         add(ErsItems.TACHYPLEUS_GLADIUS_BUCKET.get(), "匕首鲎桶");
+        add(ErsItems.TACHYCARIS_GUSTATUS_BUCKET.get(), "鲜美鲎虾桶");
         add(ErsItems.ACICULABULAR_BUCKET.get(), "银光鱵鳕桶");
-        add(ErsItems.LABIUM_BUCKET.get(),"迷宫宝石鲷桶");
+        add(ErsItems.LABIUM_BUCKET.get(), "迷宫宝石鲷桶");
+        add(ErsItems.BENTHOSUCHUS_PLANIDENS_LARGE_BUCKET.get(), "平齿恐鰧大桶");
+        add(ErsItems.PLESIOCHELYS_LONGICOLLIS_LARGE_BUCKET.get(), "长颈龟龙大桶");
+        add(ErsItems.ECHINOMORPHUS_CONVERGENS_BUCKET.get(), "伪海胆桶");
+        add(ErsItems.REMIPES_SICARIUS_BUCKET.get(), "巨镰浆足虫桶");
         add(ErsItems.LARGE_BUCKET.get(), "大桶");
         add(ErsItems.LARGE_WATER_BUCKET.get(), "大水桶");
         add(ErsItems.GILDED_HORN.get(), "镶金号角");
@@ -62,13 +93,17 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add(ErsItems.TEL_FECES.get(), "带电话粪便");
         add(ErsItems.SOUL_CUBE.get(), "灵魂魔方");
         add(ErsBlocks.SWAMP_DRAGON_NEST.get(), "泽龙巢穴");
-        add(ErsBlocks.SAEVUS_NEST.get(),"恐齿龙巢穴");
+        add(ErsBlocks.SAEVUS_NEST.get(), "恐齿龙巢穴");
+        add(ErsBlocks.DINOSAURIFORMIS_NEST.get(), "水角龙巢穴");
+        add(ErsBlocks.ANTIQUUS_NEST.get(), "始鳄龙巢穴");
         add(ErsBlocks.ARTIFICIAL_NEST.get(), "人工巢穴");
-        add(ErsBlocks.EQUISETUM.get(),"木贼");
+        add(ErsBlocks.EQUISETUM.get(), "木贼");
         add(ErsItems.SWAMP_DRAGON_EGG.get(), "泽龙蛋");
-        add(ErsItems.SAEVUS_EGG.get(),"恐齿龙蛋");
+        add(ErsItems.DINOSAURIFORMIS_EGG.get(), "水角龙蛋");
+        add(ErsItems.SAEVUS_EGG.get(), "恐齿龙蛋");
+        add(ErsItems.ANTIQUUS_EGG.get(), "始鳄龙蛋");
         add(ErsItems.SOUL_CUBE_GIFT.get(), "灵魂魔方赐物");
-        add(ErsItems.CLOVER.get(),"幸运草");
+        add(ErsItems.CLOVER.get(), "幸运草");
         add(ErsItems.BAIT_BOX.get(), "鱼饵箱");
         add(ErsItems.BULLY_STICK.get(), "磨牙棒");
         add(ErsItems.SCRATCHING_BOARD.get(), "抓挠板");
@@ -76,8 +111,12 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add(ErsItems.RIDING_GUIDE.get(), "骑乘指南");
         add(ErsItems.FISH_FILLET.get(), "鱼段");
         add(ErsItems.COOKED_FISH_FILLET.get(), "熟鱼段");
-        add(ErsItems.CARNIVORE_FEED.get(), "肉食动物饲料");
-        add(ErsItems.PISCIVORES_FEED.get(), "食鱼动物饲料");
+        add(ErsItems.MEAT_FEED.get(), "肉饲料");
+        add(ErsItems.FISH_FEED.get(), "鱼肉饲料");
+        add(ErsItems.FRUIT_FEED.get(), "水果饲料");
+        add(ErsItems.HAY_FEED.get(), "干草饲料");
+        add(ErsItems.VEGETABLE_FEED.get(), "蔬菜饲料");
+        add(ErsItems.WORM_FEED.get(), "蠕虫饲料");
         add(ErsItems.PERCH.get(), "肉鳍鳜");
         add(ErsItems.SUCHOMIMUS.get(), "肉鳍鳄䲢");
         add(ErsItems.COOKED_SUCHOMIMUS.get(), "熟肉鳍鳄䲢");
@@ -89,20 +128,32 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add(ErsItems.COOKED_SWAMP_DRAGON_MEAT.get(), "熟泽龙肉");
         add(ErsItems.HORSESHOE_CRAB_MEAT.get(), "鲎肉");
         add(ErsItems.COOKED_HORSESHOE_CRAB_MEAT.get(), "熟鲎肉");
+        add(ErsItems.TACHYCARIS_GUSTATUS_MEAT.get(), "鲜美鲎虾肉");
+        add(ErsItems.REMIPES_SICARIUS_MEAT.get(), "生巨镰浆足虫肉");
+        add(ErsItems.COOKED_REMIPES_SICARIUS_MEAT.get(), "熟巨镰浆足虫肉");
         add(ErsItems.CHLAMYDOSELACHOIDES.get(), "绞口棘鱼");
         add(ErsItems.COOKED_CHLAMYDOSELACHOIDES.get(), "熟绞口棘鱼");
         add(ErsItems.CHLAMYDOSELACHOIDES_TOOTH.get(), "棘鱼牙齿");
-        add(ErsItems.SARCOPETERUS.get(),"大攀鳅");
-        add(ErsItems.COOKED_SARCOPETERUS.get(),"熟大攀鳅");
-        add(ErsItems.SAEVUS_MEAT.get(),"恐齿龙肉");
-        add(ErsItems.COOKED_SAEVUS_MEAT.get(),"熟恐齿龙肉");
-        add(ErsItems.DRAGON_BONE.get(),"龙骨");
-        add(ErsItems.DRAGON_BONE_FLUTE.get(),"龙骨笛");
-        add(ErsItems.SOUL_FLUTE.get(),"灵魂笛");
-        add(ErsItems.ACICULABULAR.get(),"银光鱵鳕");
-        add(ErsItems.COOKED_ACICULABULAR.get(),"熟银光鱵鳕");
-        add(ErsItems.LABIUM.get(),"迷宫宝石鲷");
-        add(ErsItems.COOKED_LABIUM.get(),"熟迷宫宝石鲷");
+        add(ErsItems.SARCOPETERUS.get(), "大攀鳅");
+        add(ErsItems.COOKED_SARCOPETERUS.get(), "熟大攀鳅");
+        add(ErsItems.SAEVUS_MEAT.get(), "恐齿龙肉");
+        add(ErsItems.COOKED_SAEVUS_MEAT.get(), "熟恐齿龙肉");
+        add(ErsItems.ECHINOMORPHUS_CONVERGENS_SHELL.get(), "伪海胆壳");
+        add(ErsItems.DRAGON_BONE.get(), "龙骨");
+        add(ErsItems.DRAGON_BONE_FLUTE.get(), "龙骨笛");
+        add(ErsItems.SOUL_FLUTE.get(), "灵魂笛");
+        add(ErsItems.ACICULABULAR.get(), "银光鱵鳕");
+        add(ErsItems.COOKED_ACICULABULAR.get(), "熟银光鱵鳕");
+        add(ErsItems.LABIUM.get(), "迷宫宝石鲷");
+        add(ErsItems.COOKED_LABIUM.get(), "熟迷宫宝石鲷");
+        add(ErsItems.BENTHOSUCHUS_PLANIDENS.get(), "平齿恐鰧");
+        add(ErsItems.COOKED_BENTHOSUCHUS_PLANIDENS.get(), "熟平齿恐鰧");
+        add(ErsItems.PLESIOCHELYS_LONGICOLLIS.get(), "长颈龟龙肉");
+        add(ErsItems.COOKED_PLESIOCHELYS_LONGICOLLIS.get(), "熟长颈龟龙肉");
+        add(ErsItems.DINOSAURIFORMIS_MEAT.get(), "水角龙肉");
+        add(ErsItems.COOKED_DINOSAURIFORMIS_MEAT.get(), "熟水角龙肉");
+        add(ErsItems.ANTIQUUS_MEAT.get(), "始鳄龙肉");
+        add(ErsItems.COOKED_ANTIQUE_MEAT.get(), "熟始鳄龙肉");
         add(ErsItems.CHLAMYDOSELACHOIDES_TOOTH_SWORD.get(), "棘齿剑");
         add(ErsItems.DRAGON_CLAW_HARPOON.get(), "龙爪鱼叉");
         add(ErsItems.TOURNIQUET.get(), "止血带");
@@ -115,9 +166,11 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add("tooltip.ers.hatch", "孵化进度: %d%%");
         add("tooltip.oasis.gender.male", "§b雄性");
         add("tooltip.oasis.gender.female", "§d雌性");
-        add("ers.command.sit","坐下");
-        add("ers.command.stand","站立");
-        add("ers.command.follow","跟随");
+        add("ers.command.sit", "坐下");
+        add("ers.command.stand", "站立");
+        add("ers.command.follow", "跟随");
+        add("ers.taming.dinosauriformis.wait", "水角龙现在不想吃东西");
+        add("ers.taming.dinosauriformis.tip", "水角龙现在想吃 %s");
         add("commands.ers.age.success", "设置 %s 年龄至 %d 天");
         add("commands.ers.age.failed", "非法对象 %s ,无法设置年龄.");
         add("commands.ers.elite.success", "设置 %s 为精英个体.");
@@ -125,32 +178,42 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add("death.attack.bleeding", "%s流血而死");
         add("death.attack.bleeding.player", "%1$s在与%2$s战斗时流血而死");
         add(ErsMobEffects.BLEEDING.get(), "流血");
+        add(ErsMobEffects.COMFORT.get(), "惬意");
         add(ErsMobEffects.FRACTURE.get(), "骨折");
 
         add("ers.tamable.missing", "§c你的宠物似乎消失或者卸载了,最后追踪位置: %s");
 
-        add("item.ers.book.name","生态补给站手册");
-        add("item.ers.book.landing_text","在进化分异之后，我们需要重新认识这些生物体。");
+        add("item.ers.book.name", "生态补给站手册");
+        add("item.ers.book.landing_text", "在进化分异之后，我们需要重新认识这些生物体。");
 
         addAdvancement("enter_world", "生态补给站", "欢迎来到生态补给站的世界!");
         addAdvancement("swamp_dragon_egg", "获得泽龙蛋", "将其放入人工巢穴中孵化.");
         addAdvancement("tame_swamp_dragon", "驯服泽龙", "使用鱼肉或食鱼动物饲料喂养它.");
         addAdvancement("saevus_egg", "获得恐齿龙蛋", "将其放入人工巢穴中孵化.");
         addAdvancement("tame_saevus", "驯服恐齿龙", "使用肉类或肉食动物饲料喂养它.");
+        addTooltip(ErsItems.CLOVER.get(), "好运的象征。骑乘时赋予骑手幸运效果。");
+        addTooltip(ErsItems.BULLY_STICK.get(), "坚固的咀嚼玩具。装备后加强坐骑的咬合攻击。");
+        addTooltip(ErsItems.SCRATCHING_BOARD.get(), "粗糙的磨爪表面。装备后加强坐骑的爪击攻击。");
+        addTooltip(ErsItems.RIDING_GUIDE.get(), "正确骑乘技巧手册。骑乘时免疫大多数直接攻击。");
+        addTooltip(ErsItems.RIDING_GUIDE.get(), "patchouli", "安装帕秋莉手册解锁更多功能");
+        addTooltip(ErsItems.DRIED_FISH.get(), "§e食鱼动物专用§r 腌制鱼干零食。每10秒消耗一条，自动恢复饱食度和生命值。");
+        addTooltip(ErsItems.BAIT_BOX.get(), "§e食鱼动物专用§r 装满鱼饵的容器。骑乘钓鱼时提高钓鱼成功率。");
 
         add("itemGroup.oasis_group", "绿洲");
         add("item.minecraft.potion.effect.embryo_healing", "胚胎治疗");
         add("item.minecraft.splash_potion.effect.embryo_healing", "溅射型胚胎治疗");
         add("item.minecraft.lingering_potion.effect.embryo_healing", "滞留型胚胎治疗");
-        add(OasisEntities.TUBUNASUS_DUROVELA.get(),"杜拉帆管兽");
-        add(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(),"圆盾管鼻兽");
-        add(OasisEntities.PYGOPODUS_ANNULATUM.get(),"环颈合足兽");
+        add(OasisEntities.TUBUNASUS_DUROVELA.get(), "杜拉帆管兽");
+        add(OasisEntities.TUBUNASUS_CLYDEROTUNDA.get(), "圆盾管鼻兽");
+        add(OasisEntities.PYGOPODUS_ANNULATUM.get(), "环颈合足兽");
+        add(OasisEntities.IMPERIOVENATOR_REGIUS.get(), "暴君冠鮀");
         add(OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get(), "杜拉帆管兽生成蛋");
         add(OasisItems.TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG.get(), "圆盾管鼻兽生成蛋");
         add(OasisItems.PYGOPODUS_ANNULATUM_SPAWN_EGG.get(), "环颈合足兽生成蛋");
+        add(OasisItems.IMPERIOVENATOR_REGIUS_SPAWN_EGG.get(), "暴君冠鮀生成蛋");
         add(OasisItems.TUBUNASUS_DUROVELA_LARGE_BUCKET.get(), "杜拉帆管兽大桶");
         add(OasisItems.TUBUNASUS_SADDLE.get(), "杜拉帆管兽鞍");
-        add(OasisItems.HORSESHOE.get(),"马蹄铁");
+        add(OasisItems.HORSESHOE.get(), "马蹄铁");
         add(OasisItems.BONE.get(), "???兽骨");
         add(OasisItems.HEART.get(), "???心脏");
         add(OasisItems.INTESTINES.get(), "???肠子");
@@ -161,9 +224,12 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add(OasisItems.COOKED_LUNG.get(), "烤???肺");
         add(OasisItems.KIDNEY.get(), "???肾脏");
         add(OasisItems.COOKED_KIDNEY.get(), "烤???肾脏");
-        add(OasisItems.ANNULATUM.get(),"合足兽肉");
-        add(OasisItems.COOKED_ANNULATUM.get(),"烤合足兽肉");
-        add(OasisItems.TEASELGOURD.get(),"黄刺瓜");
+        add(OasisItems.ANNULATUM.get(), "合足兽肉");
+        add(OasisItems.TUBUNASUS_MEAT.get(), "管鼻兽肉");
+        add(OasisItems.COOKED_ANNULATUM.get(), "烤合足兽肉");
+        add(OasisItems.TEASELGOURD.get(), "黄刺瓜");
+        add(OasisItems.CUDMILK.get(), "反刍乳");
+        add(OasisItems.EMPTY_MILK_BOTTLE.get(), "空奶瓶");
 
         add(OasisItems.DUROVELA_SPECIMEN.get(), "杜拉帆管兽标本");
         add(OasisItems.CLYDEROTUNDA_SPECIMEN.get(), "圆盾管鼻兽标本");
@@ -171,8 +237,18 @@ public class ErsChineseLanguangeProvider extends LanguageProvider {
         add(OasisMobEffects.BREATH_HOLD.get(), "屏息");
     }
 
-    private void addAdvancement(String name, String title, String desc){
-        add("advancements." + EcologicalReplenishmentStation.MODID  + "." + name + ".title", title);
-        add("advancements." + EcologicalReplenishmentStation.MODID  + "." + name + ".desc", desc);
+    private void addAdvancement(String name, String title, String desc) {
+        add("advancements." + EcologicalReplenishmentStation.MODID + "." + name + ".title", title);
+        add("advancements." + EcologicalReplenishmentStation.MODID + "." + name + ".desc", desc);
+    }
+
+    private void addTooltip(Item item, String translation) {
+        var key = ForgeRegistries.ITEMS.getKey(item);
+        if (key != null) add("tooltip." + key.getNamespace() + "." + key.getPath(), translation);
+    }
+
+    private void addTooltip(Item item, String suffix, String translation) {
+        var key = ForgeRegistries.ITEMS.getKey(item);
+        if (key != null) add("tooltip." + key.getNamespace() + "." + key.getPath() + "." + suffix, translation);
     }
 }

@@ -10,11 +10,11 @@ public class BreathHoldEffect extends MobEffect {
     public BreathHoldEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
     }
+
     @Override
     public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier) {
-        if(pLivingEntity instanceof ServerPlayer player){
-            player.setAirSupply(Math.min(player.getMaxAirSupply(),
-                    player.getAirSupply() + 20));
+        if (pLivingEntity instanceof ServerPlayer player) {
+            player.setAirSupply(Math.min(player.getMaxAirSupply(), player.getAirSupply() + 20));
         }
     }
 

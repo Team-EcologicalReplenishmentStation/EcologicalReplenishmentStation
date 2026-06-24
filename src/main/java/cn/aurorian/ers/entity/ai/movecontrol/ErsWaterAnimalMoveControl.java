@@ -37,21 +37,21 @@ public class ErsWaterAnimalMoveControl extends MoveControl {
             if ($$3 < 2.500000277905201E-7) {
                 this.mob.setZza(0.0F);
             } else {
-                float $$4 = (float)(Mth.atan2($$2, $$0) * 57.2957763671875) - 90.0F;
+                float $$4 = (float) (Mth.atan2($$2, $$0) * 57.2957763671875) - 90.0F;
 
-                this.mob.setYRot(this.rotlerp(this.mob.getYRot(), $$4, (float)this.maxTurnY));
+                this.mob.setYRot(this.rotlerp(this.mob.getYRot(), $$4, (float) this.maxTurnY));
                 this.mob.yHeadRot = this.mob.yBodyRot;
-                float $$5 = (float)(this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                float $$5 = (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED));
                 if (this.mob.isInWater()) {
 
-                    if(Mth.abs(Mth.degreesDifference(this.fish.getYRot(),this.fish.yBodyRot)) < (fish.isSprinting() ? 5 : 1))
-                        this.mob.setSpeed($$5 * this.inWaterSpeedModifier);
+                    if (Mth.abs(Mth.degreesDifference(this.fish.getYRot(), this.fish.yBodyRot))
+                            < (fish.isSprinting() ? 5 : 1)) this.mob.setSpeed($$5 * this.inWaterSpeedModifier);
 
                     double $$6 = Math.sqrt($$0 * $$0 + $$2 * $$2);
                     float $$8;
                     if (Math.abs($$1) > 9.999999747378752E-6 || Math.abs($$6) > 9.999999747378752E-6) {
-                        $$8 = -((float)(Mth.atan2($$1, $$6) * 57.2957763671875));
-                        $$8 = Mth.clamp(Mth.wrapDegrees($$8), (float)(-this.maxTurnX), (float)this.maxTurnX);
+                        $$8 = -((float) (Mth.atan2($$1, $$6) * 57.2957763671875));
+                        $$8 = Mth.clamp(Mth.wrapDegrees($$8), (float) (-this.maxTurnX), (float) this.maxTurnX);
                         this.mob.setXRot(this.rotlerp(this.mob.getXRot(), $$8, 5.0F));
                     }
 
@@ -64,10 +64,9 @@ public class ErsWaterAnimalMoveControl extends MoveControl {
                     float $$11 = getTurningSpeedFactor($$10);
                     this.mob.setSpeed($$5 * this.outsideWaterSpeedModifier * $$11);
                 }
-
             }
         } else {
-            if(this.fish.randomSwimmingGoal != null && this.fish.getTarget() == null && this.fish.isInWater())
+            if (this.fish.randomSwimmingGoal != null && this.fish.getTarget() == null && this.fish.isInWater())
                 this.fish.randomSwimmingGoal.trigger();
         }
     }

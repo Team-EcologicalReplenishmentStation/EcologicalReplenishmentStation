@@ -8,6 +8,7 @@ import cn.aurorian.ers.entity.creatures.tachypleusgladius.ai.CrabAmbushGoal;
 import cn.aurorian.ers.entity.creatures.tachypleusgladius.ai.CrabAttackGoal;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.util.ErsUtils;
+import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -44,9 +45,8 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
-
-public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, Bucketable, ErsEntity<TachypleusGladiusEntity> {
+public class TachypleusGladiusEntity extends WaterAnimal
+        implements GeoEntity, Bucketable, ErsEntity<TachypleusGladiusEntity> {
     public TachypleusGladiusEntity(EntityType<? extends WaterAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         animator = new KnifeHorseshoeCrabAnimator(this);
@@ -54,9 +54,12 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final KnifeHorseshoeCrabAnimator animator;
-    private static final EntityDataAccessor<Boolean> IS_WAITING = SynchedEntityData.defineId(TachypleusGladiusEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> COOLDOWN =  SynchedEntityData.defineId(TachypleusGladiusEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(TachypleusGladiusEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IS_WAITING =
+            SynchedEntityData.defineId(TachypleusGladiusEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> COOLDOWN =
+            SynchedEntityData.defineId(TachypleusGladiusEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> FROM_BUCKET =
+            SynchedEntityData.defineId(TachypleusGladiusEntity.class, EntityDataSerializers.BOOLEAN);
 
     public boolean isWaiting() {
         return entityData.get(IS_WAITING);
@@ -88,21 +91,21 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
             RawAnimation builder = RawAnimation.begin();
             if (ErsUtils.isMoving(this)) {
                 builder.thenLoop("animation.walk");
-            }
-            else if(state.animationTick >= 60 && isWaiting()) {
+            } else if (state.animationTick >= 60 && isWaiting()) {
                 builder.thenLoop("animation.wait");
-            }else {
+            } else {
                 builder.thenLoop("animation.idle");
             }
             return state.setAndContinue(builder);
         });
 
-        AnimationController<TachypleusGladiusEntity> extra = new AnimationController<>(this, "extra", 4, state -> PlayState.STOP)
+        AnimationController<TachypleusGladiusEntity> extra = new AnimationController<>(
+                        this, "extra", 4, state -> PlayState.STOP)
                 .triggerableAnim("attack", RawAnimation.begin().thenPlay("animation.attack"))
                 .triggerableAnim("ambush", RawAnimation.begin().thenPlay("animation.ambush"))
                 .triggerableAnim("dodge", RawAnimation.begin().thenPlay("animation.dodge"));
 
-        controllerRegistrar.add(main,extra);
+        controllerRegistrar.add(main, extra);
     }
 
     @Override
@@ -114,8 +117,8 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)
                 .add(Attributes.ATTACK_DAMAGE, 20.0)
-                .add(Attributes.MOVEMENT_SPEED,0.35)
-                .add(Attributes.ARMOR,6)
+                .add(Attributes.MOVEMENT_SPEED, 0.35)
+                .add(Attributes.ARMOR, 6)
                 .add(Attributes.FOLLOW_RANGE, 6);
     }
 
@@ -126,8 +129,7 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
 
     @Override
     public void knockback(double pStrength, double pX, double pZ) {
-        if(isWaiting())
-            return;
+        if (isWaiting()) return;
         super.knockback(pStrength, pX, pZ);
     }
 
@@ -135,13 +137,13 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new CrabAttackGoal(this));
         this.goalSelector.addGoal(1, new TryFindWaterGoal(this));
-        this.goalSelector.addGoal(2, new PanicGoal(this, 1.0){
+        this.goalSelector.addGoal(2, new PanicGoal(this, 1.0) {
             @Override
             public boolean canUse() {
                 return super.canUse() && !isWaiting();
             }
         });
-        this.goalSelector.addGoal(4, new RandomSwimmingGoal(this,1.0,40){
+        this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0, 40) {
             @Override
             public boolean canUse() {
                 return super.canUse() && !isWaiting();
@@ -150,13 +152,16 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
         this.goalSelector.addGoal(5, new CrabAmbushGoal(this));
 
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this,Mob.class,true,entity -> !(entity instanceof TachypleusGladiusEntity)){
-            @Override
-            public boolean canUse() {
-                return super.canUse() && isWaiting();
-            }
-        });
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class,true){
+        this.targetSelector.addGoal(
+                2,
+                new NearestAttackableTargetGoal<>(
+                        this, Mob.class, true, entity -> !(entity instanceof TachypleusGladiusEntity)) {
+                    @Override
+                    public boolean canUse() {
+                        return super.canUse() && isWaiting();
+                    }
+                });
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true) {
             @Override
             public boolean canUse() {
                 return super.canUse() && isWaiting();
@@ -168,29 +173,29 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
     public void tick() {
         super.tick();
         animator.tick();
-        if(getCooldown() > 0) {
+        if (getCooldown() > 0) {
             setCooldown(getCooldown() - 1);
         }
     }
 
     @Override
     protected @NotNull BodyRotationControl createBodyControl() {
-        return new GeneralBodyControl(this,20);
+        return new GeneralBodyControl(this, 20);
     }
 
-    public void crabAttack(){
+    public void crabAttack() {
         setCooldown(200);
         Vec3 targetTo = new Vec3(
-                this.getTarget().getX() - this.getX(),
-                this.getTarget().getY() - this.getY(),
-                this.getTarget().getZ() - this.getZ()
-        ).normalize();
+                        this.getTarget().getX() - this.getX(),
+                        this.getTarget().getY() - this.getY(),
+                        this.getTarget().getZ() - this.getZ())
+                .normalize();
         float f = (float) (Mth.atan2(targetTo.z, targetTo.x) * 57.2957763671875D) - 90.0F;
 
         this.setYRot(ErsUtils.rotlerp(this.getYRot(), f, 360));
         this.yBodyRot = this.getYRot();
 
-        this.setDeltaMovement(targetTo.x * 1.6,targetTo.y * 1.6,targetTo.z * 1.6);
+        this.setDeltaMovement(targetTo.x * 1.6, targetTo.y * 1.6, targetTo.z * 1.6);
 
         Vec3 pos = this.position();
         double range = 3;
@@ -201,27 +206,22 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
         this.triggerAnim("extra", "attack");
 
         AABB attackBox = new AABB(
-                startX - range, startY - range, startZ - range,
-                startX + range,
-                startY + range,
-                startZ + range
-        );
-        List<Entity> entities = this.level().getEntities(this, attackBox,
-                entity -> entity instanceof LivingEntity);
+                startX - range, startY - range, startZ - range, startX + range, startY + range, startZ + range);
+        List<Entity> entities = this.level().getEntities(this, attackBox, entity -> entity instanceof LivingEntity);
         double damage = this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            
+
         boolean shouldEscape = false;
         for (Entity target : entities) {
             target.setAirSupply(target.getAirSupply() - 150);
             target.hurt(this.level().damageSources().mobAttack(this), (float) damage);
-            if(target.isAlive()){
+            if (target.isAlive()) {
                 shouldEscape = true;
-            }else {
+            } else {
                 setCooldown(1200);
             }
         }
 
-        if(shouldEscape){
+        if (shouldEscape) {
             crabEscape(this.getTarget());
         }
     }
@@ -230,34 +230,26 @@ public class TachypleusGladiusEntity extends WaterAnimal implements GeoEntity, B
         setCooldown(400);
         setWaiting(false);
         this.triggerAnim("extra", "dodge");
-        Vec3 targetTo = new Vec3(
-                target.getX() - this.getX(),
-                target.getY() - this.getY(),
-                target.getZ() - this.getZ()
-        ).normalize();
+        Vec3 targetTo = new Vec3(target.getX() - this.getX(), target.getY() - this.getY(), target.getZ() - this.getZ())
+                .normalize();
         float f = (float) (Mth.atan2(targetTo.z, targetTo.x) * 57.2957763671875D) - 90.0F;
 
         this.setYRot(ErsUtils.rotlerp(this.getYRot(), f, 360));
         this.yBodyRot = this.getYRot();
-        this.setDeltaMovement(
-                -targetTo.x * 2,
-                0,
-                -targetTo.z * 2
-        );
+        this.setDeltaMovement(-targetTo.x * 2, 0, -targetTo.z * 2);
     }
 
     @Override
     public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
         if (pSource.is(DamageTypes.MOB_ATTACK) || pSource.is(DamageTypes.PLAYER_ATTACK)) {
-            if(!isWaiting()){
-                if(getLastHurtByMob() != null){
+            if (!isWaiting()) {
+                if (getLastHurtByMob() != null) {
                     crabEscape(getLastHurtByMob());
-                }else if(pSource.is(DamageTypes.PLAYER_ATTACK)){
+                } else if (pSource.is(DamageTypes.PLAYER_ATTACK)) {
                     crabEscape(pSource.getEntity());
                 }
-
             }
-            if(pSource.getEntity() instanceof LivingEntity living){
+            if (pSource.getEntity() instanceof LivingEntity living) {
                 living.hurt(level().damageSources().thorns(this), 4);
             }
         }

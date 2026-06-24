@@ -20,10 +20,18 @@ public class DurovelaHiddenLayer extends GeoRenderLayer<TubunasusDurovelaEntity>
     public DurovelaHiddenLayer(GeoRenderer<TubunasusDurovelaEntity> entityRendererIn) {
         super(entityRendererIn);
     }
+
     @Override
-    public void preRender(PoseStack poseStack, TubunasusDurovelaEntity entity, BakedGeoModel bakedModel, RenderType renderType,
-                          MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick,
-                          int packedLight, int packedOverlay) {
+    public void preRender(
+            PoseStack poseStack,
+            TubunasusDurovelaEntity entity,
+            BakedGeoModel bakedModel,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
         bakedModel.getBone("saddleA").ifPresent(bone -> {
             float scale = entity.isSaddled() ? 1.0f : 0.0f;
             bone.setScaleX(scale);
@@ -38,7 +46,6 @@ public class DurovelaHiddenLayer extends GeoRenderLayer<TubunasusDurovelaEntity>
             bone.setScaleZ(scale);
         });
 
-
         bakedModel.getBone("Saddle").ifPresent(bone -> {
             float scale = entity.isSaddled() ? 1.0f : 0.0f;
             bone.setScaleX(scale);
@@ -46,8 +53,7 @@ public class DurovelaHiddenLayer extends GeoRenderLayer<TubunasusDurovelaEntity>
             bone.setScaleZ(scale);
         });
 
-
-        if(!entity.isBaby()){
+        if (!entity.isBaby()) {
             float percent = entity.getHealth() / entity.getMaxHealth();
             bakedModel.getBone("scar1").ifPresent(bone -> bone.setHidden(percent > 0.8));
             bakedModel.getBone("scar9").ifPresent(bone -> bone.setHidden(percent > 0.8));
@@ -62,26 +68,59 @@ public class DurovelaHiddenLayer extends GeoRenderLayer<TubunasusDurovelaEntity>
     }
 
     @Override
-    public void renderForBone(PoseStack poseStack, TubunasusDurovelaEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+    public void renderForBone(
+            PoseStack poseStack,
+            TubunasusDurovelaEntity animatable,
+            GeoBone bone,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
         if (bone.getName().equals("Saddle")) {
-            if (Minecraft.getInstance().screen == null || !animatable.isOwnedBy(Minecraft.getInstance().player) && animatable.isVehicle()) {
+            if (Minecraft.getInstance().screen == null
+                    || !animatable.isOwnedBy(Minecraft.getInstance().player) && animatable.isVehicle()) {
                 animatable.setAnimData(ErsDataTickets.SADDLE_POS, bone.getLocalPosition());
             }
         }
     }
 
     @Override
-    public void render(PoseStack poseStack, TubunasusDurovelaEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-        if(animatable.isBaby())
-            return;
-        if(animatable.hasCustomName() && animatable.getCustomName().getString().equals("D3WOJDIWLANLAND"))
-            return;
+    public void render(
+            PoseStack poseStack,
+            TubunasusDurovelaEntity animatable,
+            BakedGeoModel bakedModel,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
+        if (animatable.isBaby()) return;
         RenderType armorRenderType = RenderType.armorCutoutNoCull(getTextureResource(animatable));
-        this.getRenderer().reRender(this.getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, armorRenderType, bufferSource.getBuffer(armorRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.getRenderer()
+                .reRender(
+                        this.getDefaultBakedModel(animatable),
+                        poseStack,
+                        bufferSource,
+                        animatable,
+                        armorRenderType,
+                        bufferSource.getBuffer(armorRenderType),
+                        partialTick,
+                        packedLight,
+                        OverlayTexture.NO_OVERLAY,
+                        1.0F,
+                        1.0F,
+                        1.0F,
+                        1.0F);
     }
 
     @Override
     protected ResourceLocation getTextureResource(TubunasusDurovelaEntity animatable) {
-        return Oasis.prefix("textures/entity/tubunasus_durovela_layer.png");
+        if (animatable.hasCustomName() && animatable.getCustomName().getString().equals("D3WOJDIWLANLAND")) {
+            return Oasis.prefix("textures/entity/tubunasus_durovela/base_D3WOJDIWLANLAND.png");
+        }
+        return Oasis.prefix("textures/entity/tubunasus_durovela/layer.png");
     }
 }

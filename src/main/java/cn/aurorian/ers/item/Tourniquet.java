@@ -24,19 +24,17 @@ public class Tourniquet extends Item {
     }
 
     @Override
-    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack item, @NotNull Level level, @NotNull LivingEntity entity) {
-        Player player = entity instanceof Player ? (Player)entity : null;
+    public @NotNull ItemStack finishUsingItem(
+            @NotNull ItemStack item, @NotNull Level level, @NotNull LivingEntity entity) {
+        Player player = entity instanceof Player ? (Player) entity : null;
 
-        if (player instanceof ServerPlayer)
-        {
-            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer)player, item);
+        if (player instanceof ServerPlayer) {
+            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, item);
         }
 
-        if (player != null)
-        {
+        if (player != null) {
             player.awardStat(Stats.ITEM_USED.get(this));
-            if (!player.getAbilities().instabuild)
-            {
+            if (!player.getAbilities().instabuild) {
                 item.shrink(1);
             }
             player.removeEffect(ErsMobEffects.BLEEDING.get());
@@ -47,14 +45,18 @@ public class Tourniquet extends Item {
     }
 
     @Override
-    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack itemStack, @NotNull Player player, @NotNull LivingEntity target, @NotNull InteractionHand pUsedHand) {
+    public @NotNull InteractionResult interactLivingEntity(
+            @NotNull ItemStack itemStack,
+            @NotNull Player player,
+            @NotNull LivingEntity target,
+            @NotNull InteractionHand pUsedHand) {
         if (target.hasEffect(ErsMobEffects.BLEEDING.get())) {
             ErsBleedingEffect.removeBleedingEffect(target);
             itemStack.shrink(1);
             return InteractionResult.CONSUME;
         }
 
-       return InteractionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -66,8 +68,8 @@ public class Tourniquet extends Item {
         return UseAnim.BRUSH;
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level p_42993_, @NotNull Player p_42994_, @NotNull InteractionHand p_42995_)
-    {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            @NotNull Level p_42993_, @NotNull Player p_42994_, @NotNull InteractionHand p_42995_) {
         return ItemUtils.startUsingInstantly(p_42993_, p_42994_, p_42995_);
     }
 }

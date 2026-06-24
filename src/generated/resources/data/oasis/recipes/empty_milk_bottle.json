@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "L": {
+      "item": "oasis:leather"
+    }
+  },
+  "pattern": [
+    "LLL",
+    "G G",
+    "GGG"
+  ],
+  "result": {
+    "item": "oasis:empty_milk_bottle"
+  },
+  "show_notification": true
+}

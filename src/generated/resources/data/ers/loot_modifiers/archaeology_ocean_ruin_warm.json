@@ -1,0 +1,20 @@
+{
+  "type": "ers:archaeology_loot_modifier",
+  "additions": [
+    {
+      "Count": 1,
+      "id": "ers:swamp_dragon_egg"
+    },
+    {
+      "Count": 1,
+      "id": "ers:dinosauriformis_egg"
+    }
+  ],
+  "chance": 0.02173913,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:archaeology/ocean_ruin_warm"
+    }
+  ]
+}

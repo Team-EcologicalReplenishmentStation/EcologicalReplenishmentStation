@@ -1,5 +1,8 @@
 package cn.aurorian.ers.entity.ai.navigation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -12,17 +15,19 @@ import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 public class MMPathFinder extends PathFinder {
     public MMPathFinder(NodeEvaluator processor, int maxVisitedNodes) {
         super(processor, maxVisitedNodes);
     }
 
     @Override
-    public Path findPath(@NotNull PathNavigationRegion regionIn, @NotNull Mob mob, @NotNull Set<BlockPos> targetPositions, float maxRange, int accuracy, float searchDepthMultiplier) {
+    public Path findPath(
+            @NotNull PathNavigationRegion regionIn,
+            @NotNull Mob mob,
+            @NotNull Set<BlockPos> targetPositions,
+            float maxRange,
+            int accuracy,
+            float searchDepthMultiplier) {
         Path path = super.findPath(regionIn, mob, targetPositions, maxRange, accuracy, searchDepthMultiplier);
         return path == null ? null : new PatchedPath(path);
     }

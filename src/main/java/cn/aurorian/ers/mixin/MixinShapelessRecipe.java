@@ -15,18 +15,43 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(value = ShapelessRecipe.class)
 public abstract class MixinShapelessRecipe {
-    @Shadow @Final
+    @Shadow
+    @Final
     NonNullList<Ingredient> ingredients;
-    @Shadow @Final
+
+    @Shadow
+    @Final
     ItemStack result;
 
-    @Redirect(method = "matches(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/world/level/Level;)Z",at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/StackedContents;accountStack(Lnet/minecraft/world/item/ItemStack;I)V"))
+    @Redirect(
+            method = "matches(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/world/level/Level;)Z",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/player/StackedContents;accountStack(Lnet/minecraft/world/item/ItemStack;I)V"))
     public void matches(StackedContents instance, ItemStack itemStack, int pAmount) {
-        if(result.is(ErsItems.FISH_FILLET.get())){
-            if(!itemStack.is(ErsTagKeys.KNOWN_FISH) || ingredients.get(0).getItems()[0].is(ErsTagKeys.KNOWN_FISH))
+        if (result.is(ErsItems.FISH_FILLET.get())) {
+            boolean isKnownFish = itemStack.is(ErsTagKeys.KNOWN_FISH);
+            boolean recipeAllowsKnownFish = ingredients.stream().anyMatch(MixinShapelessRecipe::isKnownFishOnly);
+            if (!isKnownFish || recipeAllowsKnownFish) {
                 instance.accountStack(itemStack, 1);
-        }else {
-            instance.accountStack(itemStack, 1);
+            }
+            return;
         }
+        instance.accountStack(itemStack, 1);
+    }
+
+    private static boolean isKnownFishOnly(Ingredient ingredient) {
+        ItemStack[] items = ingredient.getItems();
+        if (items.length == 0) {
+            return false;
+        }
+        for (ItemStack item : items) {
+            if (!item.is(ErsTagKeys.KNOWN_FISH)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

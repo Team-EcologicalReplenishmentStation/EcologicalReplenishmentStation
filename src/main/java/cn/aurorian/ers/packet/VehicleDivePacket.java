@@ -1,12 +1,11 @@
 package cn.aurorian.ers.packet;
 
 import cn.aurorian.ers.entity.ErsTamableVehicle;
+import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class VehicleDivePacket {
     private final boolean diving;
@@ -28,24 +27,22 @@ public class VehicleDivePacket {
     }
 
     public static VehicleDivePacket decode(FriendlyByteBuf buf) {
-        return new VehicleDivePacket(buf.readInt(),buf.readBoolean());
+        return new VehicleDivePacket(buf.readInt(), buf.readBoolean());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if(ctx.get().getDirection().getReceptionSide().isServer()){
+            if (ctx.get().getDirection().getReceptionSide().isServer()) {
                 ServerPlayer player = ctx.get().getSender();
                 if (player != null) {
                     Entity entity = player.level().getEntity(entityId);
                     if (entity instanceof ErsTamableVehicle<?> tamable) {
                         tamable.onDiveKeyUpdate(diving);
-                        if(diving)
-                            tamable.setSwimState(2);
+                        if (diving) tamable.setSwimState(2);
                     }
                 }
                 ctx.get().setPacketHandled(true);
             }
         });
-
     }
 }

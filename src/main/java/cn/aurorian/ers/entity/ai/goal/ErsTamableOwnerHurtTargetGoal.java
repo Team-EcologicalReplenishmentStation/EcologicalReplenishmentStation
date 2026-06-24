@@ -6,6 +6,7 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 
 public class ErsTamableOwnerHurtTargetGoal extends OwnerHurtTargetGoal {
     ErsTamable<?> tamable;
+
     public ErsTamableOwnerHurtTargetGoal(TamableAnimal pTameAnimal) {
         super(pTameAnimal);
         tamable = (ErsTamable<?>) pTameAnimal;

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ers:plesiochelys_longicollis"
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:furnace_smelt",
+          "conditions": [
+            {
+              "condition": "minecraft:entity_properties",
+              "entity": "this",
+              "predicate": {
+                "flags": {
+                  "is_on_fire": true
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

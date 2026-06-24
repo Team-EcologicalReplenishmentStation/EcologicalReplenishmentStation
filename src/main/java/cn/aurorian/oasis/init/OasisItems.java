@@ -5,6 +5,7 @@ import cn.aurorian.ers.item.ErsSaddleItem;
 import cn.aurorian.oasis.Oasis;
 import cn.aurorian.oasis.entity.tubunasusdurovela.TubunasusDurovelaEntity;
 import cn.aurorian.oasis.item.CookedAnnulatumItem;
+import cn.aurorian.oasis.item.EmptyMilkBottleItem;
 import cn.aurorian.oasis.item.equipment.HorseShoe;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,85 +20,107 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class OasisItems {
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS,
-            Oasis.MODID);
-    public static final RegistryObject<Item> TUBUNASUS_DUROVELA_SPAWN_EGG = OasisItems.ITEMS.register("durovela_spawn_egg",
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Oasis.MODID);
+    public static final RegistryObject<Item> TUBUNASUS_DUROVELA_SPAWN_EGG = OasisItems.ITEMS.register(
+            "durovela_spawn_egg",
+            () -> new ForgeSpawnEggItem(OasisEntities.TUBUNASUS_DUROVELA, 0xFFFFFF, 0x000000, new Item.Properties()));
+    public static final RegistryObject<Item> TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG = OasisItems.ITEMS.register(
+            "clyderotunda_spawn_egg",
             () -> new ForgeSpawnEggItem(
-                    OasisEntities.TUBUNASUS_DUROVELA,
-                    0xFFFFFF,
-                    0x000000,
-                    new Item.Properties()
-            ));
-
-    public static final RegistryObject<Item> TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG = OasisItems.ITEMS.register("clyderotunda_spawn_egg",
+                    OasisEntities.TUBUNASUS_CLYDEROTUNDA, 0xFFFFFF, 0x000000, new Item.Properties()));
+    public static final RegistryObject<Item> PYGOPODUS_ANNULATUM_SPAWN_EGG = OasisItems.ITEMS.register(
+            "annulatum_spawn_egg",
+            () -> new ForgeSpawnEggItem(OasisEntities.PYGOPODUS_ANNULATUM, 0xFFFFFF, 0x000000, new Item.Properties()));
+    public static final RegistryObject<Item> IMPERIOVENATOR_REGIUS_SPAWN_EGG = OasisItems.ITEMS.register(
+            "imperiovenator_spawn_egg",
             () -> new ForgeSpawnEggItem(
-                    OasisEntities.TUBUNASUS_CLYDEROTUNDA,
-                    0xFFFFFF,
-                    0x000000,
-                    new Item.Properties()
-            ));
+                    OasisEntities.IMPERIOVENATOR_REGIUS, 0xFFFFFF, 0x000000, new Item.Properties()));
 
-    public static final RegistryObject<Item> PYGOPODUS_ANNULATUM_SPAWN_EGG = OasisItems.ITEMS.register("annulatum_spawn_egg",
-            () -> new ForgeSpawnEggItem(
-                    OasisEntities.PYGOPODUS_ANNULATUM,
-                    0xFFFFFF,
-                    0x000000,
-                    new Item.Properties()
-            ));
-
-    public static final RegistryObject<Item> TUBUNASUS_DUROVELA_LARGE_BUCKET = OasisItems.ITEMS.register("durovela_large_bucket",
+    public static final RegistryObject<Item> TUBUNASUS_DUROVELA_LARGE_BUCKET = OasisItems.ITEMS.register(
+            "durovela_large_bucket",
             () -> new ErsMobLargeBucket(
                     OasisEntities.TUBUNASUS_DUROVELA,
                     () -> Fluids.WATER,
                     () -> SoundEvents.BUCKET_EMPTY_AXOLOTL,
-                    new Item.Properties().stacksTo(1)
-            ));
+                    new Item.Properties().stacksTo(1)));
 
-    public static final RegistryObject<Item> TUBUNASUS_SADDLE = OasisItems.ITEMS.register("tubunasus_saddle",
-            () -> new ErsSaddleItem(new Item.Properties().stacksTo(1)){
+    public static final RegistryObject<Item> TUBUNASUS_SADDLE =
+            OasisItems.ITEMS.register("tubunasus_saddle", () -> new ErsSaddleItem(new Item.Properties().stacksTo(1)) {
                 @Override
                 protected boolean canEquip(cn.aurorian.ers.entity.ErsTamableVehicle<?> entity) {
                     return entity instanceof TubunasusDurovelaEntity;
                 }
             });
 
-    public static final RegistryObject<Item> HORSESHOE = OasisItems.ITEMS.register("horseshoe",
-            () -> new HorseShoe(new Item.Properties()));
-    public static final RegistryObject<Item> BONE = ITEMS.register("bone",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> HEART = ITEMS.register("heart",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> INTESTINES = ITEMS.register("intestines",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> LEATHER = ITEMS.register("leather",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> LIVER = ITEMS.register("liver",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> LUNG = ITEMS.register("lung",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> EMBRYO = ITEMS.register("embryo",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> COOKED_LUNG = ITEMS.register("cooked_lung",
-            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(5).saturationMod(0.6f)
-                    .effect(() -> new MobEffectInstance(OasisMobEffects.BREATH_HOLD.get(),72000),1).build())));
-    public static final RegistryObject<Item> KIDNEY = ITEMS.register("kidney",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> COOKED_KIDNEY = ITEMS.register("cooked_kidney",
-            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationMod(1f)
-                    .effect(() -> new MobEffectInstance(OasisMobEffects.APHRODISIAC.get(),72000),1).build())));
-    public static final RegistryObject<Item> ANNULATUM = ITEMS.register("annulatum",
-            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).meat().saturationMod(0.5f).build())));
-    public static final RegistryObject<Item> COOKED_ANNULATUM = ITEMS.register("cooked_annulatum",
-            () -> new CookedAnnulatumItem(new Item.Properties().food(new FoodProperties.Builder().meat().nutrition(6).saturationMod(0.8f)
-                    .build())));
+    public static final RegistryObject<Item> HORSESHOE =
+            OasisItems.ITEMS.register("horseshoe", () -> new HorseShoe(new Item.Properties()));
+    public static final RegistryObject<Item> BONE = ITEMS.register("bone", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> HEART = ITEMS.register("heart", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> INTESTINES =
+            ITEMS.register("intestines", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> LEATHER = ITEMS.register("leather", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> LIVER = ITEMS.register("liver", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> LUNG = ITEMS.register("lung", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> EMBRYO = ITEMS.register("embryo", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COOKED_LUNG = ITEMS.register(
+            "cooked_lung",
+            () -> new Item(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .nutrition(5)
+                            .saturationMod(0.6f)
+                            .effect(() -> new MobEffectInstance(OasisMobEffects.BREATH_HOLD.get(), 72000), 1)
+                            .build())));
+    public static final RegistryObject<Item> KIDNEY = ITEMS.register("kidney", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COOKED_KIDNEY = ITEMS.register(
+            "cooked_kidney",
+            () -> new Item(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .nutrition(6)
+                            .saturationMod(1f)
+                            .effect(() -> new MobEffectInstance(OasisMobEffects.APHRODISIAC.get(), 72000), 1)
+                            .build())));
+    public static final RegistryObject<Item> ANNULATUM = ITEMS.register(
+            "annulatum",
+            () -> new Item(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .nutrition(2)
+                            .meat()
+                            .saturationMod(0.5f)
+                            .build())));
+    public static final RegistryObject<Item> TUBUNASUS_MEAT = ITEMS.register(
+            "tubunasus_meat",
+            () -> new Item(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .nutrition(6)
+                            .meat()
+                            .saturationMod(0.8f)
+                            .build())));
+    public static final RegistryObject<Item> COOKED_ANNULATUM = ITEMS.register(
+            "cooked_annulatum",
+            () -> new CookedAnnulatumItem(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .meat()
+                            .nutrition(6)
+                            .saturationMod(0.8f)
+                            .build())));
 
-    public static final RegistryObject<Item> TEASELGOURD = ITEMS.register("teaselgourd",
-            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationMod(0.4f).build())));
+    public static final RegistryObject<Item> TEASELGOURD = ITEMS.register(
+            "teaselgourd",
+            () -> new Item(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .nutrition(4)
+                            .saturationMod(0.4f)
+                            .build())));
+    public static final RegistryObject<Item> CUDMILK = ITEMS.register("cudmilk", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> EMPTY_MILK_BOTTLE =
+            ITEMS.register("empty_milk_bottle", () -> new EmptyMilkBottleItem(new Item.Properties()));
 
-    public static final RegistryObject<Item> DUROVELA_SPECIMEN = ITEMS.register("durovela_specimen",
-            () -> new BlockItem(OasisBlocks.DUROVELA_SPECIMEN.get(), new Item.Properties()));
-    public static final RegistryObject<Item> CLYDEROTUNDA_SPECIMEN = ITEMS.register("clyderotunda_specimen",
+    public static final RegistryObject<Item> DUROVELA_SPECIMEN = ITEMS.register(
+            "durovela_specimen", () -> new BlockItem(OasisBlocks.DUROVELA_SPECIMEN.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CLYDEROTUNDA_SPECIMEN = ITEMS.register(
+            "clyderotunda_specimen",
             () -> new BlockItem(OasisBlocks.CLYDEROTUNDA_SPECIMEN.get(), new Item.Properties()));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

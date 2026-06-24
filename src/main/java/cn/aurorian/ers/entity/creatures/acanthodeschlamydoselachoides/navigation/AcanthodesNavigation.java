@@ -14,8 +14,10 @@ public class AcanthodesNavigation extends AmphibiousPathNavigation {
     public AcanthodesNavigation(Mob pMob, Level pLevel) {
         super(pMob, pLevel);
     }
+
     // Distance to continue beyond the target (in blocks)
     private static final int OVERSHOOT_DISTANCE = 30;
+
     @Nullable
     @Override
     public Path createPath(Entity pEntity, int pAccuracy) {
@@ -25,19 +27,14 @@ public class AcanthodesNavigation extends AmphibiousPathNavigation {
         // Calculate direction from mob to target
 
         Vec3 mobPos = this.mob.position();
-        Vec3 direction = new Vec3(
-                targetPos.getX() - mobPos.x,
-                targetPos.getY() - mobPos.y,
-                targetPos.getZ() - mobPos.z
-        ).normalize();
-
+        Vec3 direction = new Vec3(targetPos.getX() - mobPos.x, targetPos.getY() - mobPos.y, targetPos.getZ() - mobPos.z)
+                .normalize();
 
         // Calculate overshoot position (extending beyond the target)
         BlockPos overshootPos = new BlockPos(
-                (int)(targetPos.getX() + direction.x * OVERSHOOT_DISTANCE),
-                (int)(targetPos.getY() + direction.y * OVERSHOOT_DISTANCE / 3),
-                (int)(targetPos.getZ() + direction.z * OVERSHOOT_DISTANCE)
-        );
+                (int) (targetPos.getX() + direction.x * OVERSHOOT_DISTANCE),
+                (int) (targetPos.getY() + direction.y * OVERSHOOT_DISTANCE / 3),
+                (int) (targetPos.getZ() + direction.z * OVERSHOOT_DISTANCE));
 
         // Create path to the overshoot position
         return this.createPath(ImmutableSet.of(overshootPos), 16, true, pAccuracy);
@@ -47,17 +44,14 @@ public class AcanthodesNavigation extends AmphibiousPathNavigation {
         BlockPos targetPos = pEntity.blockPosition();
 
         Vec3 mobPos = this.mob.position();
-        Vec3 direction = new Vec3(
-                targetPos.getX() - mobPos.x,
-                targetPos.getY() - mobPos.y,
-                targetPos.getZ() - mobPos.z
-        ).normalize().multiply(i,i,i);
+        Vec3 direction = new Vec3(targetPos.getX() - mobPos.x, targetPos.getY() - mobPos.y, targetPos.getZ() - mobPos.z)
+                .normalize()
+                .multiply(i, i, i);
 
         BlockPos overshootPos = new BlockPos(
-                (int)(targetPos.getX() + direction.x * OVERSHOOT_DISTANCE),
-                (int)(targetPos.getY() + direction.y * OVERSHOOT_DISTANCE / 3),
-                (int)(targetPos.getZ() + direction.z * OVERSHOOT_DISTANCE)
-        );
+                (int) (targetPos.getX() + direction.x * OVERSHOOT_DISTANCE),
+                (int) (targetPos.getY() + direction.y * OVERSHOOT_DISTANCE / 3),
+                (int) (targetPos.getZ() + direction.z * OVERSHOOT_DISTANCE));
 
         this.createPath(ImmutableSet.of(overshootPos), 16, true, pAccuracy);
     }

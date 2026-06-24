@@ -9,7 +9,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class OasisCreativeTab {
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Oasis.MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Oasis.MODID);
     public static RegistryObject<CreativeModeTab> ERS_TAB = TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.oasis_group"))
             .icon(() -> OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get().getDefaultInstance())
@@ -17,6 +18,7 @@ public class OasisCreativeTab {
                 output.accept(OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get());
                 output.accept(OasisItems.TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG.get());
                 output.accept(OasisItems.PYGOPODUS_ANNULATUM_SPAWN_EGG.get());
+                output.accept(OasisItems.IMPERIOVENATOR_REGIUS_SPAWN_EGG.get());
                 output.accept(OasisItems.TUBUNASUS_DUROVELA_LARGE_BUCKET.get());
                 output.accept(OasisItems.TUBUNASUS_SADDLE.get());
                 output.accept(OasisItems.HORSESHOE.get());
@@ -31,12 +33,16 @@ public class OasisCreativeTab {
                 output.accept(OasisItems.KIDNEY.get());
                 output.accept(OasisItems.COOKED_KIDNEY.get());
                 output.accept(OasisItems.ANNULATUM.get());
+                output.accept(OasisItems.TUBUNASUS_MEAT.get());
                 output.accept(OasisItems.COOKED_ANNULATUM.get());
                 output.accept(OasisItems.TEASELGOURD.get());
+                output.accept(OasisItems.CUDMILK.get());
+                output.accept(OasisItems.EMPTY_MILK_BOTTLE.get());
                 output.accept(OasisItems.DUROVELA_SPECIMEN.get());
-//                output.accept(OasisItems.CLYDEROTUNDA_SPECIMEN.get());
+                //                output.accept(OasisItems.CLYDEROTUNDA_SPECIMEN.get());
             })
             .build());
+
     public static void register(IEventBus eventBus) {
         TABS.register(eventBus);
     }

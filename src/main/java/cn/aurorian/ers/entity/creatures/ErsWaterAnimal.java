@@ -1,6 +1,8 @@
 package cn.aurorian.ers.entity.creatures;
 
 import cn.aurorian.ers.entity.GeneralBodyControl;
+import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -8,6 +10,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -19,6 +23,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -29,21 +34,25 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, Bucketable {
     @Nullable
     private ErsWaterAnimal leader;
+
     private int schoolSize = 1;
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     protected ErsWaterAnimal(EntityType<? extends WaterAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level pLevel) {
         return new WaterBoundPathNavigation(this, pLevel);
+    }
+
+    protected @NotNull InteractionResult mobInteract(@NotNull Player pPlayer, @NotNull InteractionHand pHand) {
+        return Bucketable.bucketMobPickup(pPlayer, pHand, this).orElse(super.mobInteract(pPlayer, pHand));
     }
 
     @Override
@@ -51,7 +60,8 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
         return cache;
     }
 
-    private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(ErsWaterAnimal.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> FROM_BUCKET =
+            SynchedEntityData.defineId(ErsWaterAnimal.class, EntityDataSerializers.BOOLEAN);
 
     @Override
     protected void defineSynchedData() {
@@ -64,7 +74,7 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
 
     @Override
     protected void registerGoals() {
-        this.randomSwimmingGoal = new RandomSwimmingGoal(this,1,40){
+        this.randomSwimmingGoal = new RandomSwimmingGoal(this, 1, 40) {
             @Nullable
             @Override
             protected Vec3 getPosition() {
@@ -91,7 +101,7 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
 
     @Override
     protected @NotNull BodyRotationControl createBodyControl() {
-        return new GeneralBodyControl(this,6);
+        return new GeneralBodyControl(this, 6);
     }
 
     public void saveToBucketTag(@NotNull ItemStack pStack) {
@@ -105,7 +115,6 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
     public @NotNull SoundEvent getPickupSound() {
         return SoundEvents.BUCKET_FILL_FISH;
     }
-
 
     public int getMaxSpawnClusterSize() {
         return this.getMaxSchoolSize();
@@ -146,15 +155,34 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
         return this.hasFollowers() && this.schoolSize < this.getMaxSchoolSize();
     }
 
+    private int stuckTicks = 0;
+    private Vec3 lastStuckPos = Vec3.ZERO;
+
     public void tick() {
         super.tick();
         if (this.hasFollowers() && this.level().random.nextInt(200) == 1) {
-            List<? extends ErsWaterAnimal> $$0 = this.level().getEntitiesOfClass(this.getClass(), this.getBoundingBox().inflate(14.0, 14.0, 14.0));
+            List<? extends ErsWaterAnimal> $$0 = this.level()
+                    .getEntitiesOfClass(this.getClass(), this.getBoundingBox().inflate(14.0, 14.0, 14.0));
             if ($$0.size() <= 1) {
                 this.schoolSize = 1;
             }
         }
 
+        if (!this.level().isClientSide && this.isInWater() && this.tickCount % 20 == 0) {
+            if (this.distanceToSqr(this.lastStuckPos) < 0.04D) {
+                this.stuckTicks++;
+                if (this.stuckTicks >= 3) {
+                    this.getNavigation().stop();
+                    if (this.randomSwimmingGoal != null) {
+                        this.randomSwimmingGoal.trigger();
+                    }
+                    this.stuckTicks = 0;
+                }
+            } else {
+                this.stuckTicks = 0;
+            }
+            this.lastStuckPos = this.position();
+        }
     }
 
     public boolean hasFollowers() {
@@ -167,13 +195,15 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
 
     public void pathToLeader() {
         if (this.isFollower()) {
-            this.getNavigation().moveTo(this.leader, level().random.nextIntBetweenInclusive(8,12) * 0.1f);
+            this.getNavigation().moveTo(this.leader, level().random.nextIntBetweenInclusive(8, 12) * 0.1f);
         }
-
     }
 
     public void addFollowers(Stream<? extends ErsWaterAnimal> pFollowers) {
-        pFollowers.limit(this.getMaxSchoolSize() - this.schoolSize).filter((p_27538_) -> p_27538_ != this).forEach((p_27536_) -> p_27536_.startFollowing(this));
+        pFollowers
+                .limit(this.getMaxSchoolSize() - this.schoolSize)
+                .filter((p_27538_) -> p_27538_ != this)
+                .forEach((p_27536_) -> p_27536_.startFollowing(this));
     }
 
     @Override
@@ -182,12 +212,17 @@ public abstract class ErsWaterAnimal extends WaterAnimal implements GeoEntity, B
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(
+            @NotNull ServerLevelAccessor pLevel,
+            @NotNull DifficultyInstance pDifficulty,
+            @NotNull MobSpawnType pReason,
+            @Nullable SpawnGroupData pSpawnData,
+            @Nullable CompoundTag pDataTag) {
         super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         if (pSpawnData == null) {
             pSpawnData = new ErsWaterAnimal.SchoolSpawnGroupData(this);
         } else {
-            this.startFollowing(((ErsWaterAnimal.SchoolSpawnGroupData)pSpawnData).leader);
+            this.startFollowing(((ErsWaterAnimal.SchoolSpawnGroupData) pSpawnData).leader);
         }
 
         return pSpawnData;

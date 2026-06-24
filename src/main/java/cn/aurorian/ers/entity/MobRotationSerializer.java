@@ -14,16 +14,11 @@ public class MobRotationSerializer implements EntityDataSerializer<MobRotDirecti
     @Override
     public @NotNull MobRotDirection read(@NotNull FriendlyByteBuf friendlyByteBuf) {
         return MobRotDirection.of(
-                MobRotDirection.RotDirection.values()[friendlyByteBuf.readInt()],
-                friendlyByteBuf.readBoolean()
-        );
+                MobRotDirection.RotDirection.values()[friendlyByteBuf.readInt()], friendlyByteBuf.readBoolean());
     }
 
     @Override
     public @NotNull MobRotDirection copy(@NotNull MobRotDirection mobRotDirection) {
-        return MobRotDirection.of(
-                mobRotDirection.getDirection(),
-                mobRotDirection.isLargeTurn()
-        );
+        return MobRotDirection.of(mobRotDirection.getDirection(), mobRotDirection.isLargeTurn());
     }
 }

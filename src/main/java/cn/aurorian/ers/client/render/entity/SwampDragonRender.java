@@ -26,33 +26,60 @@ public class SwampDragonRender extends GeoEntityRenderer<DentisaurusLongirostris
     }
 
     @Override
-    protected void applyRotations(DentisaurusLongirostrisEntity animatable, PoseStack poseStack, float ageInTicks, float rotationYaw,
-                                  float partialTick) {
+    protected void applyRotations(
+            DentisaurusLongirostrisEntity animatable,
+            PoseStack poseStack,
+            float ageInTicks,
+            float rotationYaw,
+            float partialTick) {
         super.applyRotations(animatable, poseStack, ageInTicks, rotationYaw, partialTick);
         GeneralAnimator<DentisaurusLongirostrisEntity> animator = animatable.getAnimator();
         float scale = animatable.getRenderSize();
-    
+
         poseStack.scale(scale, scale, scale);
 
-        if(!animatable.getAnimator().isInScreen){
+        if (!animatable.getAnimator().isInScreen) {
             poseStack.translate(0, 1.5, 0.5);
             poseStack.mulPose(Axis.XP.rotationDegrees(animator.getModelPitch(partialTick)));
             poseStack.translate(0, -1.5, -0.5);
         }
-
     }
+
     @Override
-    public void renderFinal(PoseStack poseStack, DentisaurusLongirostrisEntity animatable, BakedGeoModel model,
-                            MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight,
-                            int packedOverlay, float red, float green, float blue, float alpha) {
-        super.renderFinal(poseStack, animatable, model, bufferSource, buffer, partialTick, packedLight, packedOverlay, red,
-                green, blue, alpha);
-                model.getBone("Food").ifPresent(bone ->{
-                    if (!animatable.getAttackState().isEmpty()) {
-                        //向服务器发包
-                        ErsNetwork.INSTANCE.sendToServer(new ErsTamableTrackFoodPacket(animatable.getId(), new Vector3f((float)bone.getLocalPosition().x, (float)bone.getLocalPosition().y, (float)bone.getLocalPosition().z)));
-                    }
-                });
+    public void renderFinal(
+            PoseStack poseStack,
+            DentisaurusLongirostrisEntity animatable,
+            BakedGeoModel model,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay,
+            float red,
+            float green,
+            float blue,
+            float alpha) {
+        super.renderFinal(
+                poseStack,
+                animatable,
+                model,
+                bufferSource,
+                buffer,
+                partialTick,
+                packedLight,
+                packedOverlay,
+                red,
+                green,
+                blue,
+                alpha);
+        model.getBone("Food").ifPresent(bone -> {
+            if (!animatable.getAttackState().isEmpty()) {
+                // 向服务器发包
+                ErsNetwork.INSTANCE.sendToServer(new ErsTamableTrackFoodPacket(
+                        animatable.getId(),
+                        new Vector3f((float) bone.getLocalPosition().x, (float) bone.getLocalPosition().y, (float)
+                                bone.getLocalPosition().z)));
+            }
+        });
     }
 }
-

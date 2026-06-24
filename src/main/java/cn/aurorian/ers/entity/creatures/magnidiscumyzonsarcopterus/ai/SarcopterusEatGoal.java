@@ -16,16 +16,18 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class SarcopterusEatGoal extends Goal {
     private final MagnidiscumyzonSarcopterusEntity entity;
+
     public SarcopterusEatGoal(MagnidiscumyzonSarcopterusEntity entity) {
         this.entity = entity;
     }
 
-    private static final ResourceLocation LOOT_TABLE = EcologicalReplenishmentStation.prefix("entities/magnidiscumyzon_sarcopterus_reward");
+    private static final ResourceLocation LOOT_TABLE =
+            EcologicalReplenishmentStation.prefix("magnidiscumyzon_sarcopterus_reward");
 
     @Override
     public void start() {
         this.entity.setEating(true);
-        tickCount = this.entity.getRandom().nextIntBetweenInclusive(100,200);
+        tickCount = this.entity.getRandom().nextIntBetweenInclusive(100, 200);
     }
 
     private int tickCount = 0;
@@ -46,7 +48,8 @@ public class SarcopterusEatGoal extends Goal {
     @Override
     public void tick() {
         tickCount--;
-        BlockParticleOption particleOptions = new BlockParticleOption(ParticleTypes.BLOCK, this.entity.getBlockStateOn());
+        BlockParticleOption particleOptions =
+                new BlockParticleOption(ParticleTypes.BLOCK, this.entity.getBlockStateOn());
         if (this.entity.getRandom().nextFloat() < 0.3f && this.entity.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(
                     particleOptions,
@@ -57,8 +60,7 @@ public class SarcopterusEatGoal extends Goal {
                     0.3,
                     0.3,
                     0.3,
-                    0.5
-            );
+                    0.5);
         }
     }
 
@@ -69,17 +71,20 @@ public class SarcopterusEatGoal extends Goal {
 
     @Override
     public void stop() {
-        if(this.entity.getRandom().nextFloat() < 0.1f){
-            LootParams params = new LootParams.Builder((ServerLevel)this.entity.level())
+        if (this.entity.getRandom().nextFloat() < 0.1f) {
+            LootParams params = new LootParams.Builder((ServerLevel) this.entity.level())
                     .withParameter(LootContextParams.ORIGIN, this.entity.position())
                     .withParameter(LootContextParams.THIS_ENTITY, this.entity)
                     .create(LootContextParamSets.GIFT);
             LootTable lootTable = this.entity.level().getServer().getLootData().getLootTable(LOOT_TABLE);
 
             for (ItemStack stack : lootTable.getRandomItems(params)) {
-                this.entity.level().addFreshEntity(new ItemEntity(this.entity.level(),entity.getX(),entity.getY(),entity.getZ(), stack));
+                this.entity
+                        .level()
+                        .addFreshEntity(new ItemEntity(
+                                this.entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack));
             }
         }
-      this.entity.setEating(false);
+        this.entity.setEating(false);
     }
 }

@@ -24,12 +24,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class ArtificialNestBlockEntity extends BlockEntity implements GeoBlockEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private ItemStack egg;
+
     public ArtificialNestBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ErsBlockEntities.ARTIFICIAL_NEST_BLOCK_ENTITY.get(), pPos, pBlockState);
         egg = ItemStack.EMPTY;
     }
 
     int hatchingTime;
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
 
@@ -39,42 +41,46 @@ public class ArtificialNestBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     public static void tick(Level level, BlockPos pos, BlockState blockState, ArtificialNestBlockEntity entity) {
-        if(level.isClientSide)
-            return;
+        if (level.isClientSide) return;
 
-        if(!entity.getEgg().isEmpty()) {
+        if (!entity.getEgg().isEmpty()) {
             int hatchingTime = entity.egg.getOrCreateTag().getInt("HatchTime");
-            if(hatchingTime > entity.hatchingTime){
+            if (hatchingTime > entity.hatchingTime) {
                 entity.hatchingTime = hatchingTime;
-            }else {
+            } else {
                 entity.egg.getOrCreateTag().putInt("HatchTime", entity.hatchingTime);
             }
-
 
             entity.hatchingTime = entity.hatchingTime + ErsServerConfig.HATCHING_RATE.get();
 
             entity.setChanged();
-            if(entity.hatchingTime % 20 == 0){
+            if (entity.hatchingTime % 20 == 0) {
                 entity.markUpdated();
             }
 
             ErsEgg hatchingEgg = (ErsEgg) entity.egg.getItem();
 
-            if(entity.hatchingTime >= hatchingEgg.getHatchTime()) {
+            if (entity.hatchingTime >= hatchingEgg.getHatchTime()) {
                 entity.hatchingTime = 0;
                 entity.egg = ItemStack.EMPTY;
                 entity.markUpdated();
 
                 ErsTamable<?> entity1 = hatchingEgg.born(level);
-                if(entity1 != null){
+                if (entity1 != null) {
                     entity1.setAgeInTicks(0);
-                    entity1.updateFromAgeServer();
-                    entity1.moveTo((double)pos.getX() + 0.3, pos.getY() + 1, (double)pos.getZ() + 0.3, 0.0F, 0.0F);
-                    level.playSound(entity1,pos, SoundEvents.TURTLE_EGG_CRACK, entity1.getSoundSource(), 0.7F, 0.9F + level.random.nextFloat() * 0.2F);
+                    entity1.updateAgeFromServer();
+                    entity1.moveTo((double) pos.getX() + 0.3, pos.getY() + 1, (double) pos.getZ() + 0.3, 0.0F, 0.0F);
+                    level.playSound(
+                            entity1,
+                            pos,
+                            SoundEvents.TURTLE_EGG_CRACK,
+                            entity1.getSoundSource(),
+                            0.7F,
+                            0.9F + level.random.nextFloat() * 0.2F);
                     level.addFreshEntity(entity1);
                 }
             }
-        }else{
+        } else {
             entity.hatchingTime = 0;
         }
     }

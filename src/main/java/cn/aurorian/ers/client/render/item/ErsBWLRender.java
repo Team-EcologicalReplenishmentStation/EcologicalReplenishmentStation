@@ -38,24 +38,42 @@ public class ErsBWLRender extends BlockEntityWithoutLevelRenderer {
     }
 
     @Override
-    public void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext type, PoseStack stackIn, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderByItem(
+            @NotNull ItemStack stack,
+            @NotNull ItemDisplayContext type,
+            PoseStack stackIn,
+            @NotNull MultiBufferSource bufferIn,
+            int combinedLightIn,
+            int combinedOverlayIn) {
         stackIn.translate(0.5F, 0.5f, 0.5f);
-        if (type == ItemDisplayContext.GUI || type == ItemDisplayContext.FIXED || type == ItemDisplayContext.NONE || type == ItemDisplayContext.GROUND) {
+        if (type == ItemDisplayContext.GUI
+                || type == ItemDisplayContext.FIXED
+                || type == ItemDisplayContext.NONE
+                || type == ItemDisplayContext.GROUND) {
             ItemStack tridentInventory = new ItemStack(ErsItems.DRAGON_CLAW_HARPOON_INVENTORY.get());
             if (stack.isEnchanted()) {
                 ListTag enchantments = stack.getTag().getList("Enchantments", 10);
                 tridentInventory.addTagElement("Enchantments", enchantments);
             }
-            Minecraft.getInstance().getItemRenderer().renderStatic(tridentInventory, type, type == ItemDisplayContext.GROUND ? combinedLightIn : 240, combinedOverlayIn, stackIn, bufferIn, Minecraft.getInstance().level, 0);
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            tridentInventory,
+                            type,
+                            type == ItemDisplayContext.GROUND ? combinedLightIn : 240,
+                            combinedOverlayIn,
+                            stackIn,
+                            bufferIn,
+                            Minecraft.getInstance().level,
+                            0);
         } else {
             stackIn.pushPose();
             stackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
-            VertexConsumer glintVertexBuilder = ItemRenderer.getFoilBufferDirect(bufferIn, RenderType.entityCutoutNoCull(DragonClawHarpoonRender.LOCATION), false, stack.hasFoil());
-            model.renderToBuffer(stackIn,
-                    glintVertexBuilder, combinedLightIn,
-                    combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+            VertexConsumer glintVertexBuilder = ItemRenderer.getFoilBufferDirect(
+                    bufferIn, RenderType.entityCutoutNoCull(DragonClawHarpoonRender.LOCATION), false, stack.hasFoil());
+            model.renderToBuffer(
+                    stackIn, glintVertexBuilder, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
             stackIn.popPose();
         }
     }
-
 }

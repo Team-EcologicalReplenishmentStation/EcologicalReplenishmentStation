@@ -25,6 +25,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -42,7 +43,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntity>{
+public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntity> {
     public PygopodusAnnulatumEntity(EntityType<? extends ErsTamable> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new LimitedMoveControl(this);
@@ -52,12 +53,16 @@ public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntit
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GeneralAnimator<PygopodusAnnulatumEntity> animator;
-    public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME = SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> EATING = SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.BOOLEAN);
-    public void setEating(boolean eating){
-        this.entityData.set(EATING,eating);
+    public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME =
+            SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> EATING =
+            SynchedEntityData.defineId(PygopodusAnnulatumEntity.class, EntityDataSerializers.BOOLEAN);
+
+    public void setEating(boolean eating) {
+        this.entityData.set(EATING, eating);
     }
-    public boolean isEating(){
+
+    public boolean isEating() {
         return this.entityData.get(EATING);
     }
 
@@ -70,7 +75,7 @@ public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntit
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 30.0)
                 .add(Attributes.ATTACK_DAMAGE, 2)
-                .add(ForgeMod.SWIM_SPEED.get(),3)
+                .add(ForgeMod.SWIM_SPEED.get(), 3)
                 .add(Attributes.MOVEMENT_SPEED, 0.2);
     }
 
@@ -82,74 +87,75 @@ public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntit
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(100,300));
-        entityData.define(EATING,false);
+        entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(100, 300));
+        entityData.define(EATING, false);
     }
 
     @Override
     protected @NotNull BodyRotationControl createBodyControl() {
-        return new GeneralBodyControl(this,15);
+        return new GeneralBodyControl(this, 15);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if(level().isClientSide){
+        if (level().isClientSide) {
             animator.tick();
             if (!isBaby() && this.tickCount > this.entityData.get(NEXT_CHANGE_TIME)) {
-                this.entityData.set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200,400));
+                this.entityData.set(
+                        NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200, 400));
                 int newState = RandomSource.create().nextInt(3);
-                if(newState != 0 && !ErsUtils.isMoving(this) && !isInWater()){
-                    if(newState == 1) {
+                if (newState != 0 && !ErsUtils.isMoving(this) && !isInWater()) {
+                    if (newState == 1) {
                         triggerAnim("extra", "idle2");
-                    }else {
+                    } else {
                         triggerAnim("extra", "idle3");
                     }
                 }
             }
-        }else {
+        } else {
             float hunger = getHunger();
-            if(tickCount % 200 == 0){
+            if (tickCount % 200 == 0) {
                 setHunger(hunger - 0.1f);
             }
 
-            if(hunger > 90f && getAge() == 0 && canFallInLove() && !isBaby()){
+            if (hunger > 90f && getAge() == 0 && canFallInLove() && !isBaby()) {
                 setInLove(null);
             }
         }
 
-        if(ErsUtils.isMoving(this)){
+        if (ErsUtils.isMoving(this)) {
             updateMount();
         }
     }
 
     public void updateMount() {
-        this.getEntityData().set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(100,300));
+        this.getEntityData()
+                .set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(100, 300));
         this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle2");
         this.getAnimatableInstanceCache().getManagerForId(this.getId()).stopTriggeredAnimation("idle3");
     }
 
     @Override
     public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
-        if(isMoving() && !isBaby() && level().random.nextFloat() < 0.25f)
-        {
-            if(pSource.getEntity() instanceof LivingEntity livingEntity){
-                if(ErsUtils.calculateFallDirection(livingEntity,this)){
-                    triggerAnim("extra","dodge_right");
-                }else{
-                    triggerAnim("extra","dodge_left");
+        if (isMoving() && !isBaby() && level().random.nextFloat() < 0.25f) {
+            if (pSource.getEntity() instanceof LivingEntity livingEntity) {
+                if (ErsUtils.calculateFallDirection(livingEntity, this)) {
+                    triggerAnim("extra", "dodge_right");
+                } else {
+                    triggerAnim("extra", "dodge_left");
                 }
             }
             return false;
         }
-        setHunger(Math.min(89.9f,getHunger()));
+        setHunger(Math.min(89.9f, getHunger()));
         return super.hurt(pSource, pAmount);
     }
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new MobAvodingEntityGoal<>(this, Player.class, 8f, 1d,1.8d));
-        this.goalSelector.addGoal(1, new PanicGoal(this,2.4f){
+        this.goalSelector.addGoal(1, new MobAvodingEntityGoal<>(this, Player.class, 8f, 1d, 1.8d));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 2.4f) {
             @Override
             public void start() {
                 super.start();
@@ -162,49 +168,55 @@ public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntit
                 this.mob.setSprinting(false);
             }
         });
-        this.goalSelector.addGoal(2, new BreedGoal(this,1));
-        this.goalSelector.addGoal(3, new RandomStrollGoal(this,1,40));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new BreedGoal(this, 1));
+        this.goalSelector.addGoal(3, new RandomStrollGoal(this, 1, 40));
         this.goalSelector.addGoal(3, new AnnulatumEatGoal(this));
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        AnimationController<PygopodusAnnulatumEntity> main = new AnimationController<>(this, "main", 10 , state -> {
-            RawAnimation builder = RawAnimation.begin();
-            if(isInWater() && !onGround()){
-                if(isSprinting() || ErsUtils.isMoving(this)){
-                    builder.thenLoop("animation.swim");
-                }
-               else {
-                    builder.thenLoop("animation.swim_idle");
-                }
-            }else {
-                if (isSprinting()) {
-                    builder.thenLoop("animation.run");
-                } else if (state.isMoving() || ErsUtils.isMoving(this)) {
-                    if(isEating()){
-                        builder.thenLoop("animation.walk2");
-                    }else{
-                        if(isBaby()){
-                            builder.thenLoop("animation.run");
-                        }else
-                            builder.thenLoop("animation.walk");
-                    }
-                } else {
-                    builder.thenLoop("animation.idle");
-                }
-            }
-            return state.setAndContinue(builder);
-        }).setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
+    public double getFluidJumpThreshold() {
+        return (double) this.getEyeHeight() < 1.2D ? 0.0D : 1.2D;
+    }
 
-        AnimationController<PygopodusAnnulatumEntity> extra = new AnimationController<>(this, "extra",2, state -> PlayState.STOP)
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        AnimationController<PygopodusAnnulatumEntity> main = new AnimationController<>(this, "main", 10, state -> {
+                    RawAnimation builder = RawAnimation.begin();
+                    if (isInWater() && !onGround()) {
+                        if (isSprinting() || ErsUtils.isMoving(this)) {
+                            builder.thenLoop("animation.swim");
+                        } else {
+                            builder.thenLoop("animation.swim_idle");
+                        }
+                    } else {
+                        if (isSprinting()) {
+                            builder.thenLoop("animation.run");
+                        } else if (state.isMoving() || ErsUtils.isMoving(this)) {
+                            if (isEating()) {
+                                builder.thenLoop("animation.walk2");
+                            } else {
+                                if (isBaby()) {
+                                    builder.thenLoop("animation.run");
+                                } else builder.thenLoop("animation.walk");
+                            }
+                        } else {
+                            builder.thenLoop("animation.idle");
+                        }
+                    }
+                    return state.setAndContinue(builder);
+                })
+                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
+
+        AnimationController<PygopodusAnnulatumEntity> extra = new AnimationController<>(
+                        this, "extra", 2, state -> PlayState.STOP)
                 .triggerableAnim("idle2", RawAnimation.begin().thenPlay("animation.idle2"))
                 .triggerableAnim("idle3", RawAnimation.begin().thenPlay("animation.idle3"))
                 .triggerableAnim("dodge_left", RawAnimation.begin().thenPlay("animation.dodge_left"))
                 .triggerableAnim("dodge_right", RawAnimation.begin().thenPlay("animation.dodge_right"))
                 .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>(Oasis.MODID));
 
-        controllerRegistrar.add(main,extra);
+        controllerRegistrar.add(main, extra);
     }
 
     @Override
@@ -224,7 +236,12 @@ public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntit
     }
 
     @Override
-    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public @NotNull SpawnGroupData finalizeSpawn(
+            @NotNull ServerLevelAccessor pLevel,
+            @NotNull DifficultyInstance pDifficulty,
+            @NotNull MobSpawnType pReason,
+            @Nullable SpawnGroupData pSpawnData,
+            @Nullable CompoundTag pDataTag) {
         if (pSpawnData == null) {
             pSpawnData = new AgeableMob.AgeableMobGroupData(0.2F);
         }
@@ -233,11 +250,11 @@ public class PygopodusAnnulatumEntity extends ErsTamable<PygopodusAnnulatumEntit
 
     @Override
     public float getVolume() {
-        return 0.5f;
+        return 0.4f;
     }
 
     @Override
     public float getSoundRange() {
-        return 16f;
+        return 10f;
     }
 }

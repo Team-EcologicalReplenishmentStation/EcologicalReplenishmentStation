@@ -16,8 +16,12 @@ public class ErsSaddleItem extends Item {
     }
 
     @Override
-    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack pStack, @NotNull Player pPlayer, @NotNull LivingEntity pTarget, @NotNull InteractionHand pHand) {
-        if(pTarget instanceof ErsTamableVehicle<?> entity && canEquip(entity)) {
+    public @NotNull InteractionResult interactLivingEntity(
+            @NotNull ItemStack pStack,
+            @NotNull Player pPlayer,
+            @NotNull LivingEntity pTarget,
+            @NotNull InteractionHand pHand) {
+        if (pTarget instanceof ErsTamableVehicle<?> entity && canEquip(entity)) {
             if (entity.isAlive()) {
                 if (!entity.isSaddled() && entity.isSaddleable()) {
                     if (!pPlayer.level().isClientSide) {

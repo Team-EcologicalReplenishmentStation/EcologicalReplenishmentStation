@@ -2,9 +2,11 @@ package cn.aurorian.ers;
 
 import cn.aurorian.ers.client.ErsDataTickets;
 import cn.aurorian.ers.client.gui.VehicleStaminaRenderer;
+import cn.aurorian.ers.config.ErsClientConfig;
 import cn.aurorian.ers.config.ErsServerConfig;
 import cn.aurorian.ers.init.*;
 import cn.aurorian.oasis.init.*;
+import java.util.Locale;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,8 +19,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import software.bernie.geckolib.GeckoLib;
 
-import java.util.Locale;
-
 @EventBusSubscriber
 @Mod(EcologicalReplenishmentStation.MODID)
 public class EcologicalReplenishmentStation {
@@ -27,11 +27,14 @@ public class EcologicalReplenishmentStation {
 
     public static boolean AlexsMobsLoaded;
     public static boolean PrehistoricFaunaLoaded;
+    public static boolean leawindLoaded = false;
+
     public EcologicalReplenishmentStation(FMLJavaModLoadingContext context) {
         GeckoLib.initialize();
         initRegister(context.getModEventBus());
         context.getModEventBus().addListener(this::commonSetup);
         context.getModEventBus().addListener(this::setupClient);
+        ErsClientConfig.register(context);
         ErsServerConfig.register(context);
 
         if (FMLEnvironment.dist.isClient()) {
@@ -53,6 +56,7 @@ public class EcologicalReplenishmentStation {
         ErsSounds.SOUND_EVENTS.register(eventBus);
         ErsParticleType.PARTICLE_TYPES.register(eventBus);
         ErsBiomeModifierSerializers.register(eventBus);
+        ErsGlobalLootModifiers.register(eventBus);
 
         OasisEntities.register(eventBus);
         OasisBlocks.register(eventBus);
@@ -73,7 +77,12 @@ public class EcologicalReplenishmentStation {
     }
 
     public void setupClient(FMLClientSetupEvent event) {
-        ItemProperties.register(ErsItems.DRAGON_CLAW_HARPOON.get(), prefix("throwing"), (stack, level, entity, p) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
+        leawindLoaded = ModList.get().isLoaded("leawind_third_person");
+        ItemProperties.register(
+                ErsItems.DRAGON_CLAW_HARPOON.get(),
+                prefix("throwing"),
+                (stack, level, entity, p) ->
+                        entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
     }
 
     public static ResourceLocation prefix(String name) {

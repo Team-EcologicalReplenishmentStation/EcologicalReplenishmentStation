@@ -10,16 +10,29 @@ import software.bernie.geckolib.model.GeoModel;
 public class ErsBlockModel<T extends BlockEntity & GeoAnimatable> extends GeoModel<T> {
     @Override
     public ResourceLocation getModelResource(T entity) {
-        return ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID,"geo/block/" + BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).getPath() + ".geo.json");
+        return ResourceLocation.fromNamespaceAndPath(
+                EcologicalReplenishmentStation.MODID,
+                "geo/block/"
+                        + BuiltInRegistries.BLOCK_ENTITY_TYPE
+                                .getKey(entity.getType())
+                                .getPath()
+                        + ".geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(T entity) {
-        return ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID,"textures/block/" + BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).getPath() +".png");
+        return ResourceLocation.fromNamespaceAndPath(
+                EcologicalReplenishmentStation.MODID,
+                "textures/block/"
+                        + BuiltInRegistries.BLOCK_ENTITY_TYPE
+                                .getKey(entity.getType())
+                                .getPath()
+                        + ".png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(T entity) {
-        return ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "animations/block/empty.animation.json");
+        return ResourceLocation.fromNamespaceAndPath(
+                EcologicalReplenishmentStation.MODID, "animations/block/empty.animation.json");
     }
 }

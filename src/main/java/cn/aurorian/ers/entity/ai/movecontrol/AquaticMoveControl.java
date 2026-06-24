@@ -32,7 +32,7 @@ public class AquaticMoveControl extends MoveControl {
 
     public void tick() {
         if (this.entity.isInWater()) {
-            if(gravity)
+            if (gravity)
                 this.entity.setDeltaMovement(this.entity.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
         }
 
@@ -45,14 +45,15 @@ public class AquaticMoveControl extends MoveControl {
             float f = (float) (Mth.atan2(d2, d0) * 57.2957763671875D) - 90.0F;
 
             this.entity.setYRot(this.rotlerp(this.entity.getYRot(), f, yawLimit));
-//            this.entity.yBodyRot = this.entity.getYRot();
+            //            this.entity.yBodyRot = this.entity.getYRot();
 
-            float f1 = (float) (this.speedModifier * this.entity.getAttributeValue(Attributes.MOVEMENT_SPEED) * speedMulti);
+            float f1 = (float)
+                    (this.speedModifier * this.entity.getAttributeValue(Attributes.MOVEMENT_SPEED) * speedMulti);
             this.entity.setSpeed(f1 * 0.4F);
-            this.entity.setDeltaMovement(this.entity.getDeltaMovement().add(0.0D, (double) this.entity.getSpeed() * d1 * 0.6D, 0.0D));
+            this.entity.setDeltaMovement(
+                    this.entity.getDeltaMovement().add(0.0D, (double) this.entity.getSpeed() * d1 * 0.6D, 0.0D));
         } else {
             this.entity.setSpeed(0.0F);
         }
     }
 }
-

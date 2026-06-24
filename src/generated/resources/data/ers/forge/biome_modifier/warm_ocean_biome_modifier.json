@@ -1,0 +1,14 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:warm_ocean",
+    "minecraft:lukewarm_ocean",
+    "minecraft:deep_lukewarm_ocean"
+  ],
+  "spawners": {
+    "type": "ers:tachycaris_gustatus",
+    "maxCount": 3,
+    "minCount": 1,
+    "weight": 8
+  }
+}

@@ -10,11 +10,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class OasisPotion {
-    public static final DeferredRegister<Potion> POTION = DeferredRegister.create(ForgeRegistries.POTIONS,
-            Oasis.MODID);
+    public static final DeferredRegister<Potion> POTION = DeferredRegister.create(ForgeRegistries.POTIONS, Oasis.MODID);
 
-    public static final RegistryObject<Potion> EMBRYO_HEALING = POTION.register("embryo_healing",
-            () -> new Potion(new MobEffectInstance(MobEffects.REGENERATION, 72000)));
+    public static final RegistryObject<Potion> EMBRYO_HEALING =
+            POTION.register("embryo_healing", () -> new Potion(new MobEffectInstance(MobEffects.REGENERATION, 72000)));
 
     public static void register(IEventBus eventBus) {
         POTION.register(eventBus);

@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:eosuchosaurus_antiquus_saddle"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "in_inventory": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:saddle"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "in_inventory",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:eosuchosaurus_antiquus_saddle"
+    ]
+  },
+  "sends_telemetry_event": false
+}

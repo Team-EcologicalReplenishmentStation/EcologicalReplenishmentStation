@@ -13,6 +13,18 @@
       "maxCount": 4,
       "minCount": 2,
       "weight": 4
+    },
+    {
+      "type": "ers:echinomorphus_convergens",
+      "maxCount": 4,
+      "minCount": 2,
+      "weight": 8
+    },
+    {
+      "type": "ers:remipes_sicarius",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 1
     }
   ]
 }

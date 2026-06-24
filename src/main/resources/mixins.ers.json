@@ -10,7 +10,9 @@
     "patchoulibooks.MixinPageEntity"
   ],
   "client": [
-    "MixinForgeGui"
+    "MixinForgeGui",
+    "MixinLocalPlayer",
+    "geckolib.FileLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

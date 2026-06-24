@@ -9,13 +9,12 @@ public class TubunasusClyderotundaBodyControl extends GeneralVehicleBodyControl 
     }
 
     private final TubunasusClyderotundaEntity entity;
+
     @Override
     public void clientTick() {
-        if(entity.isTame() && entity.getOwner() == entity.getControllingPassenger()) {
-            vehicleTick(3.5f, 3.5f,9,
-                    5, 9 , 20,25);
+        if (entity.isTame() && entity.getOwner() == entity.getControllingPassenger()) {
+            vehicleTick(3.5f, 3.5f, 9, 5, 9, 20, 25, 80);
 
-        } else
-            aiTick(35f,2f, entity.isInWater() ? 2.3f : 10f);
+        } else aiTick(35f, 2f, entity.isInWater() ? 2.3f : 10f);
     }
 }

@@ -7,16 +7,16 @@ import net.minecraft.resources.ResourceLocation;
 public class MandgemareLabiumModel extends ErsModel<MandgemareLabiumEntity> {
     @Override
     public ResourceLocation getModelResource(MandgemareLabiumEntity entity) {
-        if(entity.getGender()){
+        if (entity.getGender()) {
             return EcologicalReplenishmentStation.prefix("geo/entity/mandgemare_labium_male.geo.json");
-        }else{
+        } else {
             return EcologicalReplenishmentStation.prefix("geo/entity/mandgemare_labium_female.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(MandgemareLabiumEntity entity) {
-        if(entity.getGender()){
+        if (entity.getGender()) {
             String base = "textures/entity/mandgemare_labium/";
 
             switch (entity.getTail().getId()) {
@@ -35,7 +35,7 @@ public class MandgemareLabiumModel extends ErsModel<MandgemareLabiumEntity> {
                 case 6 -> base = base + "_green.png";
             }
             return EcologicalReplenishmentStation.prefix(base);
-        }else {
+        } else {
             return EcologicalReplenishmentStation.prefix("textures/entity/mandgemare_labium/female.png");
         }
     }

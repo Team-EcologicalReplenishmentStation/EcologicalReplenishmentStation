@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:cristatodromeus_brachypterus_saddle"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "in_inventory": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:saddle"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "in_inventory",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:cristatodromeus_brachypterus_saddle"
+    ]
+  },
+  "sends_telemetry_event": false
+}

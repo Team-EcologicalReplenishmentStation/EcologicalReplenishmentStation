@@ -9,7 +9,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ErsCreativeTab {
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, EcologicalReplenishmentStation.MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, EcologicalReplenishmentStation.MODID);
     public static RegistryObject<CreativeModeTab> ERS_TAB = TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.ers_group"))
             .icon(() -> ErsItems.SWAMP_DRAGON_SADDLE.get().getDefaultInstance())
@@ -23,6 +24,15 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.MAGNIDISCUMYZON_SARCOPTERUS_SPAWN_EGG.get());
                 output.accept(ErsItems.ARGENTUMNISCUS_ACICULAULAR_SPAWN_EGG.get());
                 output.accept(ErsItems.MANDGEMARE_LABIUM_SPAWN_EGG.get());
+                output.accept(ErsItems.BENTHOSUCHUS_PLANIDENS_SPAWN_EGG.get());
+                output.accept(ErsItems.AQUICORNIS_DINOSAURIFORMIS_SPAWN_EGG.get());
+                output.accept(ErsItems.EOSUCHOSAURUS_ANTIQUUS_SPAWN_EGG.get());
+                output.accept(ErsItems.ECHINOMORPHUS_CONVERGENS_SPAWN_EGG.get());
+                output.accept(ErsItems.PTEROCHIRUS_DUX_SPAWN_EGG.get());
+                output.accept(ErsItems.TACHYCARIS_GUSTATUS_SPAWN_EGG.get());
+                output.accept(ErsItems.REMIPES_SICARIUS_SPAWN_EGG.get());
+                output.accept(ErsItems.PLESIOCHELYS_LONGICOLLIS_SPAWN_EGG.get());
+                output.accept(ErsItems.CRISTATODROMEUS_BRACHYPTERUS_SPAWN_EGG.get());
                 output.accept(ErsItems.DENTISARUS_LONGIROSTRIS_LARGE_BUCKET.get());
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES_LARGE_BUCKET.get());
                 output.accept(ErsItems.SUCHOMIMUS_LARGE_BUCKET.get());
@@ -31,14 +41,26 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.TACHYPLEUS_GLADIUS_BUCKET.get());
                 output.accept(ErsItems.ACICULABULAR_BUCKET.get());
                 output.accept(ErsItems.LABIUM_BUCKET.get());
+                output.accept(ErsItems.BENTHOSUCHUS_PLANIDENS_LARGE_BUCKET.get());
+                output.accept(ErsItems.AQUICORNIS_DINOSAURIFORMIS_LARGE_BUCKET.get());
+                output.accept(ErsItems.TACHYCARIS_GUSTATUS_BUCKET.get());
+                output.accept(ErsItems.ECHINOMORPHUS_CONVERGENS_BUCKET.get());
+                output.accept(ErsItems.REMIPES_SICARIUS_BUCKET.get());
+                output.accept(ErsItems.PLESIOCHELYS_LONGICOLLIS_LARGE_BUCKET.get());
                 output.accept(ErsItems.LARGE_BUCKET.get());
                 output.accept(ErsItems.LARGE_WATER_BUCKET.get());
                 output.accept(ErsItems.GILDED_HORN.get());
                 output.accept(ErsItems.FILLED_GILDED_HORN.get());
                 output.accept(ErsItems.SWAMP_DRAGON_EGG.get());
                 output.accept(ErsItems.SAEVUS_EGG.get());
+                output.accept(ErsItems.DINOSAURIFORMIS_EGG.get());
+                output.accept(ErsItems.ANTIQUUS_EGG.get());
                 output.accept(ErsItems.SWAMP_DRAGON_SADDLE.get());
                 output.accept(ErsItems.SAEVUS_SADDLE.get());
+                output.accept(ErsItems.DINOSAURIFORMIS_SADDLE.get());
+                output.accept(ErsItems.ANTIQUUS_SADDLE.get());
+                output.accept(ErsItems.PTEROCHIRUS_DUX_SADDLE.get());
+                output.accept(ErsItems.CRISTATODROMEUS_BRACHYPTERUS_SADDLE.get());
                 output.accept(ErsItems.FECES.get());
                 output.accept(ErsItems.CLOVER.get());
                 output.accept(ErsItems.BAIT_BOX.get());
@@ -49,8 +71,12 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.SOUL_CUBE_GIFT.get());
                 output.accept(ErsItems.FISH_FILLET.get());
                 output.accept(ErsItems.COOKED_FISH_FILLET.get());
-                output.accept(ErsItems.CARNIVORE_FEED.get());
-                output.accept(ErsItems.PISCIVORES_FEED.get());
+                output.accept(ErsItems.MEAT_FEED.get());
+                output.accept(ErsItems.FISH_FEED.get());
+                output.accept(ErsItems.FRUIT_FEED.get());
+                output.accept(ErsItems.HAY_FEED.get());
+                output.accept(ErsItems.VEGETABLE_FEED.get());
+                output.accept(ErsItems.WORM_FEED.get());
                 output.accept(ErsItems.PERCH.get());
                 output.accept(ErsItems.COOKED_PERCH.get());
                 output.accept(ErsItems.SUCHOMIMUS.get());
@@ -73,21 +99,37 @@ public class ErsCreativeTab {
                 output.accept(ErsItems.COOKED_ACICULABULAR.get());
                 output.accept(ErsItems.LABIUM.get());
                 output.accept(ErsItems.COOKED_LABIUM.get());
+                output.accept(ErsItems.BENTHOSUCHUS_PLANIDENS.get());
+                output.accept(ErsItems.COOKED_BENTHOSUCHUS_PLANIDENS.get());
+                output.accept(ErsItems.PLESIOCHELYS_LONGICOLLIS.get());
+                output.accept(ErsItems.COOKED_PLESIOCHELYS_LONGICOLLIS.get());
+                output.accept(ErsItems.DINOSAURIFORMIS_MEAT.get());
+                output.accept(ErsItems.COOKED_DINOSAURIFORMIS_MEAT.get());
+                output.accept(ErsItems.ANTIQUUS_MEAT.get());
+                output.accept(ErsItems.COOKED_ANTIQUE_MEAT.get());
                 output.accept(ErsItems.DRAGON_BONE.get());
-                //
+                output.accept(ErsItems.TACHYCARIS_GUSTATUS_MEAT.get());
+                output.accept(ErsItems.REMIPES_SICARIUS_MEAT.get());
+                output.accept(ErsItems.COOKED_REMIPES_SICARIUS_MEAT.get());
+                output.accept(ErsItems.ECHINOMORPHUS_CONVERGENS_SHELL.get());
+                // Tool and Weapon
                 output.accept(ErsItems.CHLAMYDOSELACHOIDES_TOOTH_SWORD.get());
                 output.accept(ErsItems.DRAGON_CLAW_HARPOON.get());
                 output.accept(ErsItems.DRAGON_BONE_FLUTE.get());
                 output.accept(ErsItems.SOUL_FLUTE.get());
                 //
                 output.accept(ErsItems.TOURNIQUET.get());
-                //Block
+                // Block
                 output.accept(ErsItems.SOUL_CUBE.get());
                 output.accept(ErsItems.SWAMP_DRAGON_NEST.get());
                 output.accept(ErsItems.SAEVUS_NEST.get());
+                output.accept(ErsItems.DINOSAURIFORMIS_NEST.get());
+                output.accept(ErsItems.ANTIQUUS_NEST.get());
                 output.accept(ErsItems.ARTIFICIAL_NEST.get());
                 output.accept(ErsItems.EQUISETUM.get());
-            }).build());
+            })
+            .build());
+
     public static void register(IEventBus eventBus) {
         TABS.register(eventBus);
     }

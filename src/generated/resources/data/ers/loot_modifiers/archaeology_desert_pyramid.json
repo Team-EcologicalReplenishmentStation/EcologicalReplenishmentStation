@@ -1,0 +1,28 @@
+{
+  "type": "ers:archaeology_loot_modifier",
+  "additions": [
+    {
+      "Count": 1,
+      "id": "ers:swamp_dragon_egg"
+    },
+    {
+      "Count": 1,
+      "id": "ers:saevus_egg"
+    },
+    {
+      "Count": 1,
+      "id": "ers:dinosauriformis_egg"
+    },
+    {
+      "Count": 1,
+      "id": "ers:antiquus_egg"
+    }
+  ],
+  "chance": 0.020408163,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:archaeology/desert_pyramid"
+    }
+  ]
+}

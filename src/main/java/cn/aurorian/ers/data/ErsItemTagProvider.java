@@ -3,6 +3,8 @@ package cn.aurorian.ers.data;
 import cn.aurorian.ers.EcologicalReplenishmentStation;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.init.ErsTagKeys;
+import cn.aurorian.oasis.init.OasisItems;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -13,17 +15,21 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.CompletableFuture;
+public class ErsItemTagProvider extends ItemTagsProvider {
 
-public class ErsItemTagProvider extends ItemTagsProvider{
-
-    public ErsItemTagProvider(PackOutput p_275343_, CompletableFuture<HolderLookup.Provider> p_275729_, CompletableFuture<TagLookup<Block>> p_275322_, @Nullable ExistingFileHelper existingFileHelper) {
+    public ErsItemTagProvider(
+            PackOutput p_275343_,
+            CompletableFuture<HolderLookup.Provider> p_275729_,
+            CompletableFuture<TagLookup<Block>> p_275322_,
+            @Nullable ExistingFileHelper existingFileHelper) {
         super(p_275343_, p_275729_, p_275322_, EcologicalReplenishmentStation.MODID, existingFileHelper);
     }
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         this.tag(ErsTagKeys.KNOWN_FISH)
+                .add(Items.SALMON)
+                .add(Items.COD)
                 .add(ErsItems.PERCH.get())
                 .add(ErsItems.CHLAMYDOSELACHOIDES.get())
                 .add(ErsItems.SUCHOMIMUS.get())
@@ -31,11 +37,11 @@ public class ErsItemTagProvider extends ItemTagsProvider{
                 .add(ErsItems.ACICULABULAR.get())
                 .add(ErsItems.LABIUM.get());
 
-        this.tag(ItemTags.FISHES)
-                .addTag(ErsTagKeys.KNOWN_FISH);
+        this.tag(ItemTags.FISHES).addTag(ErsTagKeys.KNOWN_FISH);
 
         this.tag(ErsTagKeys.MEAT)
                 .add(ErsItems.SWAMP_DRAGON_MEAT.get())
+                .add(OasisItems.TUBUNASUS_MEAT.get())
                 .add(Items.MUTTON)
                 .add(Items.BEEF)
                 .add(Items.PORKCHOP);

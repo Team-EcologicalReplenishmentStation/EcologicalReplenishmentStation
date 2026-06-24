@@ -51,7 +51,7 @@ public class ErsJadePlugin implements IWailaPlugin {
         public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
             if (accessor.getEntity() instanceof ErsTamable<?> entity && entity.doHunger()) {
                 float hunger = entity.getHunger();
-                
+
                 tooltip.add(Component.translatable("tooltip.ers.food", hunger));
             }
         }
@@ -68,30 +68,28 @@ public class ErsJadePlugin implements IWailaPlugin {
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             if (accessor.getBlockEntity() instanceof ArtificialNestBlockEntity entity) {
-                if(entity.getEgg().isEmpty())
-                    return;
+                if (entity.getEgg().isEmpty()) return;
                 ErsEgg eggItem = (ErsEgg) entity.getEgg().getItem();
                 int timer = entity.getHatchingTime() * 100 / eggItem.getHatchTime();
 
-                tooltip.add(Component.translatable("tooltip.ers.hatch","§a" + timer));
+                tooltip.add(Component.translatable("tooltip.ers.hatch", "§a" + timer));
             }
         }
+
         @Override
         public ResourceLocation getUid() {
             return HATCH;
         }
     }
 
-    private enum GenderProvider implements IEntityComponentProvider{
+    private enum GenderProvider implements IEntityComponentProvider {
         INSTANCE;
 
         @Override
         public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
             if (accessor.getEntity() instanceof HasGender hasGender) {
-                if(hasGender.getGender())
-                    tooltip.add(Component.translatable("tooltip.oasis.gender.male"));
-                else
-                    tooltip.add(Component.translatable("tooltip.oasis.gender.female"));
+                if (hasGender.getGender()) tooltip.add(Component.translatable("tooltip.oasis.gender.male"));
+                else tooltip.add(Component.translatable("tooltip.oasis.gender.female"));
             }
         }
 

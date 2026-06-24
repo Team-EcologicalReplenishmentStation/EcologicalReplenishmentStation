@@ -8,9 +8,7 @@ import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Random stroll goal for non-flying/swimming mobs
- */
+/** Random stroll goal for non-flying/swimming mobs */
 public class MobWanderGoal extends RandomStrollGoal {
     int waterVerticalRange = 8;
 
@@ -29,15 +27,17 @@ public class MobWanderGoal extends RandomStrollGoal {
 
     @Override
     public boolean canUse() {
-        if (this.mob.isInWater() || !((ErsTamableVehicle<?>)this.mob).getAttackState().getType().canMove()) {
+        if (this.mob.isInWater()
+                || !((ErsTamableVehicle<?>) this.mob).getAttackState().getType().canMove()) {
             return false;
         }
-        return super.canUse() && ((ErsTamableVehicle<?>)this.mob).getCommand() == 0;
+        return super.canUse() && ((ErsTamableVehicle<?>) this.mob).getCommand() == 0;
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !this.mob.getNavigation().isDone() && (!this.mob.isVehicle() || this.mob.getControllingPassenger() == null);
+        return !this.mob.getNavigation().isDone()
+                && (!this.mob.isVehicle() || this.mob.getControllingPassenger() == null);
     }
 
     @Nullable
@@ -50,7 +50,9 @@ public class MobWanderGoal extends RandomStrollGoal {
             randomPos = LandRandomPos.getPos(mob, 30, waterVerticalRange);
             return randomPos == null ? LandRandomPos.getPos(mob, 10, verticalDistance) : randomPos;
         }
-        randomPos = mob.getRandom().nextFloat() > 0.001 ? LandRandomPos.getPos(mob, 10, verticalDistance) : DefaultRandomPos.getPos(mob, 10, verticalDistance);
+        randomPos = mob.getRandom().nextFloat() > 0.001
+                ? LandRandomPos.getPos(mob, 10, verticalDistance)
+                : DefaultRandomPos.getPos(mob, 10, verticalDistance);
         return randomPos;
     }
 }

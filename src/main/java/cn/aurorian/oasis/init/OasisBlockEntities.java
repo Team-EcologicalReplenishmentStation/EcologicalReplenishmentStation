@@ -10,11 +10,18 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class OasisBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Oasis.MODID);
-    public static final RegistryObject<BlockEntityType<DurovelaSpecimenBlockEntity>> DUROVELA_SPECIMEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("durovela_specimen",
-            () -> BlockEntityType.Builder.of(DurovelaSpecimenBlockEntity::new, OasisBlocks.DUROVELA_SPECIMEN.get()).build(null));
-    public static final RegistryObject<BlockEntityType<ClyderotundaSpecimenBlockEntity>> CLYDEROTUNDA_SPECIMEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("clyderotunda_specimen",
-            () -> BlockEntityType.Builder.of(ClyderotundaSpecimenBlockEntity::new, OasisBlocks.CLYDEROTUNDA_SPECIMEN.get()).build(null));
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Oasis.MODID);
+    public static final RegistryObject<BlockEntityType<DurovelaSpecimenBlockEntity>> DUROVELA_SPECIMEN_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("durovela_specimen", () -> BlockEntityType.Builder.of(
+                            DurovelaSpecimenBlockEntity::new, OasisBlocks.DUROVELA_SPECIMEN.get())
+                    .build(null));
+    public static final RegistryObject<BlockEntityType<ClyderotundaSpecimenBlockEntity>>
+            CLYDEROTUNDA_SPECIMEN_BLOCK_ENTITY =
+                    BLOCK_ENTITIES.register("clyderotunda_specimen", () -> BlockEntityType.Builder.of(
+                                    ClyderotundaSpecimenBlockEntity::new, OasisBlocks.CLYDEROTUNDA_SPECIMEN.get())
+                            .build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

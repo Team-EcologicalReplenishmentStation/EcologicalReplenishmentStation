@@ -5,12 +5,14 @@ import cn.aurorian.ers.client.animator.MandgemareLabiumAnimator;
 import cn.aurorian.ers.entity.ErsEntity;
 import cn.aurorian.ers.entity.GeneralBodyControl;
 import cn.aurorian.ers.entity.HasGender;
-import cn.aurorian.ers.entity.ai.goal.ErsFollowFlockLeaderGoal;
+import cn.aurorian.ers.entity.SpawnVariant;
 import cn.aurorian.ers.entity.creatures.ErsWaterAnimal;
 import cn.aurorian.ers.entity.creatures.mandgemarelabium.ai.LabiumFightGoal;
 import cn.aurorian.ers.init.ErsItems;
 import com.mojang.serialization.Codec;
-import net.minecraft.Util;
+import java.util.UUID;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -19,8 +21,6 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -31,7 +31,6 @@ import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,37 +44,44 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-
-public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity, ErsEntity<MandgemareLabiumEntity>, HasGender, VariantHolder<MandgemareLabiumEntity.Variant> {
+public class MandgemareLabiumEntity extends ErsWaterAnimal
+        implements GeoEntity,
+                ErsEntity<MandgemareLabiumEntity>,
+                HasGender,
+                VariantHolder<MandgemareLabiumEntity.Variant> {
 
     public MandgemareLabiumEntity(EntityType<? extends ErsWaterAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.moveControl = new SmoothSwimmingMoveControl(this,85,10,0.02F,0.1F,true);
+        this.moveControl = new SmoothSwimmingMoveControl(this, 85, 10, 0.02F, 0.1F, true);
         this.lookControl = new SmoothSwimmingLookControl(this, 10);
         animator = new MandgemareLabiumAnimator(this);
     }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> GENDER =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntityDataAccessor<Integer> DATA_VARIANT = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_VARIANT =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> DATA_MARKING = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_MARKING =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> DATA_TAIL = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_TAIL =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> DATA_FIGURE = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_FIGURE =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> FORCE = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> FORCE =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> COMPLETE = SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> COMPLETE =
+            SynchedEntityData.defineId(MandgemareLabiumEntity.class, EntityDataSerializers.INT);
 
     private final GeneralAnimator<MandgemareLabiumEntity> animator;
 
@@ -98,13 +104,13 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(GENDER,false);
-        this.entityData.define(DATA_VARIANT,0);
-        this.entityData.define(DATA_MARKING,0);
-        this.entityData.define(DATA_TAIL,0);
-        this.entityData.define(DATA_FIGURE,0);
-        this.entityData.define(FORCE,0);
-        this.entityData.define(COMPLETE,0);
+        this.entityData.define(GENDER, false);
+        this.entityData.define(DATA_VARIANT, 0);
+        this.entityData.define(DATA_MARKING, 0);
+        this.entityData.define(DATA_TAIL, 0);
+        this.entityData.define(DATA_FIGURE, 0);
+        this.entityData.define(FORCE, 0);
+        this.entityData.define(COMPLETE, 0);
     }
 
     @Override
@@ -131,6 +137,7 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
     public void saveToBucketTag(ItemStack pStack) {
         this.addAdditionalSaveData(pStack.getOrCreateTag());
     }
+
     @Override
     public void loadFromBucketTag(@NotNull CompoundTag pTag) {
         this.readAdditionalSaveData(pTag);
@@ -150,30 +157,34 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         AnimationController<MandgemareLabiumEntity> main = new AnimationController<>(this, "main", 10, state -> {
             RawAnimation builder = RawAnimation.begin();
-            if(isInWater()){
+            if (isInWater()) {
                 if (state.isMoving()) {
-                    if(isSprinting()){
+                    if (isSprinting()) {
                         builder.thenLoop("animation.quickly_swim");
-                    }else {
+                    } else {
                         builder.thenLoop("animation.swim");
                     }
                 } else {
                     builder.thenLoop("animation.idle");
                 }
-            }else {
+            } else {
                 builder.thenLoop("animation.flop");
             }
             return state.setAndContinue(builder);
         });
+        AnimationController<MandgemareLabiumEntity> attack = new AnimationController<>(
+                        this, "attack", 0, state -> PlayState.STOP)
+                .triggerableAnim("show", RawAnimation.begin().thenPlay("animation.show"))
+                .triggerableAnim("close", RawAnimation.begin().thenPlay("animation.close"));
 
-        controllerRegistrar.add(main);
+        controllerRegistrar.add(main, attack);
     }
 
     public static AttributeSupplier.@NotNull Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 6.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.4)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.4);
+                .add(ForgeMod.SWIM_SPEED.get(), 0.5);
     }
 
     @Override
@@ -185,42 +196,36 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
         return animator;
     }
 
-    protected @NotNull InteractionResult mobInteract(@NotNull Player pPlayer, @NotNull InteractionHand pHand) {
-        return Bucketable.bucketMobPickup(pPlayer, pHand, this).orElse(super.mobInteract(pPlayer, pHand));
-    }
-
     @Override
     public void tick() {
         super.tick();
-        if(level().isClientSide()){
+        if (level().isClientSide()) {
             animator.tick();
-        }else {
-            if(tickCount % 20 == 0){
-                if(getComplete() > 0){
+        } else {
+            if (tickCount % 20 == 0) {
+                if (getComplete() > 0) {
                     setComplete(getComplete() - 20);
-                }else {
+                } else {
                     setComplete(0);
                 }
             }
         }
-
     }
 
     @Override
     protected @NotNull BodyRotationControl createBodyControl() {
-        return new GeneralBodyControl(this,26);
+        return new GeneralBodyControl(this, 26);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
         Predicate<Entity> var = EntitySelector.NO_SPECTATORS;
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1f, 2f, var::test){
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1f, 2f, var::test) {
             @Override
             public boolean canUse() {
                 super.canUse();
-                if(isFollower())
-                    return false;
+                if (isFollower()) return false;
 
                 if (this.toAvoid == null) {
                     return false;
@@ -248,13 +253,14 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
                 super.stop();
                 this.mob.setSprinting(false);
             }
-
         });
-        this.goalSelector.addGoal(2, new LabiumFightGoal(this,1.2f));
+        this.goalSelector.addGoal(2, new LabiumFightGoal(this, 2f));
     }
 
     private static final UUID SPEED_MODIFIER_SPRINTING_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
-    private static final AttributeModifier SPEED_MODIFIER_SPRINTING = new AttributeModifier(SPEED_MODIFIER_SPRINTING_UUID, "Sprinting speed boost", 2.0D,AttributeModifier.Operation.MULTIPLY_TOTAL);
+    private static final AttributeModifier SPEED_MODIFIER_SPRINTING = new AttributeModifier(
+            SPEED_MODIFIER_SPRINTING_UUID, "Sprinting speed boost", 2.0D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+
     @Override
     public void setSprinting(boolean pSprinting) {
         this.setSharedFlag(3, pSprinting);
@@ -270,7 +276,7 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
 
     @Override
     public void setGender(boolean gender) {
-        this.entityData.set(GENDER,gender);
+        this.entityData.set(GENDER, gender);
     }
 
     @Override
@@ -313,18 +319,23 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
     }
 
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public @Nullable SpawnGroupData finalizeSpawn(
+            @NotNull ServerLevelAccessor pLevel,
+            @NotNull DifficultyInstance pDifficulty,
+            @NotNull MobSpawnType pReason,
+            @Nullable SpawnGroupData pSpawnData,
+            @Nullable CompoundTag pDataTag) {
         if (pReason == MobSpawnType.BUCKET) {
             return pSpawnData;
-        }else {
+        } else {
             RandomSource random = pLevel.getRandom();
-            this.setVariant(Variant.getCommonSpawnVariant(random));
+            this.setVariant(SpawnVariant.getCommonSpawnVariant(Variant.values(), random));
             this.setMarking(Markings.byId(random.nextInt(Markings.values().length)));
             this.setTail(Tails.byId(random.nextInt(Tails.values().length)));
             this.setFigure(Figures.byId(random.nextInt(Figures.values().length)));
             this.setGender(random.nextBoolean());
-            if(getGender()){
-                if(getForce() == 0){
+            if (getGender()) {
+                if (getForce() == 0) {
                     this.setForce(random.nextInt(10));
                 }
             }
@@ -337,7 +348,8 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
         SPOT(0),
         STRIPE(1);
 
-        private static final IntFunction<Figures> BY_ID = ByIdMap.continuous(Figures::getId, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+        private static final IntFunction<Figures> BY_ID =
+                ByIdMap.continuous(Figures::getId, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
         private final int id;
 
         Figures(int pId) {
@@ -358,7 +370,8 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
         LION(1),
         ROUND(2);
 
-        private static final IntFunction<Tails> BY_ID = ByIdMap.continuous(Tails::getId, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+        private static final IntFunction<Tails> BY_ID =
+                ByIdMap.continuous(Tails::getId, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
         private final int id;
 
         Tails(int pId) {
@@ -383,7 +396,8 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
         CYAN(5),
         GREEN(6);
 
-        private static final IntFunction<Markings> BY_ID = ByIdMap.continuous(Markings::getId, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+        private static final IntFunction<Markings> BY_ID =
+                ByIdMap.continuous(Markings::getId, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
         private final int id;
 
         Markings(int pId) {
@@ -399,7 +413,7 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
         }
     }
 
-    public enum Variant implements StringRepresentable {
+    public enum Variant implements StringRepresentable, SpawnVariant {
         WHITE(0, "white", true),
         BLACK(1, "black", true),
         YELLOW(2, "yellow", true),
@@ -408,7 +422,8 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
         CYAN(5, "cyan", true),
         GREEN(6, "green", true);
 
-        private static final IntFunction<Variant> BY_ID = ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        private static final IntFunction<Variant> BY_ID =
+                ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
         private final int id;
         private final String name;
@@ -428,25 +443,17 @@ public class MandgemareLabiumEntity extends ErsWaterAnimal implements GeoEntity,
             return this.name;
         }
 
+        @Override
+        public boolean isCommon() {
+            return this.common;
+        }
+
         public @NotNull String getSerializedName() {
             return this.name;
         }
 
         public static Variant byId(int pId) {
             return BY_ID.apply(pId);
-        }
-
-        public static Variant getCommonSpawnVariant(RandomSource pRandom) {
-            return getSpawnVariant(pRandom, true);
-        }
-
-        public static Variant getRareSpawnVariant(RandomSource pRandom) {
-            return getSpawnVariant(pRandom, false);
-        }
-
-        private static Variant getSpawnVariant(RandomSource pRandom, boolean pCommon) {
-            Variant[] $$2 = Arrays.stream(values()).filter((p_149252_) -> p_149252_.common == pCommon).toArray(Variant[]::new);
-            return Util.getRandom($$2, pRandom);
         }
     }
 }

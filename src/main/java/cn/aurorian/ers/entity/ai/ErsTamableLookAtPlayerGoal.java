@@ -7,10 +7,10 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 
 public class ErsTamableLookAtPlayerGoal extends LookAtPlayerGoal {
     ErsTamable<?> mob;
+
     public ErsTamableLookAtPlayerGoal(Mob mob, Class<? extends LivingEntity> pLookAtType, float pLookDistance) {
         super(mob, pLookAtType, pLookDistance);
         this.mob = (ErsTamable<?>) mob;
-
     }
 
     @Override

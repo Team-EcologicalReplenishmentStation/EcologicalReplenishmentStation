@@ -1,5 +1,6 @@
 package cn.aurorian.oasis.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -22,11 +23,10 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.Nullable;
-
 public abstract class SpecimenBlock extends BaseEntityBlock implements GeoBlockEntity {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty RANDOM = BooleanProperty.create("random");
+
     public SpecimenBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
@@ -45,17 +45,15 @@ public abstract class SpecimenBlock extends BaseEntityBlock implements GeoBlockE
 
         Direction facing = context.getHorizontalDirection();
 
-        BlockState blockstate = this.defaultBlockState()
-                .setValue(FACING, facing)
-                .setValue(RANDOM, level.random.nextBoolean());
+        BlockState blockstate =
+                this.defaultBlockState().setValue(FACING, facing).setValue(RANDOM, level.random.nextBoolean());
 
         if (blockstate.canSurvive(level, pos)) {
             return blockstate;
         }
 
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            blockstate = this.defaultBlockState()
-                    .setValue(FACING, direction);
+            blockstate = this.defaultBlockState().setValue(FACING, direction);
             if (blockstate.canSurvive(level, pos)) {
                 return blockstate;
             }
@@ -65,9 +63,11 @@ public abstract class SpecimenBlock extends BaseEntityBlock implements GeoBlockE
     }
 
     @Override
-    public @NotNull VoxelShape getShape(BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    public @NotNull VoxelShape getShape(
+            BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return state.getValue(FACING).getAxis() == Direction.Axis.Z ? AABB : AABB_FLIPPED;
     }
+
     private static final VoxelShape AABB = Block.box(-14.0D, 0.0D, -32.0D, 30.0D, 64.0D, 48.0D);
     private static final VoxelShape AABB_FLIPPED = Block.box(-32.0D, 0.0D, -14.0D, 48.0D, 64.0D, 30.0D);
 

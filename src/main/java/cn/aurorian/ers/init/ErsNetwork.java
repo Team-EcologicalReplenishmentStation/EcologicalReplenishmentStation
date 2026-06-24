@@ -7,37 +7,31 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-import java.util.Optional;
-
 public class ErsNetwork {
     private static final String PROTOCOL_VERSION = "1";
-    
+
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath(EcologicalReplenishmentStation.MODID, "network"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
+            PROTOCOL_VERSION::equals);
     private static int packetId = 0;
+
     private static int nextId() {
         return packetId++;
     }
+
     public static void register() {
         INSTANCE.messageBuilder(MobAttackPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-            .encoder(MobAttackPacket::encode)
-            .decoder(MobAttackPacket::decode)
-            .consumerMainThread(MobAttackPacket::handle)
-            .add();
+                .encoder(MobAttackPacket::encode)
+                .decoder(MobAttackPacket::decode)
+                .consumerMainThread(MobAttackPacket::handle)
+                .add();
         INSTANCE.messageBuilder(ErsTamableTrackFoodPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-            .encoder(ErsTamableTrackFoodPacket::encode)
-            .decoder(ErsTamableTrackFoodPacket::decode)
-            .consumerMainThread(ErsTamableTrackFoodPacket::handle)
-            .add();
-        INSTANCE.messageBuilder(MobSyncDimPacket.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-            .encoder(MobSyncDimPacket::encode)
-            .decoder(MobSyncDimPacket::decode)
-            .consumerMainThread(MobSyncDimPacket::handle)
-            .add();
+                .encoder(ErsTamableTrackFoodPacket::encode)
+                .decoder(ErsTamableTrackFoodPacket::decode)
+                .consumerMainThread(ErsTamableTrackFoodPacket::handle)
+                .add();
         INSTANCE.messageBuilder(VehicleDivePacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
                 .encoder(VehicleDivePacket::encode)
                 .decoder(VehicleDivePacket::decode)
@@ -53,18 +47,20 @@ public class ErsNetwork {
                 .decoder(VehicleJumpInWaterPacket::decode)
                 .consumerMainThread(VehicleJumpInWaterPacket::handle)
                 .add();
-
+        INSTANCE.messageBuilder(VehicleFlightControlPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(VehicleFlightControlPacket::encode)
+                .decoder(VehicleFlightControlPacket::decode)
+                .consumerMainThread(VehicleFlightControlPacket::handle)
+                .add();
         INSTANCE.messageBuilder(MobPositionRiderPacket.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
                 .encoder(MobPositionRiderPacket::encode)
                 .decoder(MobPositionRiderPacket::decode)
                 .consumerMainThread(MobPositionRiderPacket::handle)
                 .add();
-
-        INSTANCE.registerMessage(nextId(),
-                MobTurnPacket.class,
-                MobTurnPacket::encode,
-                MobTurnPacket::decode,
-                MobTurnPacket::handle, Optional.empty());
+        INSTANCE.messageBuilder(MobTurnPacket.class, nextId())
+                .encoder(MobTurnPacket::encode)
+                .decoder(MobTurnPacket::decode)
+                .consumerMainThread(MobTurnPacket::handle)
+                .add();
     }
-    
 }

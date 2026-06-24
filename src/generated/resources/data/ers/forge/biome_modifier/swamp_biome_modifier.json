@@ -6,6 +6,18 @@
   ],
   "spawners": [
     {
+      "type": "ers:dentisaurus_longirostris",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 6
+    },
+    {
+      "type": "ers:aquicornis_dinosauriformis",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 6
+    },
+    {
       "type": "ers:tachypleus_gladius",
       "maxCount": 4,
       "minCount": 2,
@@ -21,13 +33,25 @@
       "type": "ers:latimeria_suchomimus",
       "maxCount": 2,
       "minCount": 1,
-      "weight": 8
+      "weight": 6
     },
     {
       "type": "ers:magnidiscumyzon_sarcopterus",
       "maxCount": 3,
       "minCount": 2,
       "weight": 8
+    },
+    {
+      "type": "ers:benthosuchus_planidens",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 4
+    },
+    {
+      "type": "ers:plesiochelys_longicollis",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 2
     }
   ]
 }

@@ -6,10 +6,8 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 
 public class ErsTamableHurtByTargetGoal extends HurtByTargetGoal {
-
     ErsTamable<?> mob;
     boolean restore;
-
 
     public ErsTamableHurtByTargetGoal(PathfinderMob pMob, Class<?>... pToIgnoreDamage) {
         super(pMob, pToIgnoreDamage);
@@ -18,9 +16,8 @@ public class ErsTamableHurtByTargetGoal extends HurtByTargetGoal {
 
     @Override
     public boolean canUse() {
-        if(this.mob.getLastHurtByMob() instanceof TamableAnimal tamableAnimal){
-            if(this.mob.isTame() && tamableAnimal.getOwner() == this.mob.getOwner())
-                return false;
+        if (this.mob.getLastHurtByMob() instanceof TamableAnimal tamableAnimal) {
+            if (this.mob.isTame() && tamableAnimal.getOwner() == this.mob.getOwner()) return false;
         }
         return super.canUse();
     }

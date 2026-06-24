@@ -1,8 +1,7 @@
 package cn.aurorian.oasis;
 
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.Locale;
+import net.minecraft.resources.ResourceLocation;
 
 public class Oasis {
     public static final String MODID = "oasis";

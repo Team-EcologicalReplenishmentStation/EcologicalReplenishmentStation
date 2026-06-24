@@ -2,6 +2,7 @@ package cn.aurorian.ers.data;
 
 import cn.aurorian.ers.EcologicalReplenishmentStation;
 import cn.aurorian.ers.init.ErsBlocks;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -10,10 +11,11 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.CompletableFuture;
-
 public class ErsBlockTagProvider extends BlockTagsProvider {
-    public ErsBlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
+    public ErsBlockTagProvider(
+            PackOutput output,
+            CompletableFuture<HolderLookup.Provider> lookupProvider,
+            @Nullable ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, EcologicalReplenishmentStation.MODID, existingFileHelper);
     }
 

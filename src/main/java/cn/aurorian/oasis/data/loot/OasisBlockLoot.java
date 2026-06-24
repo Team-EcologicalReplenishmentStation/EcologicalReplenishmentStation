@@ -9,8 +9,12 @@ import org.jetbrains.annotations.NotNull;
 public class OasisBlockLoot extends VanillaBlockLoot {
     @Override
     protected void generate() {
-        this.add(OasisBlocks.DUROVELA_SPECIMEN.get(), block -> this.createSingleItemTable(OasisBlocks.DUROVELA_SPECIMEN.get()));
-        this.add(OasisBlocks.CLYDEROTUNDA_SPECIMEN.get(), block -> this.createSingleItemTable(OasisBlocks.CLYDEROTUNDA_SPECIMEN.get()));
+        this.add(
+                OasisBlocks.DUROVELA_SPECIMEN.get(),
+                block -> this.createSingleItemTable(OasisBlocks.DUROVELA_SPECIMEN.get()));
+        this.add(
+                OasisBlocks.CLYDEROTUNDA_SPECIMEN.get(),
+                block -> this.createSingleItemTable(OasisBlocks.CLYDEROTUNDA_SPECIMEN.get()));
     }
 
     @Override

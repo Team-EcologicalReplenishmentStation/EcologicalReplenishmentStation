@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "ers:has_glow_berries": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:glow_berries"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ers:fruit_feed"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "ers:has_glow_berries",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ers:fruit_feed"
+    ]
+  },
+  "sends_telemetry_event": false
+}

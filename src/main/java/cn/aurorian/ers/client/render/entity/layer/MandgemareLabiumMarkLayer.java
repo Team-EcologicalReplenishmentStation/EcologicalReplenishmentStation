@@ -18,13 +18,45 @@ public class MandgemareLabiumMarkLayer extends GeoRenderLayer<MandgemareLabiumEn
     }
 
     @Override
-    public void render(PoseStack poseStack, MandgemareLabiumEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+    public void render(
+            PoseStack poseStack,
+            MandgemareLabiumEntity animatable,
+            BakedGeoModel bakedModel,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
         RenderType armorRenderType = RenderType.armorCutoutNoCull(getTextureResource(animatable));
-        this.getRenderer().reRender(this.getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, armorRenderType, bufferSource.getBuffer(armorRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.getRenderer()
+                .reRender(
+                        this.getDefaultBakedModel(animatable),
+                        poseStack,
+                        bufferSource,
+                        animatable,
+                        armorRenderType,
+                        bufferSource.getBuffer(armorRenderType),
+                        partialTick,
+                        packedLight,
+                        OverlayTexture.NO_OVERLAY,
+                        1.0F,
+                        1.0F,
+                        1.0F,
+                        1.0F);
     }
 
     @Override
-    public void preRender(PoseStack poseStack, MandgemareLabiumEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+    public void preRender(
+            PoseStack poseStack,
+            MandgemareLabiumEntity animatable,
+            BakedGeoModel bakedModel,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
         boolean loser = animatable.getComplete() != 0;
         bakedModel.getBone("fin_silk").ifPresent(bone -> bone.setHidden(loser));
         bakedModel.getBone("fin_silk2").ifPresent(bone -> bone.setHidden(loser));
@@ -34,10 +66,10 @@ public class MandgemareLabiumMarkLayer extends GeoRenderLayer<MandgemareLabiumEn
 
     @Override
     protected ResourceLocation getTextureResource(MandgemareLabiumEntity animatable) {
-        if(animatable.getGender()){
+        if (animatable.getGender()) {
             String base = "textures/entity/mandgemare_labium/";
 
-            switch (animatable.getFigure().getId()){
+            switch (animatable.getFigure().getId()) {
                 case 0 -> base = base + "spot/";
                 case 1 -> base = base + "stripe/";
             }

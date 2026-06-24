@@ -1,6 +1,7 @@
 package cn.aurorian.ers.entity.ai.goal;
 
 import cn.aurorian.ers.entity.ErsTamable;
+import java.util.EnumSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
@@ -10,11 +11,9 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 
-import java.util.EnumSet;
-
 /**
- * Custom Implementation of {@link FollowOwnerGoal} which starts even if the pet is sitting or sleeping and uses a different teleport check for
- * swimming or flying dinos.
+ * Custom Implementation of {@link FollowOwnerGoal} which starts even if the pet is sitting or
+ * sleeping and uses a different teleport check for swimming or flying dinos.
  */
 public class MobFollowOwnerGoal extends Goal {
     private final ErsTamable<?> mob;
@@ -29,11 +28,18 @@ public class MobFollowOwnerGoal extends Goal {
     private LivingEntity owner;
     private int timeToRecalcPath;
 
-    public MobFollowOwnerGoal(ErsTamable<?> mob, double sprintModifier, float startDistance, float stopDistance, boolean canFly) {
+    public MobFollowOwnerGoal(
+            ErsTamable<?> mob, double sprintModifier, float startDistance, float stopDistance, boolean canFly) {
         this(mob, sprintModifier, startDistance, stopDistance, 18, canFly);
     }
 
-    public MobFollowOwnerGoal(ErsTamable<?> mob, double sprintModifier, float startDistance, float stopDistance, float teleportDistance, boolean canFly) {
+    public MobFollowOwnerGoal(
+            ErsTamable<?> mob,
+            double sprintModifier,
+            float startDistance,
+            float stopDistance,
+            float teleportDistance,
+            boolean canFly) {
         this.mob = mob;
         this.speedModifier = 1.2;
         this.sprintModifier = sprintModifier;
@@ -54,8 +60,7 @@ public class MobFollowOwnerGoal extends Goal {
             return false;
         } else if (mob.distanceToSqr(currentOwner) < startDistanceSqr) {
             return false;
-        }else
-        this.owner = currentOwner;
+        } else this.owner = currentOwner;
         return true;
     }
 
@@ -64,8 +69,8 @@ public class MobFollowOwnerGoal extends Goal {
         if (mob.getNavigation().isDone()) {
             return false;
         }
-        double yDistanceSqr = Math.abs(mob.getY()- owner.getY());
-        if(yDistanceSqr > stopDistanceSqr && mob.distanceToSqr(owner) - yDistanceSqr < stopDistanceSqr){
+        double yDistanceSqr = Math.abs(mob.getY() - owner.getY());
+        if (yDistanceSqr > stopDistanceSqr && mob.distanceToSqr(owner) - yDistanceSqr < stopDistanceSqr) {
             return false;
         }
         return mob.distanceToSqr(owner) > stopDistanceSqr;
@@ -89,14 +94,10 @@ public class MobFollowOwnerGoal extends Goal {
     public void tick() {
         mob.getLookControl().setLookAt(owner, 10, mob.getMaxHeadXRot());
         --timeToRecalcPath;
-        if (timeToRecalcPath > 0) {
-            return;
-        }
-        timeToRecalcPath = adjustedTickDelay(100);
         if (mob.distanceToSqr(owner) >= sprintDistanceSqr) {
             shouldSprint = true;
             mob.setSprinting(true);
-        }else {
+        } else {
             mob.setSprinting(false);
         }
         if (!mob.isLeashed() && mob.distanceToSqr(owner) >= teleportDistanceSqr) {
@@ -104,7 +105,10 @@ public class MobFollowOwnerGoal extends Goal {
             return;
         }
 
-        mob.getNavigation().moveTo(owner, shouldSprint ? sprintModifier : speedModifier);
+        if (timeToRecalcPath <= 0) {
+            timeToRecalcPath = 10;
+            mob.getNavigation().moveTo(owner, mob.isSprinting() ? sprintModifier : speedModifier);
+        }
     }
 
     private void teleportToOwner() {
@@ -133,10 +137,12 @@ public class MobFollowOwnerGoal extends Goal {
     private boolean canTeleportTo(BlockPos teleportPos) {
         Level level = mob.level();
         NodeEvaluator nodeEvaluator = mob.getNavigation().getNodeEvaluator();
-        BlockPathTypes type = nodeEvaluator.getBlockPathType(level, teleportPos.getX(), teleportPos.getY(), teleportPos.getZ());
-//        if (type == BlockPathTypes.WATER && dino.getPathfindingMalus(type) == 0) {
-//            return level.noCollision(dino, dino.getBoundingBox().move(teleportPos.subtract(dino.blockPosition())));
-//        }
+        BlockPathTypes type =
+                nodeEvaluator.getBlockPathType(level, teleportPos.getX(), teleportPos.getY(), teleportPos.getZ());
+        //        if (type == BlockPathTypes.WATER && dino.getPathfindingMalus(type) == 0) {
+        //            return level.noCollision(dino,
+        // dino.getBoundingBox().move(teleportPos.subtract(dino.blockPosition())));
+        //        }
         if (type != BlockPathTypes.WALKABLE) {
             return false;
         }
@@ -149,5 +155,4 @@ public class MobFollowOwnerGoal extends Goal {
     private int randomIntInclusive(int min, int max) {
         return mob.getRandom().nextInt(max - min + 1) + min;
     }
-
 }

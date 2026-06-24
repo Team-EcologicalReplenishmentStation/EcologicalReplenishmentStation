@@ -19,14 +19,10 @@ public class CrabAmbushGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if(mob.getCooldown() > 0)
-            return false;
-        if(!mob.isInWater())
-            return false;
-        if(mob.isWaiting())
-            return false;
-        if(mob.getTarget() != null)
-            return false;
+        if (mob.getCooldown() > 0) return false;
+        if (!mob.isInWater()) return false;
+        if (mob.isWaiting()) return false;
+        if (mob.getTarget() != null) return false;
         return canAmbush();
     }
 
@@ -37,17 +33,22 @@ public class CrabAmbushGoal extends Goal {
         this.mob.triggerAnim("extra", "ambush");
     }
 
-    private boolean canAmbush(){
+    private boolean canAmbush() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if(mob.level().getBlockState(mob.getOnPos().offset(i - 1, 0, j - 1)).is(Blocks.WATER) ||
-                        mob.level().getBlockState(mob.getOnPos().offset(i - 1, 0, j - 1)).is(Blocks.AIR)){
+                if (mob.level()
+                                .getBlockState(mob.getOnPos().offset(i - 1, 0, j - 1))
+                                .is(Blocks.WATER)
+                        || mob.level()
+                                .getBlockState(mob.getOnPos().offset(i - 1, 0, j - 1))
+                                .is(Blocks.AIR)) {
                     return false;
                 }
             }
         }
-        return mob.getBlockStateOn().is(Blocks.SAND) ||
-                mob.getBlockStateOn().is(Blocks.GRAVEL) || mob.getBlockStateOn().is(Blocks.MUD);
+        return mob.getBlockStateOn().is(Blocks.SAND)
+                || mob.getBlockStateOn().is(Blocks.GRAVEL)
+                || mob.getBlockStateOn().is(Blocks.MUD);
     }
 
     @Override
@@ -59,22 +60,14 @@ public class CrabAmbushGoal extends Goal {
     public void tick() {
         countdown++;
         this.mob.getNavigation().stop();
-        if(countdown > 30){
+        if (countdown > 30) {
             mob.setWaiting(true);
             countdown = 0;
-        }else if (this.mob.level() instanceof ServerLevel serverLevel) {
-            BlockParticleOption particleOptions = new BlockParticleOption(ParticleTypes.BLOCK, this.mob.getBlockStateOn());
+        } else if (this.mob.level() instanceof ServerLevel serverLevel) {
+            BlockParticleOption particleOptions =
+                    new BlockParticleOption(ParticleTypes.BLOCK, this.mob.getBlockStateOn());
             serverLevel.sendParticles(
-                    particleOptions,
-                    this.mob.getX(),
-                    this.mob.getY(),
-                    this.mob.getZ(),
-                    40,
-                    0.3,
-                    0.3,
-                    0.3,
-                    0.5
-            );
+                    particleOptions, this.mob.getX(), this.mob.getY(), this.mob.getZ(), 40, 0.3, 0.3, 0.3, 0.5);
         }
     }
 }

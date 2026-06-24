@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:saddle"
+    },
+    "B": {
+      "item": "minecraft:leather"
+    },
+    "C": {
+      "item": "minecraft:potion"
+    }
+  },
+  "pattern": [
+    "   ",
+    " AC",
+    " B "
+  ],
+  "result": {
+    "item": "ers:aquicornis_dinosauriformis_saddle"
+  },
+  "show_notification": true
+}

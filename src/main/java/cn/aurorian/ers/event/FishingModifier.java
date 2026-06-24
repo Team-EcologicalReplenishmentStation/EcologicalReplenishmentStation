@@ -1,5 +1,6 @@
 package cn.aurorian.ers.event;
 
+import cn.aurorian.ers.entity.creatures.aquicornisdinosauriformis.AquicornisDinosauriformisEntity;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.DentisaurusLongirostrisEntity;
 import cn.aurorian.ers.init.ErsItems;
 import net.minecraft.tags.ItemTags;
@@ -16,7 +17,10 @@ public class FishingModifier {
     @SubscribeEvent
     public static void onItemFished(ItemFishedEvent event) {
         Player player = event.getEntity();
-        if (player.isPassenger() && player.getVehicle() instanceof DentisaurusLongirostrisEntity sotek) {
+        if (player.isPassenger()
+                && (player.getVehicle() instanceof DentisaurusLongirostrisEntity
+                        || player.getVehicle() instanceof AquicornisDinosauriformisEntity)) {
+            var sotek = (cn.aurorian.ers.entity.ErsTamableVehicle<?>) player.getVehicle();
             boolean hasBait = false;
             for (int i = 5; i <= 7; i++) {
                 ItemStack itemStack = sotek.getInventory().getItem(i);
@@ -26,17 +30,20 @@ public class FishingModifier {
             }
 
             if (hasBait) {
+                java.util.List<ItemStack> toAdd = new java.util.ArrayList<>();
+                java.util.List<ItemStack> toRemove = new java.util.ArrayList<>();
                 for (ItemStack stack : event.getDrops()) {
-                    // 重新分配概率
                     if (Math.random() < RIDING_FISH_BONUS) {
-                       if (stack.is(ItemTags.FISHES)) {
-                         event.getDrops().add(stack);
+                        if (stack.is(ItemTags.FISHES)) {
+                            toAdd.add(stack.copy());
                         } else {
-                            event.getDrops().remove(stack);
+                            toRemove.add(stack);
                         }
+                    }
                 }
+                event.getDrops().removeAll(toRemove);
+                event.getDrops().addAll(toAdd);
             }
-        }
         }
     }
 }

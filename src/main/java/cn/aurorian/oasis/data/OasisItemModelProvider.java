@@ -16,10 +16,11 @@ public class OasisItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        //Oasis
+        // Oasis
         this.simpleItem(OasisItems.TUBUNASUS_DUROVELA_SPAWN_EGG.get());
         this.simpleItem(OasisItems.TUBUNASUS_CLYDEROTUNDA_SPAWN_EGG.get());
         this.simpleItem(OasisItems.PYGOPODUS_ANNULATUM_SPAWN_EGG.get());
+        this.simpleItem(OasisItems.IMPERIOVENATOR_REGIUS_SPAWN_EGG.get());
         this.simpleItem(OasisItems.TUBUNASUS_DUROVELA_LARGE_BUCKET.get());
         this.simpleItem(OasisItems.TUBUNASUS_SADDLE.get());
         this.simpleItem(OasisItems.HORSESHOE.get());
@@ -34,16 +35,18 @@ public class OasisItemModelProvider extends ItemModelProvider {
         this.simpleItem(OasisItems.KIDNEY.get());
         this.simpleItem(OasisItems.COOKED_KIDNEY.get());
         this.simpleItem(OasisItems.ANNULATUM.get());
+        this.simpleItem(OasisItems.TUBUNASUS_MEAT.get());
         this.simpleItem(OasisItems.COOKED_ANNULATUM.get());
         this.simpleItem(OasisItems.TEASELGOURD.get());
+        this.simpleItem(OasisItems.CUDMILK.get());
+        this.simpleItem(OasisItems.EMPTY_MILK_BOTTLE.get());
 
         this.simpleItem(OasisItems.DUROVELA_SPECIMEN.get());
-//        this.simpleItem(OasisItems.CLYDEROTUNDA_SPECIMEN.get());
+        //        this.simpleItem(OasisItems.CLYDEROTUNDA_SPECIMEN.get());
     }
 
     private void simpleItem(Item item) {
         String path = BuiltInRegistries.ITEM.getKey(item).getPath();
-        this.withExistingParent(path, this.mcLoc("item/generated"))
-                .texture("layer0", this.modLoc("item/" + path));
+        this.withExistingParent(path, this.mcLoc("item/generated")).texture("layer0", this.modLoc("item/" + path));
     }
 }

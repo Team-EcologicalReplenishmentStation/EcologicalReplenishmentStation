@@ -18,18 +18,18 @@ public class SwampDragonEyeLayer extends AutoGlowingGeoLayer<DentisaurusLongiros
     protected ResourceLocation getTextureResource(DentisaurusLongirostrisEntity animatable) {
         String base = "textures/entity/dentisaurus_longirostris/";
 
-        if(animatable.isElite()){
+        if (animatable.isElite()) {
             base = base + "elite";
-        }else if(!animatable.isMature()) {
+        } else if (!animatable.isMature()) {
             base = base + "baby";
-        }else {
+        } else {
             base = base + "base";
         }
 
         switch (animatable.getVariant().getId()) {
-            case 3,4,5 -> base = base + "_lackyellow.png";
-            case 0,1,2,6,7,8 -> base = base + ".png";
-            case 9,10,11 -> base = base + "_white.png";
+            case 3, 4, 5 -> base = base + "_lackyellow.png";
+            case 0, 1, 2, 6, 7, 8 -> base = base + ".png";
+            case 9, 10, 11 -> base = base + "_white.png";
         }
 
         return EcologicalReplenishmentStation.prefix(base);

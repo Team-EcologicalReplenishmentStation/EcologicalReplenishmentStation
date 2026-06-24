@@ -1,15 +1,16 @@
 package cn.aurorian.ers.entity.ai.goal;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.Animal;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class MobFollowParentGoal extends Goal {
     private final Animal animal;
+
     @Nullable
     private Animal parent;
+
     private final double speedModifier;
     private int timeToRecalcPath;
 
@@ -22,7 +23,10 @@ public class MobFollowParentGoal extends Goal {
         if (this.animal.getAge() >= 0) {
             return false;
         } else {
-            List<? extends Animal> $$0 = this.animal.level().getEntitiesOfClass(this.animal.getClass(), this.animal.getBoundingBox().inflate(8.0, 4.0, 8.0));
+            List<? extends Animal> $$0 = this.animal
+                    .level()
+                    .getEntitiesOfClass(
+                            this.animal.getClass(), this.animal.getBoundingBox().inflate(8.0, 4.0, 8.0));
             Animal $$1 = null;
             double $$2 = Double.MAX_VALUE;
 
@@ -70,12 +74,14 @@ public class MobFollowParentGoal extends Goal {
     public void tick() {
         if (--this.timeToRecalcPath <= 0) {
             this.timeToRecalcPath = this.adjustedTickDelay(10);
-            if(this.parent.isSprinting()){
+            if (this.parent.isSprinting()) {
                 this.animal.setSprinting(true);
-            }else {
+            } else {
                 this.animal.setSprinting(false);
             }
-            this.animal.getNavigation().moveTo(this.parent, animal.isSprinting() ? this.speedModifier * 2 : this.speedModifier);
+            this.animal
+                    .getNavigation()
+                    .moveTo(this.parent, animal.isSprinting() ? this.speedModifier * 2 : this.speedModifier);
         }
     }
 }

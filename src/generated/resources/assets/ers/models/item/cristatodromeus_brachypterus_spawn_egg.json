@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ers:item/cristatodromeus_brachypterus_spawn_egg"
+  }
+}

@@ -3,6 +3,7 @@ package cn.aurorian.ers.entity.projectile;
 import cn.aurorian.ers.init.ErsEntities;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.util.TickHelper;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,9 +25,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-
-public class DragonClawHarpoonEntity extends ThrownTrident{
+public class DragonClawHarpoonEntity extends ThrownTrident {
     public DragonClawHarpoonEntity(EntityType<? extends ThrownTrident> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.tridentItem = new ItemStack(ErsItems.DRAGON_CLAW_HARPOON.get());
@@ -49,8 +48,8 @@ public class DragonClawHarpoonEntity extends ThrownTrident{
     @Override
     public void tick() {
         super.tick();
-        if(!this.level().isClientSide){
-            if(lootedEntities != null && !lootedEntities.isEmpty()){
+        if (!this.level().isClientSide) {
+            if (lootedEntities != null && !lootedEntities.isEmpty()) {
                 lootedEntities.forEach(entity -> {
                     ItemEntity itemEntity = (ItemEntity) entity;
                     itemEntity.teleportTo(this.position().x, this.position().y, this.position().z);
@@ -94,7 +93,7 @@ public class DragonClawHarpoonEntity extends ThrownTrident{
                 LightningBolt $$10 = EntityType.LIGHTNING_BOLT.create(this.level());
                 if ($$10 != null) {
                     $$10.moveTo(Vec3.atBottomCenterOf($$9));
-                    $$10.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer)entity1 : null);
+                    $$10.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer) entity1 : null);
                     this.level().addFreshEntity($$10);
                     $$6 = SoundEvents.TRIDENT_THUNDER;
                     $$8 = 5.0F;
@@ -104,17 +103,21 @@ public class DragonClawHarpoonEntity extends ThrownTrident{
 
         this.playSound($$6, $$8, 1.0F);
 
-        if(level() instanceof ServerLevel serverLevel){
+        if (level() instanceof ServerLevel serverLevel) {
             double startX = position().x;
             double startY = position().y;
             double startZ = position().z;
-            AABB attackBox = new AABB(
-                    startX - 2.5, startY - 2.5, startZ - 2.5,
-                    startX + 2.5, startY + 2.5, startZ + 2.5
-            );
-            TickHelper.tickLater(serverLevel,2, () -> lootedEntities = this.level().getEntities(this, attackBox,
-                    item -> item instanceof ItemEntity && ((ItemEntity) item).getItem().is(ItemTags.FISHES)));
+            AABB attackBox =
+                    new AABB(startX - 2.5, startY - 2.5, startZ - 2.5, startX + 2.5, startY + 2.5, startZ + 2.5);
+            TickHelper.tickLater(
+                    serverLevel,
+                    2,
+                    () -> lootedEntities = this.level()
+                            .getEntities(
+                                    this,
+                                    attackBox,
+                                    item -> item instanceof ItemEntity
+                                            && ((ItemEntity) item).getItem().is(ItemTags.FISHES)));
         }
-
     }
 }

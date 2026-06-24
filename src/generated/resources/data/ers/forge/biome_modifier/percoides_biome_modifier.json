@@ -1,0 +1,14 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:beach",
+    "minecraft:swamp",
+    "minecraft:mangrove_swamp"
+  ],
+  "spawners": {
+    "type": "ers:latimeria_percoides",
+    "maxCount": 4,
+    "minCount": 2,
+    "weight": 20
+  }
+}

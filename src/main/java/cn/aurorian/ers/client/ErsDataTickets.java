@@ -6,8 +6,8 @@ import software.bernie.geckolib.network.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class ErsDataTickets {
-    public static final SerializableDataTicket<Vector3d> SADDLE_POS = GeckoLibUtil.addDataTicket(
-            new SerializableDataTicket<>("ers:saddle_pos", Vector3d.class) {
+    public static final SerializableDataTicket<Vector3d> SADDLE_POS =
+            GeckoLibUtil.addDataTicket(new SerializableDataTicket<>("ers:saddle_pos", Vector3d.class) {
                 @Override
                 public void encode(Vector3d data, FriendlyByteBuf buffer) {
                     buffer.writeDouble(data.x());
@@ -17,13 +17,9 @@ public class ErsDataTickets {
 
                 @Override
                 public Vector3d decode(FriendlyByteBuf buffer) {
-                    return new Vector3d(
-                            buffer.readDouble(),
-                            buffer.readDouble(),
-                            buffer.readDouble()
-                    );
+                    return new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
                 }
-            }
-    );
+            });
+
     public static void register() {}
 }

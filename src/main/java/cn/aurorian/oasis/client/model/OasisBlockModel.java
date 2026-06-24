@@ -10,12 +10,24 @@ import software.bernie.geckolib.core.animatable.GeoAnimatable;
 public class OasisBlockModel<T extends BlockEntity & GeoAnimatable> extends ErsBlockModel<T> {
     @Override
     public ResourceLocation getModelResource(T entity) {
-        return ResourceLocation.fromNamespaceAndPath(Oasis.MODID,"geo/block/" + BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).getPath() + ".geo.json");
+        return ResourceLocation.fromNamespaceAndPath(
+                Oasis.MODID,
+                "geo/block/"
+                        + BuiltInRegistries.BLOCK_ENTITY_TYPE
+                                .getKey(entity.getType())
+                                .getPath()
+                        + ".geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(T entity) {
-        return ResourceLocation.fromNamespaceAndPath(Oasis.MODID,"textures/block/" + BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).getPath() +".png");
+        return ResourceLocation.fromNamespaceAndPath(
+                Oasis.MODID,
+                "textures/block/"
+                        + BuiltInRegistries.BLOCK_ENTITY_TYPE
+                                .getKey(entity.getType())
+                                .getPath()
+                        + ".png");
     }
 
     @Override

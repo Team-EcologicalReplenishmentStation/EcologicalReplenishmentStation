@@ -9,6 +9,9 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 
 public class OasisPotionRecipe {
     public static void registerRecipes() {
-        BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)), Ingredient.of(OasisItems.EMBRYO.get()), PotionUtils.setPotion(new ItemStack(Items.POTION), OasisPotion.EMBRYO_HEALING.get()));
+        BrewingRecipeRegistry.addRecipe(
+                Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)),
+                Ingredient.of(OasisItems.EMBRYO.get()),
+                PotionUtils.setPotion(new ItemStack(Items.POTION), OasisPotion.EMBRYO_HEALING.get()));
     }
 }

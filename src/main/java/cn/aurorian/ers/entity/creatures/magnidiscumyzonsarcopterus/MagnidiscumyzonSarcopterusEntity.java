@@ -31,7 +31,8 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class MagnidiscumyzonSarcopterusEntity extends AbstractFish implements GeoEntity, ErsEntity<MagnidiscumyzonSarcopterusEntity> {
+public class MagnidiscumyzonSarcopterusEntity extends AbstractFish
+        implements GeoEntity, ErsEntity<MagnidiscumyzonSarcopterusEntity> {
     public MagnidiscumyzonSarcopterusEntity(EntityType<? extends AbstractFish> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         animator = new MagnidiscumyzonSarcopterusAnimator(this);
@@ -41,13 +42,17 @@ public class MagnidiscumyzonSarcopterusEntity extends AbstractFish implements Ge
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final GeneralAnimator<MagnidiscumyzonSarcopterusEntity> animator;
-    private static final EntityDataAccessor<Boolean> EATING = SynchedEntityData.defineId(MagnidiscumyzonSarcopterusEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> EATING =
+            SynchedEntityData.defineId(MagnidiscumyzonSarcopterusEntity.class, EntityDataSerializers.BOOLEAN);
+
     public boolean isEating() {
         return this.entityData.get(EATING);
     }
+
     public void setEating(boolean eating) {
         this.entityData.set(EATING, eating);
     }
+
     @Override
     protected @NotNull SoundEvent getFlopSound() {
         return SoundEvents.SALMON_FLOP;
@@ -64,8 +69,7 @@ public class MagnidiscumyzonSarcopterusEntity extends AbstractFish implements Ge
     @Override
     public void tick() {
         super.tick();
-        if(level().isClientSide())
-            animator.tick();
+        if (level().isClientSide()) animator.tick();
     }
 
     @Override
@@ -79,23 +83,24 @@ public class MagnidiscumyzonSarcopterusEntity extends AbstractFish implements Ge
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        AnimationController<MagnidiscumyzonSarcopterusEntity> main = new AnimationController<>(this, "main", 10, state -> {
-            RawAnimation builder = RawAnimation.begin();
-            if(isEating()) {
-                if (state.isMoving()) {
-                    builder.thenLoop("animation.eat");
-                } else {
-                    builder.thenLoop("animation.eat_idle");
-                }
-            }else {
-                if (state.isMoving()) {
-                    builder.thenLoop("animation.swim");
-                } else {
-                    builder.thenLoop("animation.idle");
-                }
-            }
-            return state.setAndContinue(builder);
-        });
+        AnimationController<MagnidiscumyzonSarcopterusEntity> main =
+                new AnimationController<>(this, "main", 10, state -> {
+                    RawAnimation builder = RawAnimation.begin();
+                    if (isEating()) {
+                        if (state.isMoving()) {
+                            builder.thenLoop("animation.eat");
+                        } else {
+                            builder.thenLoop("animation.eat_idle");
+                        }
+                    } else {
+                        if (state.isMoving()) {
+                            builder.thenLoop("animation.swim");
+                        } else {
+                            builder.thenLoop("animation.idle");
+                        }
+                    }
+                    return state.setAndContinue(builder);
+                });
 
         controllerRegistrar.add(main);
     }

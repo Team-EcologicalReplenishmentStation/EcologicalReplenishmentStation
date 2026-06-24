@@ -2,6 +2,8 @@ package cn.aurorian.ers.item;
 
 import cn.aurorian.ers.entity.ErsTamable;
 import cn.aurorian.ers.init.ErsItems;
+import java.util.Optional;
+import java.util.function.Supplier;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,24 +28,25 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+public class ErsMobLargeBucket extends MobBucketItem {
 
-
-public class ErsMobLargeBucket extends MobBucketItem{
-
-    public ErsMobLargeBucket(Supplier<? extends EntityType<?>> entitySupplier, Supplier<? extends Fluid> fluidSupplier,
-                             Supplier<? extends SoundEvent> soundSupplier, Properties properties) {
+    public ErsMobLargeBucket(
+            Supplier<? extends EntityType<?>> entitySupplier,
+            Supplier<? extends Fluid> fluidSupplier,
+            Supplier<? extends SoundEvent> soundSupplier,
+            Properties properties) {
         super(entitySupplier, fluidSupplier, soundSupplier, properties);
-       
     }
+
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player pPlayer, @NotNull InteractionHand pHand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            @NotNull Level pLevel, Player pPlayer, @NotNull InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.NONE);
-        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(pPlayer, pLevel, itemstack, blockhitresult);
+        InteractionResultHolder<ItemStack> ret =
+                net.minecraftforge.event.ForgeEventFactory.onBucketUse(pPlayer, pLevel, itemstack, blockhitresult);
         if (ret != null) return ret;
-        
+
         if (blockhitresult.getType() == HitResult.Type.MISS) {
             return InteractionResultHolder.pass(itemstack);
         } else if (blockhitresult.getType() != HitResult.Type.BLOCK) {
@@ -52,25 +55,24 @@ public class ErsMobLargeBucket extends MobBucketItem{
             BlockPos blockpos = blockhitresult.getBlockPos();
             Direction direction = blockhitresult.getDirection();
             BlockPos blockpos1 = blockpos.relative(direction);
-            
+
             if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos1, direction, itemstack)) {
                 BlockState blockstate = pLevel.getBlockState(blockpos);
                 BlockPos blockpos2 = canBlockContainFluid(pLevel, blockpos, blockstate) ? blockpos : blockpos1;
-                
+
                 if (this.emptyContents(pPlayer, pLevel, blockpos2, blockhitresult, itemstack)) {
                     this.checkExtraContent(pPlayer, pLevel, itemstack, blockpos2);
-                    
+
                     if (pPlayer instanceof ServerPlayer) {
-                        CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)pPlayer, blockpos2, itemstack);
+                        CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) pPlayer, blockpos2, itemstack);
                     }
-                    
+
                     pPlayer.awardStat(Stats.ITEM_USED.get(this));
-                    
+
                     // 返回空的大桶（在创造模式下保持原样）
                     return InteractionResultHolder.sidedSuccess(
-                        !pPlayer.getAbilities().instabuild ? new ItemStack(ErsItems.LARGE_BUCKET.get()) : itemstack,
-                        pLevel.isClientSide()
-                    );
+                            !pPlayer.getAbilities().instabuild ? new ItemStack(ErsItems.LARGE_BUCKET.get()) : itemstack,
+                            pLevel.isClientSide());
                 } else {
                     return InteractionResultHolder.fail(itemstack);
                 }
@@ -80,10 +82,11 @@ public class ErsMobLargeBucket extends MobBucketItem{
         }
     }
 
-    public static <T extends LivingEntity & Bucketable> Optional<InteractionResult> bucketMobPickup(Player player, InteractionHand interactionHand, T entity) {
+    public static <T extends LivingEntity & Bucketable> Optional<InteractionResult> bucketMobPickup(
+            Player player, InteractionHand interactionHand, T entity) {
         ItemStack itemstack = player.getItemInHand(interactionHand);
         if (itemstack.getItem() == ErsItems.LARGE_WATER_BUCKET.get() && entity.isAlive()) {
-            if(entity instanceof ErsTamable<?> tamable && tamable.isSoul()){
+            if (entity instanceof ErsTamable<?> tamable && tamable.isSoul()) {
                 return Optional.empty();
             }
             entity.playSound(entity.getPickupSound(), 1.0F, 1.0F);
@@ -93,7 +96,7 @@ public class ErsMobLargeBucket extends MobBucketItem{
             player.setItemInHand(interactionHand, itemstack2);
             Level level = entity.level();
             if (!level.isClientSide) {
-                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer)player, itemstack1);
+                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, itemstack1);
             }
 
             entity.discard();

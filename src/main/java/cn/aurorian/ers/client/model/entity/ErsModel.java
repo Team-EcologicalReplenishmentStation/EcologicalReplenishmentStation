@@ -12,17 +12,23 @@ import software.bernie.geckolib.model.GeoModel;
 public class ErsModel<T extends Mob & GeoAnimatable & ErsEntity<T>> extends GeoModel<T> {
     @Override
     public ResourceLocation getModelResource(T entity) {
-        return EcologicalReplenishmentStation.prefix("geo/entity/" + BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() + ".geo.json");
+        return EcologicalReplenishmentStation.prefix("geo/entity/"
+                + BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath()
+                + ".geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(T entity) {
-        return EcologicalReplenishmentStation.prefix("textures/entity/" + BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() +".png");
+        return EcologicalReplenishmentStation.prefix("textures/entity/"
+                + BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath()
+                + ".png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(T entity) {
-        return EcologicalReplenishmentStation.prefix("animations/entity/" + BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() + ".animation.json");
+        return EcologicalReplenishmentStation.prefix("animations/entity/"
+                + BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath()
+                + ".animation.json");
     }
 
     @Override

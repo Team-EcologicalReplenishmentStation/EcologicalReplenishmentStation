@@ -16,9 +16,24 @@ public class ArtifacialNestEggLayer extends GeoRenderLayer<ArtificialNestBlockEn
     }
 
     @Override
-    public void preRender(PoseStack poseStack, ArtificialNestBlockEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+    public void preRender(
+            PoseStack poseStack,
+            ArtificialNestBlockEntity animatable,
+            BakedGeoModel bakedModel,
+            RenderType renderType,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
         bakedModel.getBone("swamp_dragon_egg").ifPresent(bone -> bone.setHidden(true));
         bakedModel.getBone("saevus_egg").ifPresent(bone -> bone.setHidden(true));
-        bakedModel.getBone(BuiltInRegistries.ITEM.getKey(animatable.getEgg().getItem()).getPath()).ifPresent(bone -> bone.setHidden(false));
+        bakedModel.getBone("dinosauriformis_egg").ifPresent(bone -> bone.setHidden(true));
+        bakedModel.getBone("antiquus_egg").ifPresent(bone -> bone.setHidden(true));
+        bakedModel
+                .getBone(BuiltInRegistries.ITEM
+                        .getKey(animatable.getEgg().getItem())
+                        .getPath())
+                .ifPresent(bone -> bone.setHidden(false));
     }
 }

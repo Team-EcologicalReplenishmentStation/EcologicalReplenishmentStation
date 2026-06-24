@@ -10,18 +10,18 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ErsBiomeModifierSerializers {
-    private static final DeferredRegister<Codec<? extends BiomeModifier>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, EcologicalReplenishmentStation.MODID);
+    private static final DeferredRegister<Codec<? extends BiomeModifier>> SERIALIZERS = DeferredRegister.create(
+            ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, EcologicalReplenishmentStation.MODID);
 
     private static boolean isInitialised = false;
 
-    public static final RegistryObject<Codec<BiomeSpawnCostModifier>> ADD_MOB_SPAWN_COST = SERIALIZERS.register(
-            "add_mob_spawn_cost", BiomeSpawnCostModifier::makeCodec
-    );
+    public static final RegistryObject<Codec<BiomeSpawnCostModifier>> ADD_MOB_SPAWN_COST =
+            SERIALIZERS.register("add_mob_spawn_cost", BiomeSpawnCostModifier::makeCodec);
 
     /**
      * Registers the {@link DeferredRegister} instance with the mod event bus.
-     * <p>
-     * This should be called during mod construction.
+     *
+     * <p>This should be called during mod construction.
      *
      * @param modEventBus The mod event bus
      */

@@ -2,10 +2,9 @@ package cn.aurorian.ers.entity.ai.goal;
 
 import cn.aurorian.ers.entity.creatures.ErsWaterAnimal;
 import com.mojang.datafixers.DataFixUtils;
-import net.minecraft.world.entity.ai.goal.Goal;
-
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 public class ErsFollowFlockLeaderGoal extends Goal {
     private static final int INTERVAL_TICKS = 200;
@@ -33,8 +32,12 @@ public class ErsFollowFlockLeaderGoal extends Goal {
         } else {
             this.nextStartTick = this.nextStartTick(this.mob);
             Predicate<ErsWaterAnimal> $$0 = (p_25258_) -> p_25258_.canBeFollowed() || !p_25258_.isFollower();
-            List<? extends ErsWaterAnimal> $$1 = this.mob.level().getEntitiesOfClass(this.mob.getClass(), this.mob.getBoundingBox().inflate(14.0, 14.0, 14.0), $$0);
-            ErsWaterAnimal $$2 = DataFixUtils.orElse($$1.stream().filter(ErsWaterAnimal::canBeFollowed).findAny(), this.mob);
+            List<? extends ErsWaterAnimal> $$1 = this.mob
+                    .level()
+                    .getEntitiesOfClass(
+                            this.mob.getClass(), this.mob.getBoundingBox().inflate(14.0, 14.0, 14.0), $$0);
+            ErsWaterAnimal $$2 = DataFixUtils.orElse(
+                    $$1.stream().filter(ErsWaterAnimal::canBeFollowed).findAny(), this.mob);
             $$2.addFollowers($$1.stream().filter((p_25255_) -> !p_25255_.isFollower()));
             return this.mob.isFollower();
         }
@@ -59,4 +62,3 @@ public class ErsFollowFlockLeaderGoal extends Goal {
         }
     }
 }
-

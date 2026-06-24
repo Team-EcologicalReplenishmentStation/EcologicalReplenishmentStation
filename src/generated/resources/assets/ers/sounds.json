@@ -9,19 +9,206 @@
       "oasis:annulatum/walk"
     ]
   },
+  "clyderotunda_call": {
+    "sounds": [
+      "oasis:tubunasus/clyderotunda_call"
+    ]
+  },
+  "clyderotunda_hurt": {
+    "sounds": [
+      "oasis:tubunasus/clyderotunda_hurt"
+    ]
+  },
+  "dentisaurus_longirostris_attack2middle": {
+    "sounds": [
+      "ers:longirostris/attack2-middle"
+    ]
+  },
+  "dentisaurus_longirostris_attack2miss": {
+    "sounds": [
+      "ers:longirostris/attack2-miss"
+    ]
+  },
+  "dentisaurus_longirostris_attack2small": {
+    "sounds": [
+      "ers:longirostris/attack2-small"
+    ]
+  },
+  "dentisaurus_longirostris_attack3": {
+    "sounds": [
+      "ers:longirostris/attack3"
+    ]
+  },
+  "dentisaurus_longirostris_attack_swim_turn": {
+    "sounds": [
+      "ers:longirostris/attack_swim_turn"
+    ]
+  },
+  "dentisaurus_longirostris_attack_turn": {
+    "sounds": [
+      "ers:longirostris/attack_turn"
+    ]
+  },
+  "dentisaurus_longirostris_attackidle": {
+    "sounds": [
+      "ers:longirostris/attack-idle"
+    ]
+  },
+  "dentisaurus_longirostris_attackidle2": {
+    "sounds": [
+      "ers:longirostris/attack-idle2"
+    ]
+  },
+  "dentisaurus_longirostris_catch_fish_middle": {
+    "sounds": [
+      "ers:longirostris/catch_fish-middle"
+    ]
+  },
+  "dentisaurus_longirostris_catch_fish_small": {
+    "sounds": [
+      "ers:longirostris/catch_fish-small"
+    ]
+  },
+  "dentisaurus_longirostris_hurt": {
+    "sounds": [
+      "ers:longirostris/hurt1",
+      "ers:longirostris/hurt2"
+    ]
+  },
+  "dentisaurus_longirostris_idle2": {
+    "sounds": [
+      "ers:longirostris/idle2"
+    ]
+  },
+  "dentisaurus_longirostris_idle3": {
+    "sounds": [
+      "ers:longirostris/idle3"
+    ]
+  },
+  "dentisaurus_longirostris_idle_sit3": {
+    "sounds": [
+      "ers:longirostris/idle_sit3"
+    ]
+  },
+  "dentisaurus_longirostris_idle_sit4": {
+    "sounds": [
+      "ers:longirostris/idle_sit4"
+    ]
+  },
+  "dentisaurus_longirostris_jump_attack": {
+    "sounds": [
+      "ers:longirostris/jump_attack"
+    ]
+  },
+  "dentisaurus_longirostris_knockdown": {
+    "sounds": [
+      "ers:longirostris/knockdown"
+    ]
+  },
+  "dentisaurus_longirostris_quickly_swimming": {
+    "sounds": [
+      "ers:longirostris/quickly_swimming"
+    ]
+  },
+  "dentisaurus_longirostris_run": {
+    "sounds": [
+      "ers:longirostris/run"
+    ]
+  },
+  "dentisaurus_longirostris_swim_attack": {
+    "sounds": [
+      "ers:longirostris/swim_attack"
+    ]
+  },
+  "dentisaurus_longirostris_swim_attack2": {
+    "sounds": [
+      "ers:longirostris/swim_attack2"
+    ]
+  },
+  "dentisaurus_longirostris_swim_attack_miss": {
+    "sounds": [
+      "ers:longirostris/swim_attack-miss"
+    ]
+  },
+  "dentisaurus_longirostris_swim_attackmiss": {
+    "sounds": [
+      "ers:longirostris/swim_attack-miss"
+    ]
+  },
+  "dentisaurus_longirostris_swim_down": {
+    "sounds": [
+      "ers:longirostris/swim_down"
+    ]
+  },
+  "dentisaurus_longirostris_swim_mid": {
+    "sounds": [
+      "ers:longirostris/swim_mid"
+    ]
+  },
+  "dentisaurus_longirostris_swim_shallow": {
+    "sounds": [
+      "ers:longirostris/swim_shallow"
+    ]
+  },
+  "dentisaurus_longirostris_swim_up": {
+    "sounds": [
+      "ers:longirostris/swim_up"
+    ]
+  },
+  "dentisaurus_longirostris_turn": {
+    "sounds": [
+      "ers:longirostris/turn"
+    ]
+  },
+  "dentisaurus_longirostris_walk": {
+    "sounds": [
+      "ers:longirostris/walk"
+    ]
+  },
   "durovela_call": {
     "sounds": [
-      "oasis:durovela/call"
+      "oasis:tubunasus/durovela_call"
     ]
   },
-  "durovela_footstep": {
+  "regius_attack": {
     "sounds": [
-      "oasis:durovela/footstep"
+      "oasis:regius/attack"
     ]
   },
-  "durovela_hurt": {
+  "regius_attack_turn": {
     "sounds": [
-      "oasis:durovela/hurt"
+      "oasis:regius/attack_turn"
+    ]
+  },
+  "regius_hold_attack_air": {
+    "sounds": [
+      "oasis:regius/hold_attack_air"
+    ]
+  },
+  "regius_hold_attack_ground": {
+    "sounds": [
+      "oasis:regius/hold_attack_ground"
+    ]
+  },
+  "regius_hurt": {
+    "sounds": [
+      "oasis:regius/hurt1",
+      "oasis:regius/hurt2"
+    ]
+  },
+  "regius_knockdown_left": {
+    "sounds": [
+      "oasis:regius/knockdown_left"
+    ]
+  },
+  "regius_knockdown_right": {
+    "sounds": [
+      "oasis:regius/knockdown_right"
+    ]
+  },
+  "regius_roar": {
+    "sounds": [
+      "oasis:regius/roar"
     ]
   },
   "saevus_attack": {
@@ -37,6 +224,26 @@
   "saevus_footstep": {
     "sounds": [
       "ers:saevus/footstep"
+    ]
+  },
+  "saevus_idle2": {
+    "sounds": [
+      "ers:saevus/idle2"
+    ]
+  },
+  "saevus_idle3": {
+    "sounds": [
+      "ers:saevus/idle3"
+    ]
+  },
+  "saevus_idle_sit2": {
+    "sounds": [
+      "ers:saevus/idle_sit2"
+    ]
+  },
+  "saevus_idle_sit3": {
+    "sounds": [
+      "ers:saevus/idle_sit3"
     ]
   },
   "saevus_knockdown": {
@@ -59,9 +266,24 @@
       "ers:saevus/swim"
     ]
   },
+  "saevus_turn": {
+    "sounds": [
+      "ers:saevus/turn"
+    ]
+  },
   "tel_ring": {
     "sounds": [
       "ers:tel_ring"
+    ]
+  },
+  "tubunasus_hurt": {
+    "sounds": [
+      "oasis:tubunasus/durovela_hurt"
+    ]
+  },
+  "tubunasus_walk": {
+    "sounds": [
+      "oasis:tubunasus/walk"
     ]
   }
 }

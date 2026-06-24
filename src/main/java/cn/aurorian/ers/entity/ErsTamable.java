@@ -5,8 +5,11 @@ import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.init.ErsSerializers;
 import cn.aurorian.ers.item.FilledGildedHorn;
 import cn.aurorian.ers.util.ErsUtils;
+import java.util.UUID;
+import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,6 +19,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -26,48 +30,81 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.Nonnull;
-import java.util.UUID;
-
-public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal implements GeoEntity, ErsEntity<T>{
+/**
+ * 可驯服生物的基础抽象类。
+ *
+ * <p>继承自Minecraft的{@link TamableAnimal}并实现GeckoLib的{@link GeoEntity}接口， 提供了以下功能：
+ *
+ * <ul>
+ *   <li>驯服系统 - 玩家可以驯服并成为生物的主人
+ *   <li>年龄系统 - 生物会随时间成长
+ *   <li>饥饿度系统 - 生物需要定期喂食
+ *   <li>重生系统 - 驯服的生物可以在指定位置重生
+ *   <li>灵魂模式 - 特殊的灵魂形态生物
+ *   <li>命令系统 - 玩家可以给生物下达命令
+ *   <li>攻击状态 - 管理生物的攻击行为
+ * </ul>
+ *
+ * <p>所有模组中的可骑乘和可驯服生物都应该继承此类。
+ *
+ * @param <T> 具体的生物子类类型
+ * @author mlus
+ * @version 1.2.0-alpha
+ * @see TamableAnimal
+ * @see GeoEntity
+ * @see ErsEntity
+ */
+public abstract class ErsTamable<T extends ErsTamable<?>> extends TamableAnimal implements GeoEntity, ErsEntity<T> {
     protected ErsTamable(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    private static final EntityDataAccessor<Boolean> ENABLE = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> ENABLE =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntityDataAccessor<String> DIMENSION = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> DIMENSION =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.STRING);
 
-    private static final EntityDataAccessor<Integer> X = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> X =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> Y = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> Y =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> Z = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> Z =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> AGE_TICKS = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> AGE_TICKS =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Float> HUNGER = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> HUNGER =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.FLOAT);
 
-    private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> COMMAND =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<MobAttack> ATTACK_STATE = SynchedEntityData.defineId(ErsTamable.class, ErsSerializers.MOB_ATTACK_SERIALIZER.get());
+    private static final EntityDataAccessor<MobAttack> ATTACK_STATE =
+            SynchedEntityData.defineId(ErsTamable.class, ErsSerializers.MOB_ATTACK_SERIALIZER.get());
 
-    private static final EntityDataAccessor<Vector3f> FOOD_POSITION = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Vector3f> FOOD_POSITION =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.VECTOR3);
 
-    private static final EntityDataAccessor<Boolean> SOUL = SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> SOUL =
+            SynchedEntityData.defineId(ErsTamable.class, EntityDataSerializers.BOOLEAN);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     protected boolean doHunger = false;
 
     protected boolean doAgeTick = false;
+
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
 
     @Override
-    public boolean canSprint(){
+    public boolean canSprint() {
         return true;
     }
 
@@ -79,7 +116,7 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
         this.entityData.set(ENABLE, enable);
     }
 
-    public BlockPos getRespawnPos(){
+    public BlockPos getRespawnPos() {
         return new BlockPos(this.entityData.get(X), this.entityData.get(Y), this.entityData.get(Z));
     }
 
@@ -118,23 +155,22 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
     }
 
     public void setHunger(float hunger) {
-        entityData.set(HUNGER, java.lang.Math.max(java.lang.Math.min(hunger, 100),0));
+        entityData.set(HUNGER, java.lang.Math.max(java.lang.Math.min(hunger, 100), 0));
     }
-    public void setAttackState(MobAttack mobAttack)
-    {
+
+    public void setAttackState(MobAttack mobAttack) {
         this.entityData.set(ATTACK_STATE, mobAttack);
     }
 
-    public MobAttack getAttackState()
-    {
+    public MobAttack getAttackState() {
         return this.entityData.get(ATTACK_STATE);
     }
 
-    public void setFoodPosition(Vector3f foodPosition){
+    public void setFoodPosition(Vector3f foodPosition) {
         entityData.set(FOOD_POSITION, foodPosition);
     }
 
-    public Vector3f getFoodPosition(){
+    public Vector3f getFoodPosition() {
         return entityData.get(FOOD_POSITION);
     }
 
@@ -146,11 +182,11 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
         this.entityData.set(COMMAND, command);
     }
 
-    public boolean isSoul(){
+    public boolean isSoul() {
         return this.entityData.get(SOUL);
     }
 
-    public void setSoul(boolean soul){
+    public void setSoul(boolean soul) {
         this.entityData.set(SOUL, soul);
     }
 
@@ -158,11 +194,11 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
         setHunger(getHunger() + foodAmount);
     }
 
-    public boolean doHunger(){
+    public boolean doHunger() {
         return this.doHunger;
     }
 
-    public boolean doAgeTick(){
+    public boolean doAgeTick() {
         return this.doAgeTick;
     }
 
@@ -175,9 +211,9 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
         this.entityData.define(Y, 0);
         this.entityData.define(Z, 0);
         this.entityData.define(AGE_TICKS, 0);
-        this.entityData.define(HUNGER,100f);
+        this.entityData.define(HUNGER, 100f);
         this.entityData.define(COMMAND, 0);
-        this.entityData.define(ATTACK_STATE, new MobAttack(AttackType.EMPTY,this));
+        this.entityData.define(ATTACK_STATE, new MobAttack(AttackType.EMPTY, this));
         this.entityData.define(FOOD_POSITION, new Vector3f(0, 0, 0));
         this.entityData.define(SOUL, false);
     }
@@ -185,12 +221,12 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        if(isTame()){
+        if (isTame()) {
             compound.putString("StringUUID", this.getStringUUID());
         }
         compound.putBoolean("Enable", this.isRespawnEnable());
 
-        if(isRespawnEnable()){
+        if (isRespawnEnable()) {
             compound.putString("RespawnDimension", this.getDimension());
             BlockPos pos = this.getRespawnPos();
             compound.putInt("RespawnX", pos.getX());
@@ -198,55 +234,63 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
             compound.putInt("RespawnZ", pos.getZ());
         }
 
-        if(this.doHunger){
+        if (this.doHunger) {
             compound.putFloat("Hunger", this.getHunger());
         }
-        if(this.doAgeTick){
+        if (this.doAgeTick) {
             compound.putInt("AgeTicks", this.getAgeInTicks());
         }
 
         compound.putBoolean("Soul", isSoul());
 
+        if (hasCustomName()) compound.putString("CustomName", Component.Serializer.toJson(this.getCustomName()));
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        boolean enable = pCompound.getBoolean("Enable");
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        boolean enable = compoundTag.getBoolean("Enable");
         this.setEnable(enable);
 
-        if(enable){
-            this.setDimension(pCompound.getString("RespawnDimension"));
-            int x = pCompound.getInt("RespawnX");
-            int y = pCompound.getInt("RespawnY");
-            int z = pCompound.getInt("RespawnZ");
+        if (enable) {
+            this.setDimension(compoundTag.getString("RespawnDimension"));
+            int x = compoundTag.getInt("RespawnX");
+            int y = compoundTag.getInt("RespawnY");
+            int z = compoundTag.getInt("RespawnZ");
             this.setRespawnPos(new BlockPos(x, y, z));
         }
 
-        if(this.doHunger) {
-            this.setHunger(pCompound.getFloat("Hunger"));
+        if (this.doHunger) {
+            this.setHunger(compoundTag.getFloat("Hunger"));
         }
 
-        if(this.doAgeTick) {
-            this.setAgeInTicks(pCompound.getInt("AgeTicks"));
+        if (this.doAgeTick) {
+            this.setAgeInTicks(compoundTag.getInt("AgeTicks"));
         }
 
-        if(pCompound.contains("StringUUID")){
-            setUUID(UUID.fromString(pCompound.getString("StringUUID")));
+        if (compoundTag.contains("StringUUID")) {
+            setUUID(UUID.fromString(compoundTag.getString("StringUUID")));
         }
 
-        setSoul(pCompound.getBoolean("Soul"));
+        setSoul(compoundTag.getBoolean("Soul"));
+
+        if (compoundTag.contains("CustomName"))
+            this.setCustomName(Component.Serializer.fromJson(compoundTag.getString("CustomName")));
     }
 
     @Override
     protected void dropFromLootTable(@NotNull DamageSource pDamageSource, boolean pAttackedRecently) {
-        if(isSoul())
-            return;
+        if (isSoul()) return;
         super.dropFromLootTable(pDamageSource, pAttackedRecently);
     }
 
     @Override
-    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public @NotNull SpawnGroupData finalizeSpawn(
+            @NotNull ServerLevelAccessor pLevel,
+            @NotNull DifficultyInstance pDifficulty,
+            @NotNull MobSpawnType pReason,
+            @Nullable SpawnGroupData pSpawnData,
+            @Nullable CompoundTag pDataTag) {
         if (pReason == MobSpawnType.BUCKET) {
             if (pDataTag != null && pDataTag.contains("StringUUID")) {
                 setUUID(UUID.fromString(pDataTag.getString("StringUUID")));
@@ -264,19 +308,27 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
     @Override
     public void tick() {
         super.tick();
-        if(!level().isClientSide()){
+        if (!level().isClientSide()) {
             this.getAttackState().tick();
-            if(tickCount % 20 == 0 && !isSoul()){
+            if (tickCount % 20 == 0 && !isSoul()) {
                 float hunger = getHunger();
-                if(doAgeTick && hunger > 0){
+                if (doAgeTick && hunger > 0) {
                     this.setAgeInTicks(this.getAgeInTicks() + 20 * ErsServerConfig.MATURE_RATE.get());
                 }
             }
         }
     }
 
-    public void startAttack(AttackType type) {
-        this.setAttackState(new MobAttack(type,this));
+    public void startAttack(ErsAttackType type) {
+        if (this.getAttackState().getType() == AttackType.KNOCK_DOWN_LEFT
+                || this.getAttackState().getType() == AttackType.KNOCK_DOWN_RIGHT) {
+            return;
+        }
+
+        this.setAttackState(new MobAttack(type, this));
+        if (type.isForcePlay()) {
+            this.stopTriggeredAnimation("attack", type.getAnimName());
+        }
         triggerAnim("attack", type.getAnimName());
     }
 
@@ -287,19 +339,39 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
 
     @Override
     public boolean isAlliedTo(@NotNull Entity pEntity) {
-        return super.isAlliedTo(pEntity) || (pEntity instanceof TamableAnimal tamableAnimal && tamableAnimal.getOwner() == getOwner());
+        return super.isAlliedTo(pEntity)
+                || (pEntity instanceof TamableAnimal tamableAnimal
+                        && getOwner() != null
+                        && tamableAnimal.getOwner() == getOwner());
     }
 
     @Override
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand pHand) {
-        if(player.getMainHandItem().getItem() == ErsItems.GILDED_HORN.get() && this.isTame() && this.isOwnedBy(player) && !canBreatheUnderwater())
-        {
+        if (player.getMainHandItem().getItem() == ErsItems.GILDED_HORN.get()
+                && this.isTame()
+                && this.isOwnedBy(player)
+                && !canBreatheUnderwater()) {
             return FilledGildedHorn.hornPickup(player, pHand, this).orElse(InteractionResult.PASS);
         }
         return super.mobInteract(player, pHand);
     }
 
-    public void updateFromAgeServer(){}
+    @Override
+    public boolean canMate(@NotNull Animal pOtherAnimal) {
+        if (pOtherAnimal == this) {
+            return false;
+        } else if (pOtherAnimal.getClass() != this.getClass()) {
+            return false;
+        } else {
+            if (!(this instanceof HasGender)) return true;
+
+            return this.isInLove()
+                    && pOtherAnimal.isInLove()
+                    && ((HasGender) this).getGender() != ((HasGender) pOtherAnimal).getGender();
+        }
+    }
+
+    public void updateAgeFromServer() {}
 
     public boolean isMoving() {
         return ErsUtils.isMoving(this);
@@ -309,7 +381,7 @@ public abstract class ErsTamable <T extends ErsTamable<?>> extends TamableAnimal
         return ErsUtils.updateSkyBrightness(level());
     }
 
-    public boolean mightBeSleeping(){
+    public boolean mightBeSleeping() {
         return false;
     }
 }

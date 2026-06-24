@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class SuchomimusMeleeAttackGoal extends MeleeAttackGoal {
     LatimeriaSuchomimusEntity mob;
-    public SuchomimusMeleeAttackGoal(LatimeriaSuchomimusEntity pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
+
+    public SuchomimusMeleeAttackGoal(
+            LatimeriaSuchomimusEntity pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
         super(pMob, pSpeedModifier, pFollowingTargetEvenIfNotSeen);
         this.mob = pMob;
     }
@@ -35,7 +37,9 @@ public class SuchomimusMeleeAttackGoal extends MeleeAttackGoal {
 
     @Override
     public boolean canUse() {
-        return super.canUse() && this.mob.getAttackState().getType() != AttackType.SUCHOMIMUS_HOLD && !this.mob.isVehicle();
+        return super.canUse()
+                && this.mob.getAttackState().getType() != AttackType.SUCHOMIMUS_HOLD
+                && !this.mob.isVehicle();
     }
 
     @Override
@@ -43,21 +47,25 @@ public class SuchomimusMeleeAttackGoal extends MeleeAttackGoal {
         double d0 = this.getAttackReachSqr(pEnemy);
         if (pDistToEnemySqr <= d0 - 9 && this.getTicksUntilNextAttack() <= 0) {
             this.resetAttackCooldown();
-            if(this.mob.getAttackState().isEmpty()){
-                if(this.mob.isInWater()){
-                    this.mob.triggerAnim("attack","attack");
-                }else {
-                    this.mob.triggerAnim("attack","attack_land");
+            if (this.mob.getAttackState().isEmpty()) {
+                if (this.mob.isInWater()) {
+                    this.mob.triggerAnim("attack", "attack");
+                } else {
+                    this.mob.triggerAnim("attack", "attack_land");
                 }
             }
 
-            TickHelper.tickLater(this.mob.level(),15, () ->{
+            TickHelper.tickLater(this.mob.level(), 15, () -> {
                 this.mob.swing(InteractionHand.MAIN_HAND);
                 this.mob.doHurtTarget(pEnemy);
                 this.ticksUntilNextPathRecalculation = 60 + this.mob.getRandom().nextInt(10);
 
-                if(pEnemy.getDimensions(Pose.STANDING).height * pEnemy.getDimensions(Pose.STANDING).width * pEnemy.getDimensions(Pose.STANDING).width <= 0.649F){
-                    if(this.mob.getAttackState().isEmpty() && this.mob.level().random.nextFloat() < 0.5F){
+                if (pEnemy.getDimensions(Pose.STANDING).height
+                                * pEnemy.getDimensions(Pose.STANDING).width
+                                * pEnemy.getDimensions(Pose.STANDING).width
+                        <= 0.649F) {
+                    if (this.mob.getAttackState().isEmpty()
+                            && this.mob.level().random.nextFloat() < 0.5F) {
                         this.mob.startAttack(AttackType.SUCHOMIMUS_HOLD);
                     }
                 }

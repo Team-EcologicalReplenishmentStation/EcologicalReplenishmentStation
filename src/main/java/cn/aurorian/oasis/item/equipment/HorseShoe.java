@@ -12,8 +12,7 @@ public class HorseShoe extends Item implements MountEquipment {
     }
 
     @Override
-    public void tickEquip(ItemStack stack, ErsTamableVehicle<?> entity) {
-    }
+    public void tickEquip(ItemStack stack, ErsTamableVehicle<?> entity) {}
 
     @Override
     public boolean canEquip(ErsTamableVehicle<?> entity) {

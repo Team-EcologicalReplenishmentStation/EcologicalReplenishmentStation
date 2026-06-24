@@ -9,13 +9,14 @@ public class ErsServerConfig {
     public static final ForgeConfigSpec.IntValue HATCHING_RATE;
     public static final ForgeConfigSpec.IntValue MATURE_RATE;
 
-
     static {
         ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
         COMMON_BUILDER.comment("General settings").push("general");
-        HATCHING_RATE = COMMON_BUILDER.comment("The rate at which eggs hatch. Higher is faster. Default is 48000 ticks (40 minutes).")
+        HATCHING_RATE = COMMON_BUILDER
+                .comment("The rate at which eggs hatch. Higher is faster. Default is 48000 ticks (40 minutes).")
                 .defineInRange("EggHatchingSpeedMultiplier", 1, 1, Integer.MAX_VALUE);
-        MATURE_RATE = COMMON_BUILDER.comment("The rate at which creatures grow up. Higher is faster. Default is 24000 ticks (20 minutes).")
+        MATURE_RATE = COMMON_BUILDER
+                .comment("The rate at which creatures grow up. Higher is faster. Default is 24000 ticks (20 minutes).")
                 .defineInRange("BabyMatureSpeedMultiplier", 1, 1, Integer.MAX_VALUE);
 
         COMMON_BUILDER.pop();

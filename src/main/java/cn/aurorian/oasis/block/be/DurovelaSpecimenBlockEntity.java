@@ -11,17 +11,16 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class DurovelaSpecimenBlockEntity extends BlockEntity implements GeoBlockEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public DurovelaSpecimenBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(OasisBlockEntities.DUROVELA_SPECIMEN_BLOCK_ENTITY.get(), pPos, pBlockState);
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-    }
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {}
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-
 }

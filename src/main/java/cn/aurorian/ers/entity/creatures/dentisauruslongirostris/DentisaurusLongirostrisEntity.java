@@ -2,29 +2,29 @@ package cn.aurorian.ers.entity.creatures.dentisauruslongirostris;
 
 import cn.aurorian.ers.client.animator.GeneralAnimator;
 import cn.aurorian.ers.client.animator.SwampDragonAnimator;
-import cn.aurorian.ers.entity.AttackType;
-import cn.aurorian.ers.entity.ErsTamable;
-import cn.aurorian.ers.entity.ErsTamableVehicle;
-import cn.aurorian.ers.entity.MobAttack;
+import cn.aurorian.ers.entity.*;
+import cn.aurorian.ers.entity.ai.AttackFishGoal;
 import cn.aurorian.ers.entity.ai.ErsTamableLookAtPlayerGoal;
+import cn.aurorian.ers.entity.ai.ErsTamableVehicleRandomSwimGoal;
 import cn.aurorian.ers.entity.ai.goal.*;
 import cn.aurorian.ers.entity.ai.movecontrol.AquaticMoveControl;
 import cn.aurorian.ers.entity.ai.movecontrol.LimitedMoveControl;
 import cn.aurorian.ers.entity.ai.navigation.MMGroundPathNavigation;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.AttackFishGoal;
 import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.DentisaurusLongirostrisMeleeAttackGoal;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.ai.DentisaurusLongirostrisRandomSwimGoal;
-import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.invertory.DentisaurusLongirostrisMenuProvider;
+import cn.aurorian.ers.entity.creatures.dentisauruslongirostris.inventory.DentisaurusLongirostrisMenuProvider;
 import cn.aurorian.ers.init.ErsBlocks;
 import cn.aurorian.ers.init.ErsItems;
 import cn.aurorian.ers.init.ErsNetwork;
+import cn.aurorian.ers.init.ErsSounds;
 import cn.aurorian.ers.item.ErsMobLargeBucket;
-import cn.aurorian.ers.packet.MobSyncDimPacket;
-import cn.aurorian.ers.packet.MobTurnPacket;
 import cn.aurorian.ers.packet.VehicleJumpInWaterPacket;
 import cn.aurorian.ers.util.ErsUtils;
+import cn.aurorian.ers.util.SimpleAutoPlayingSoundKeyFrameHandler;
+import cn.aurorian.ers.util.TickHelper;
 import com.mojang.serialization.Codec;
-import net.minecraft.Util;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.IntFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -41,10 +41,11 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.*;
+import net.minecraft.world.ContainerListener;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -57,7 +58,6 @@ import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -68,20 +68,19 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.IntFunction;
-
-public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<DentisaurusLongirostrisEntity> implements ContainerListener, HasCustomInventoryScreen, Bucketable, VariantHolder<DentisaurusLongirostrisEntity.Variant>{
+public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<DentisaurusLongirostrisEntity>
+        implements ContainerListener,
+                HasCustomInventoryScreen,
+                Bucketable,
+                VariantHolder<DentisaurusLongirostrisEntity.Variant> {
     private final GeneralAnimator<DentisaurusLongirostrisEntity> animator;
 
     private static final float BASE_MOVE_SPEED = 0.25f;
@@ -90,23 +89,22 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     private static final float BASE_ATTACK_DAMAGE = 15.0f;
 
-    public static final float BASE_BOUNDING_BOX_WIDTH = 3.5f;
-
-    public static final float BASE_BOUNDING_BOX_HEIGHT = 3.4f;
-
     private static final float ACCELERATION = 0.08f;
 
-    private boolean init = false;
+    private static final EntityDataAccessor<Integer> NEXT_POOP_TIME =
+            SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> NEXT_POOP_TIME = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> FROM_BUCKET =
+            SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME =
+            SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
 
-    public static final EntityDataAccessor<Integer> NEXT_CHANGE_TIME = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FILLED_FISH =
+            SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
 
-    public static final EntityDataAccessor<Integer> FILLED_FISH = SynchedEntityData.defineId(DentisaurusLongirostrisEntity.class, EntityDataSerializers.INT);
-
-    public DentisaurusLongirostrisEntity(EntityType<? extends DentisaurusLongirostrisEntity> pEntityType, Level pLevel) {
+    public DentisaurusLongirostrisEntity(
+            EntityType<? extends DentisaurusLongirostrisEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         animator = new SwampDragonAnimator(this);
         this.createInventory();
@@ -134,23 +132,23 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     public void executeDefaultAttackType() {
-        if(!isInWater() || onGround()){
-            if(isMoving()){
-                if(isSprinting()){
+        if (!isInWater() || onGround()) {
+            if (isMoving()) {
+                if (isSprinting()) {
                     startAttack(AttackType.SWAMP_DRAGON_ATTACK_RUN);
-                }else {
+                } else {
                     startAttack(AttackType.SWAMP_DRAGON_ATTACK_WALK);
                 }
-            }else{
+            } else {
                 startAttack(AttackType.SWAMP_DRAGON_ATTACK);
             }
-        }else {
-            if(isSprinting()){
+        } else {
+            if (isSprinting()) {
                 startAttack(AttackType.SWAMP_DRAGON_ATTACK_QUICK_SWIMMING);
-            }else {
-                if(getWaterDepth() >= 3 || !onGround()){
+            } else {
+                if (getWaterDepth() >= 3 || !onGround()) {
                     startAttack(AttackType.SWAMP_DRAGON_ATTACK_SWIM_MID);
-                }else {
+                } else {
                     startAttack(AttackType.SWAMP_DRAGON_ATTACK_SWIM_SHALLOW);
                 }
             }
@@ -159,45 +157,43 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     public void executeSpecialAttackType() {
-        if(isInWater() && !onGround()){
+        if (isInWater() && !onGround()) {
             startAttack(AttackType.SWAMP_DRAGON_SWIM_JUDGEMENT);
-        }else {
+        } else {
             startAttack(AttackType.SWAMP_DRAGON_JUDGEMENT);
         }
     }
 
     @Override
     public void executeJudgementAttackType() {
-        if(isInWater() && !onGround()){
+        if (isInWater() && !onGround()) {
             startAttack(AttackType.SWAMP_DRAGON_SWIM_SPECIAL_ATTACK);
-        }else {
+        } else {
             startAttack(AttackType.SWAMP_DRAGON_SPECIAL_ATTACK);
         }
     }
 
     @Override
     public void executeTurnAttackType() {
-        if(isSprinting())
-            return;
-        if(isInWater() && !onGround()) {
+        if (isSprinting()) return;
+        if (isInWater() && !onGround()) {
             startAttack(AttackType.SWAMP_DRAGON_ATTACK_SWIM_TURN);
-        }else {
+        } else {
             startAttack(AttackType.SWAMP_DRAGON_ATTACK_TURN);
         }
     }
 
     @Override
     public void executeJumpAttackType() {
-        if(getAttackState().isEmpty() && !onGround() && !isInWater()){
-           this.startAttack(AttackType.SWAMP_DRAGON_JUMP_ATTACK);
-           this.setDeltaMovement(this.getDeltaMovement().scale(0.5f));
+        if (getAttackState().isEmpty() && !onGround() && !isInWater()) {
+            this.startAttack(AttackType.SWAMP_DRAGON_JUMP_ATTACK);
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.5f));
         }
     }
 
     @Override
     public boolean isPushable() {
-        boolean mightBeSleeping = updateSkyBrightness() < 4 && this.getControllingPassenger() == null && getCommand() == 0 && this.getAttackState().getType() == AttackType.EMPTY && this.getTarget() == null && !this.isInWater();
-        return (!mightBeSleeping && getCommand() != 1 && getAttackState().getType().canMove()) || (isMoving() && isVehicle());
+        return (isMoving() || isSprinting()) && isVehicle();
     }
 
     @Override
@@ -207,18 +203,18 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(1,new DentisaurusLongirostrisMeleeAttackGoal(this,2,false));
-        goalSelector.addGoal(2,new MobFollowOwnerGoal(this,2.2D,7.0F,4.0F,64F,false));
-        goalSelector.addGoal(5, new DentisaurusLongirostrisRandomSwimGoal(this, 1));
-        goalSelector.addGoal(5, new MobWanderGoal(this, 1.2){
+        goalSelector.addGoal(1, new DentisaurusLongirostrisMeleeAttackGoal(this, 2, false));
+        goalSelector.addGoal(2, new MobFollowOwnerGoal(this, 2.2D, 7.0F, 4.0F, 64F, false));
+        goalSelector.addGoal(5, new ErsTamableVehicleRandomSwimGoal(this, 1));
+        goalSelector.addGoal(5, new MobWanderGoal(this, 1.2) {
             @Override
             public boolean canUse() {
-                return super.canUse() && ((ErsTamable<?>)this.mob).updateSkyBrightness() > 4;
+                return super.canUse() && ((ErsTamable<?>) this.mob).updateSkyBrightness() > 4;
             }
         });
         goalSelector.addGoal(6, new ErsTamableLookAtPlayerGoal(this, Player.class, 6.0F));
         targetSelector.addGoal(1, new ErsTamableHurtByTargetGoal(this));
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this,Player.class, true){
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true) {
             @Override
             public boolean canUse() {
                 return super.canUse() && !isTame() && isMature() && !mightBeSleeping();
@@ -228,6 +224,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         targetSelector.addGoal(3, new ErsTamableOwnerHurtTargetGoal(this));
         targetSelector.addGoal(4, new AttackFishGoal(this, AbstractFish.class, Boolean.TRUE));
     }
+
     @Override
     public int getMaxSpawnClusterSize() {
         return 1;
@@ -235,7 +232,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
-        return new AmphibiousPathNavigation(this, level){
+        return new AmphibiousPathNavigation(this, level) {
 
             @Override
             public boolean isStableDestination(@NotNull BlockPos p_217799_) {
@@ -246,95 +243,74 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     public boolean mightBeSleeping() {
-        return updateSkyBrightness() < 4 && this.getControllingPassenger() == null && getCommand() == 0 && this.getAttackState().getType() == AttackType.EMPTY && this.getTarget() == null && !this.isInWater();
+        return updateSkyBrightness() < 4
+                && this.getControllingPassenger() == null
+                && getCommand() == 0
+                && this.getAttackState().getType() == AttackType.EMPTY
+                && this.getTarget() == null
+                && !this.isInWater()
+                && !isBloody();
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (isClientSide())
-        {
+        if (isClientSide()) {
             boolean flag2 = onGround() && !isMoving() && this.getAttackState().getType() == AttackType.EMPTY;
 
-            if (this.tickCount > this.entityData.get(NEXT_CHANGE_TIME) && isMature()) {
-                this.entityData.set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200,400));
+            if (this.tickCount > this.entityData.get(NEXT_CHANGE_TIME)) {
+                this.entityData.set(
+                        NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200, 400));
                 int newState = RandomSource.create().nextInt(4);
-                if(newState != 0 && flag2) {
-                    if(getCommand() == 1){
-                        if(newState == 1) {
-                            triggerAnim("extra", "idle_yawn");
-                        }else if(newState == 2) {
+                if (newState != 0 && flag2) {
+                    if (getCommand() == 1) {
+                        if (newState == 1) {
+                            triggerAnim("extra", "idle_sit4");
+                        } else if (newState == 2) {
                             triggerAnim("extra", "idle_sit2");
-                        }else {
+                        } else {
                             triggerAnim("extra", "idle_sit3");
                         }
-                    }else if(updateSkyBrightness() > 4) {
-                        if(newState == 1) {
+                    } else if (updateSkyBrightness() > 4) {
+                        if (newState == 1) {
                             triggerAnim("extra", "idle2");
-                        }else {
+                        } else {
                             triggerAnim("extra", "idle3");
                         }
                     }
                 }
             }
-            if(this.isMoving()){
+            if (this.isMoving()) {
                 updateMount();
             }
         }
 
         if (!isClientSide()) {
-            ErsNetwork.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new MobTurnPacket(this.getId(),getRotDirection()));
-
             if (this.tickCount > this.entityData.get(NEXT_CHANGE_TIME) && isMature()) {
-                boolean flag2 = onGround() && !isMoving() && this.getAttackState().getType() == AttackType.EMPTY && getTarget() == null;
-                if(flag2 && getCommand() == 0 && isInWater() && onGround() && getWaterDepth() < 3){
-                    if(level().random.nextFloat() < 0.25f){
+                boolean flag2 = onGround()
+                        && !isMoving()
+                        && this.getAttackState().getType() == AttackType.EMPTY
+                        && getTarget() == null;
+                if (flag2 && getCommand() == 0 && isInWater() && onGround() && getWaterDepth() < 3) {
+                    if (level().random.nextFloat() < 0.25f) {
                         this.navigation.stop();
-                        this.entityData.set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(1200,1600));
+                        this.entityData.set(
+                                NEXT_CHANGE_TIME,
+                                this.tickCount + RandomSource.create().nextIntBetweenInclusive(1200, 1600));
                         startAttack(AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL);
-                    }else if(level().random.nextFloat() < 0.5f) {
+                    } else if (level().random.nextFloat() < 0.5f) {
                         this.navigation.stop();
-                        this.entityData.set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(1200, 1600));
+                        this.entityData.set(
+                                NEXT_CHANGE_TIME,
+                                this.tickCount + RandomSource.create().nextIntBetweenInclusive(1200, 1600));
                         startAttack(AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE);
                     }
                 }
             }
 
-            if(tickCount % 20 == 0){
-                if(tickCount % 400 ==0){
-                    this.heal(1);
-                }
+            tickCommonServer();
 
-                //饥饿机制
-                float hunger = getHunger();
-                if(tickCount % 100 == 0){
-                    if(isElite())
-                        hunger -= 0.1f;
-                    if(isMature())
-                        hunger -= 0.1f;
-                    setHunger(hunger - 0.1f);
-                }
-
-                if((hunger < 50 || this.getHealth() < this.getMaxHealth()) && tickCount % 200 == 0){
-                    for (int slot = 5; slot <= 7; slot++) {
-                        if (!this.getInventory().getItem(slot).isEmpty()) {
-                            this.getInventory().getItem(slot).shrink(1);
-                            this.feed(3);
-                            this.heal(5);
-                            break;
-                        }
-                    }
-                }
-
-                if(this.getAgeInTicks() % 24000 == 0 || !init)
-                {
-                    this.updateFromAgeServer();
-                    // 发送同步数据包
-                    ErsNetwork.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MobSyncDimPacket(this.getId()));
-                    init = true;
-                }
-
-                //装备更新
+            if (tickCount % 20 == 0) {
                 int filledSlots = 0;
                 for (int slot = 5; slot <= 7; slot++) {
                     if (!getInventory().getItem(slot).isEmpty()) {
@@ -352,70 +328,63 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 }
             }
 
-            for (int i = 1; i <= 3; i++) {
-                ItemStack itemStack = this.inventory.getItem(i);
-                if(!itemStack.isEmpty()){
-                    if(itemStack.is(Items.TURTLE_HELMET)){
-                        if(this.getControllingPassenger()!=null){
-                            turtleHelmetTick();
-                        }
-                    }
-                }
-            }
-
-            //践踏
-            if(this.isSprinting()){
+            if (isMature() && this.isSprinting()) {
                 stompEffect(3f, 3f, checkEquipment(ErsItems.SCRATCHING_BOARD.get()) ? 4f : 2f);
             }
         }
     }
 
-    private void turtleHelmetTick() {
-        if (!this.getControllingPassenger().isEyeInFluid(FluidTags.WATER)) {
-            this.getControllingPassenger().addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 200, 0, false, false, true));
-        }
-    }
-
-    public void updateFromAgeServer() {
-        if(getAgeInDays() >= 20 && !this.isMature()){
+    public void updateAgeFromServer() {
+        if (getAgeInDays() >= 20 && !this.isMature()) {
             this.setMature(true);
+            getAnimatableInstanceCache()
+                    .getManagerForId(getId())
+                    .getAnimationControllers()
+                    .get("main")
+                    .stop();
         }
 
-        if(getAgeInDays() >= 38 && this.canBeElite()){
+        if (getAgeInDays() >= 38 && this.canBeElite()) {
             this.setElite(true);
         }
 
         float scale = calculateScale();
-        if(isMature())
-            this.setRenderSize(scale);
+        if (isMature()) this.setRenderSize(scale);
         else {
             this.setRenderSize(ErsUtils.calculateBabyRenderSize(getAgeInDays()));
         }
-        // 修改碰撞箱
+
         this.refreshDimensions();
 
-        if(!this.isElite())
-            scale *= 0.7f;
-        if(!this.isMature())
-            scale *= 0.4f;
+        if (!this.isElite()) scale *= 0.7f;
+        if (!this.isMature()) scale *= 0.4f;
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(BASE_HEALTH * scale);
+        setBaseHealth(BASE_HEALTH * scale);
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(BASE_ATTACK_DAMAGE * scale);
-        if(!this.isMature())
-            scale *= 2.1f;
-        else if(!this.isElite())
-            scale *= 1.3f;
+        if (!this.isMature()) scale *= 2.1f;
+        else if (!this.isElite()) scale *= 1.3f;
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(BASE_MOVE_SPEED * scale);
         containerChanged(this.getInventory());
-        this.getAnimatableInstanceCache().getManagerForId(getId()).clearSnapshotCache();
+    }
+
+    protected void setBaseHealth(float baseHealth) {
+        this.baseHealth = baseHealth;
+    }
+
+    private float baseHealth = BASE_HEALTH;
+
+    @Override
+    protected float getBaseHealthValue() {
+        return baseHealth;
     }
 
     @Override
     protected float calculateScale() {
         int age = getAgeInDays();
-        if(this.isMature()){
+        if (this.isMature()) {
             age -= 20;
         }
-        if(this.isElite()){
+        if (this.isElite()) {
             age -= 18;
         }
         return ErsUtils.calculateRenderSize(age);
@@ -425,14 +394,11 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
         int age = getAgeInDays();
         float scale;
-        if(this.isElite()){
-            age -= 18;
-        }
-        if(this.isMature()){
+        if (this.isMature()) {
             age -= 20;
         }
         scale = ErsUtils.calculateRenderSize(age);
-        if(!this.isMature()){
+        if (!this.isMature()) {
             scale *= 0.4F;
         }
 
@@ -441,29 +407,41 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     public boolean isFood(@NotNull ItemStack itemStack) {
-        return itemStack.is(ItemTags.FISHES);
+        return itemStack.is(ItemTags.FISHES) || itemStack.is(ErsItems.FISH_FEED.get());
     }
+
     public void setFilledFish(int count) {
         this.entityData.set(FILLED_FISH, count);
     }
+
     public int getFilledFish() {
         return this.entityData.get(FILLED_FISH);
     }
 
     @Override
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand pHand) {
-        if(player.getMainHandItem().getItem() == ErsItems.LARGE_WATER_BUCKET.get() && this.isTame() && this.isOwnedBy(player))
-        {
+        if (player.getMainHandItem().getItem() == ErsItems.LARGE_WATER_BUCKET.get()
+                && this.isTame()
+                && this.isOwnedBy(player)) {
             return ErsMobLargeBucket.bucketMobPickup(player, pHand, this).orElse(InteractionResult.PASS);
         }
-        if (isMature() && isTame() && !isVehicle() && this.isOwnedBy(player) && !player.isCrouching() && !player.getMainHandItem().is(ItemTags.FISHES)) {
+        if (isMature()
+                && isTame()
+                && !isVehicle()
+                && this.isOwnedBy(player)
+                && !player.isCrouching()
+                && !(player.getMainHandItem().is(ItemTags.FISHES)
+                        || player.getMainHandItem().is(ErsItems.FISH_FEED.get()))) {
             player.setYRot(getYRot());
             player.setXRot(getXRot());
             player.startRiding(this);
         }
 
-        if (pHand == InteractionHand.MAIN_HAND && player.isCrouching() && this.isTame() && this.isOwnedBy(player) && !player.getMainHandItem().is(ItemTags.FISHES))
-        {
+        if (pHand == InteractionHand.MAIN_HAND
+                && player.isCrouching()
+                && this.isTame()
+                && this.isOwnedBy(player)
+                && !isFood(player.getMainHandItem())) {
             navigation.stop();
             if (!level().isClientSide) {
                 this.setCommand(this.getCommand() + 1);
@@ -475,6 +453,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             if (this.getCommand() == 1) {
                 commandText = "sit";
                 this.setTarget(null);
+                setRotDirection(MobRotDirection.of(MobRotDirection.RotDirection.NONE, false));
             } else if (this.getCommand() == 2) {
                 commandText = "follow";
                 this.setTarget(null);
@@ -482,28 +461,29 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             player.displayClientMessage(Component.translatable("ers.command." + commandText), true);
         }
 
-        if (!isClientSide() && (player.getMainHandItem().is(ItemTags.FISHES) || player.getMainHandItem().is(ErsItems.PISCIVORES_FEED.get()))) {
-            // 驯服
-            if(!this.isTame() && this.getAgeInDays() < 1 && player.getMainHandItem().is(ErsItems.PISCIVORES_FEED.get())){
-                if (this.random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player)){
+        if (!isClientSide() && (isFood(player.getMainHandItem()))) {
+            if (!this.isTame()
+                    && this.getAgeInDays() < 1
+                    && player.getMainHandItem().is(ErsItems.FISH_FEED.get())) {
+                if (this.random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player)) {
                     this.tame(player);
-                    this.level().broadcastEntityEvent(this, (byte)7);
-                }else{
-                    this.level().broadcastEntityEvent(this, (byte)6);
+                    this.level().broadcastEntityEvent(this, (byte) 7);
+                } else {
+                    this.level().broadcastEntityEvent(this, (byte) 6);
                 }
-            }else if(this.isTame()) {
-                this.feed(player.getMainHandItem().is(ItemTags.FISHES)? 1 : 3);
-                this.heal(player.getMainHandItem().is(ItemTags.FISHES)? 3 : 5);
+            } else if (this.isTame()) {
+                this.feed(player.getMainHandItem().is(ItemTags.FISHES) ? 1 : 5);
+                this.heal(player.getMainHandItem().is(ItemTags.FISHES) ? 3 : 5);
                 player.getMainHandItem().shrink(1);
             }
-
         }
         return super.mobInteract(player, pHand);
     }
 
-    private void generateFeces(){
+    private void generateFeces() {
         if (this.level().isClientSide) return;
-        List<BlockState> fecesBlocks = List.of(ErsBlocks.BONE_FECES.get().defaultBlockState(),
+        List<BlockState> fecesBlocks = List.of(
+                ErsBlocks.BONE_FECES.get().defaultBlockState(),
                 ErsBlocks.SMALL_FECES.get().defaultBlockState(),
                 ErsBlocks.LARGE_FECES.get().defaultBlockState(),
                 ErsBlocks.GLASSES_FECES.get().defaultBlockState(),
@@ -516,36 +496,41 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         int offsetZ = (int) (Math.cos(yRot) * 1.5);
 
         BlockPos targetPos = pos.offset(offsetX, 0, offsetZ);
-        if (level.getBlockState(targetPos).isAir() &&
-            level.getBlockState(targetPos.below()).isSolidRender(level, targetPos.below())) {
+        if (level.getBlockState(targetPos).isAir()
+                && level.getBlockState(targetPos.below()).isSolidRender(level, targetPos.below())) {
             BlockState state = fecesBlocks.get(this.level().random.nextInt(fecesBlocks.size()));
-            if(state.is(ErsBlocks.TEL_FECES.get())){
-                if(this.level().random.nextFloat() < 0.1f){
+            if (state.is(ErsBlocks.TEL_FECES.get())) {
+                if (this.level().random.nextFloat() < 0.1f) {
                     return;
                 }
             }
             level.setBlock(targetPos, state, 3);
-            level.playSound(null,
-                targetPos.getX() + 0.5,
-                targetPos.getY() + 0.5,
-                targetPos.getZ() + 0.5,
-                SoundEvents.SLIME_BLOCK_PLACE,
-                SoundSource.BLOCKS,
-                0.5f,
-                1.0f);
+            level.playSound(
+                    null,
+                    targetPos.getX() + 0.5,
+                    targetPos.getY() + 0.5,
+                    targetPos.getZ() + 0.5,
+                    SoundEvents.SLIME_BLOCK_PLACE,
+                    SoundSource.BLOCKS,
+                    0.5f,
+                    1.0f);
         }
     }
 
-    private void placeNest(){
+    private void placeNest() {
         if (this.level().isClientSide) return;
         BlockState state = ErsBlocks.SWAMP_DRAGON_NEST.get().defaultBlockState();
         BlockPos pos = this.blockPosition();
         Level level = this.level();
 
-        if (level.getBlockState(pos).isAir() &&
-                level.getBlockState(pos.below()).isSolidRender(level, pos.below())) {
+        if (level.getBlockState(pos).isAir() && level.getBlockState(pos.below()).isSolidRender(level, pos.below())) {
             level.setBlock(pos, state, 3);
         }
+    }
+
+    @Override
+    protected @Nullable SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+        return ErsSounds.LONGIROSTRIS_HURT.get();
     }
 
     @Override
@@ -555,18 +540,16 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
 
     @Override
     protected @NotNull Vec3 getRiddenInput(@NotNull Player player, @NotNull Vec3 pTravelVector) {
-        if(this.rideSpeed != 0 || player.jumping){
+        if (this.rideSpeed != 0 || player.jumping) {
             updateMount();
-            if(getCommand() == 1)
-                this.setCommand(0);
+            if (getCommand() == 1) this.setCommand(0);
         }
-        if(this.isInFluidType()){
+        if (this.isInFluidType()) {
             float y = 0;
-            if(player.jumping && getSwimState() != 1){
+            if (player.jumping && (getSwimState() != 1 || wasEyeInWater)) {
                 y = 0.45f;
-                if(!wasEyeInWater && getSwimState() != 3)
-                    setSwimState(1);
-            }else if(entityData.get(IS_DIVING) && getSwimState() != 1) {
+                if (!wasEyeInWater && getSwimState() != 3) setSwimState(1);
+            } else if (isDiving() && getSwimState() != 1) {
                 y = -0.4f;
             }
 
@@ -576,14 +559,11 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 }
             }
 
-            if (!getAttackState().getType().canMove())
-                y = 0;
+            if (!getAttackState().getType().canMove()) y = 0;
             return new Vec3(0, y, this.rideSpeed);
-        }
-        else
-        {
-            if(onGround() && player.jumping && getAttackState().isEmpty()){
-                startAttack(AttackType.JUMP);
+        } else {
+            if (onGround() && player.jumping && getAttackState().isEmpty()) {
+                startAttack(AttackType.SWAMP_DRAGON_JUMP);
                 this.setDeltaMovement(this.getDeltaMovement().scale(2).add(0, 1, 0));
             }
             return new Vec3(0, 0, this.rideSpeed);
@@ -596,130 +576,130 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     }
 
     @Override
-    protected void tickRidden(@NotNull Player driver, @NotNull Vec3 move)
-    {
+    protected void tickRidden(@NotNull Player driver, @NotNull Vec3 move) {
         float pitch = this.getAnimator().getModelPitch(this.getAnimator().getPartialTick());
         tickStableHead();
 
-        if(this.isInFluidType() && pitch > 20 && isSprinting() && getWaterDepth() >= 4)
-        {
+        if (this.isInFluidType() && pitch > 20 && isSprinting() && getWaterDepth() >= 4) {
             jumpFromGround();
         }
-        //只有当非大转向并且按下键并且有鞍具的时候rideSpeed才会增加
-        if(this.getAttackState().getType().canMove() && this.isSaddled())
-        {
-            if((!this.getRotDirection().isLargeTurn() || this.isSprinting()) && (Math.abs(driver.zza) > 0 || Math.abs(driver.xxa) > 0))
-            {
-                float baseSpeed = (float) this.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
-                this.rideSpeed = Mth.approach(this.rideSpeed, isSprinting() ? baseSpeed * 2.2f : isInWater() ? 1.25f * baseSpeed : baseSpeed, ACCELERATION);
-            }else{
+
+        if (this.getAttackState().getType().canMove() && this.isSaddled()) {
+            if ((!this.getRotDirection().isLargeTurn() || this.isSprinting())
+                    && (Math.abs(driver.zza) > 0 || Math.abs(driver.xxa) > 0)) {
+                float baseSpeed =
+                        (float) this.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
+                this.rideSpeed = Mth.approach(
+                        this.rideSpeed,
+                        isSprinting() ? baseSpeed * 2.2f : isInWater() ? 1.25f * baseSpeed : baseSpeed,
+                        ACCELERATION);
+            } else {
                 this.rideSpeed = Mth.approach(this.rideSpeed, 0, ACCELERATION * 2);
             }
-        }
-        else{
+        } else {
             this.rideSpeed = Mth.approach(this.rideSpeed, 0, ACCELERATION * 3);
         }
-
     }
 
     @Override
     protected void jumpFromGround() {
-        // 基础跳跃速度
         double jumpVelocity = 0.36;
-        // 设置新的运动速度
         this.setDeltaMovement(this.getDeltaMovement().add(0, jumpVelocity, 0));
         this.hasImpulse = true;
         ForgeHooks.onLivingJump(this);
-        if(this.level().isClientSide)
-            ErsNetwork.INSTANCE.sendToServer(new VehicleJumpInWaterPacket(this.getId()));
+        if (this.level().isClientSide) ErsNetwork.INSTANCE.sendToServer(new VehicleJumpInWaterPacket(this.getId()));
     }
 
     @Override
     public void registerControllers(ControllerRegistrar controllers) {
         AnimationController<DentisaurusLongirostrisEntity> main = new AnimationController<>(this, "main", 5, state -> {
-            RawAnimation builder = RawAnimation.begin();
-            boolean flag1 = false;
-            for(int y = 1; y <= 8; y++) {
-                BlockPos checkPos = new BlockPos(this.blockPosition().below(y));
-                BlockState blockstate = this.level().getBlockState(checkPos);
+                    RawAnimation builder = RawAnimation.begin();
+                    boolean flag1 = false;
+                    for (int y = 1; y <= 8; y++) {
+                        BlockPos checkPos = new BlockPos(this.blockPosition().below(y));
+                        BlockState blockstate = this.level().getBlockState(checkPos);
 
-                if(blockstate.isAir()) {
-                    continue;
-                }
-                flag1 = isWaterBlock(this.level(), this.blockPosition().below(y));
-                break;
-            }
-
-            if (isFalling() && !flag1) {
-                builder.thenLoop("animation.fall");
-            }
-            if (isInWater() && !onGround() && (!isMature() || getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) > 1.7f * getRenderSize())) {
-                if (isMoving() && isSprinting()) {
-                    builder.thenLoop("animation.quickly_swimming");
-                } else if (isMoving() && !isSprinting() && (getWaterDepth() <= 3 || this.onGround() || !this.isMature())) {
-                    builder.thenLoop("animation.swim_shallow");
-                } else if (isMoving() && !isSprinting()) {
-                    builder.thenLoop("animation.swim_mid");
-                } else if (!this.getRotDirection().isNone() && isMature()) {
-                    if (this.getRotDirection().isLeft()) {
-                            builder.thenLoop("animation.+w_left");
-                    } else {
-                        builder.thenLoop("animation.-w_right");
-                    }
-                } else {
-                    if(this.getControllingPassenger() instanceof Player player &&
-                            getRiddenInput(player,new Vec3(0,0,0)).y < 0){
-                        builder.thenLoop("animation.swim_down");
-                    }
-                    else if(this.getControllingPassenger()!=null && this.getControllingPassenger().jumping){
-                        builder.thenLoop("animation.swim_up");
-                    }else {
-                        builder.thenLoop("animation.idle_shallow");
-                    }
-                }
-            } else {
-                if (isMoving() && isSprinting() && onGround()) {
-                    builder.thenLoop("animation.run");
-                } else if (isMoving() && onGround()) {
-                    builder.thenLoop("animation.walk");
-                } else if (!this.getRotDirection().isNone()) {
-                    if (this.getRotDirection().isLeft()) {
-                        if(isVehicle())
-                            builder.thenLoop("animation.+left");
-                        else
-                            builder.thenLoop("animation.+left_ai");
-                    } else {
-                        if(isVehicle())
-                            builder.thenLoop("animation.-right");
-                        else
-                            builder.thenLoop("animation.-right_ai");
-                    }
-                } else {
-                    if(getCommand() == 1){
-                        builder.thenLoop("animation.idle_sit");
-                    }
-                    else if(mightBeSleeping()){
-                        if(this.level().getRawBrightness(this.blockPosition(),0) > 8 && isMature()){
-                            builder.thenLoop("animation.sleep-sunlight");
-                        }else {
-                            builder.thenLoop("animation.sleep");
+                        if (blockstate.isAir()) {
+                            continue;
                         }
-                    }else if(onGround()){
-                        builder.thenLoop("animation.idle");
+                        flag1 = isWaterBlock(this.level(), this.blockPosition().below(y));
+                        break;
                     }
-                }
-            }
 
-            return state.setAndContinue(builder);
-            });
+                    if (isFalling() && !flag1) {
+                        builder.thenLoop("animation.fall");
+                    }
+                    if (isInWater() && !onGround()) {
+                        if (isMoving()) {
+                            if (isSprinting()) {
+                                builder.thenLoop("animation.quickly_swimming");
+                            } else if (!isSprinting()
+                                    && (getWaterDepth() <= 3 || this.onGround() || !this.isMature())) {
+                                builder.thenLoop("animation.swim_shallow");
+                            } else {
+                                builder.thenLoop("animation.swim_mid");
+                            }
+                        } else if (!this.getRotDirection().isNone() && isMature()) {
+                            if (this.getRotDirection().isLeft()) {
+                                builder.thenLoop("animation.+w_left");
+                            } else {
+                                builder.thenLoop("animation.-w_right");
+                            }
+                        } else {
+                            if (this.getControllingPassenger() instanceof Player player
+                                    && getRiddenInput(player, new Vec3(0, 0, 0)).y < 0) {
+                                builder.thenLoop("animation.swim_down");
+                            } else if (this.getControllingPassenger() != null
+                                    && this.getControllingPassenger().jumping) {
+                                builder.thenLoop("animation.swim_up");
+                            } else {
+                                builder.thenLoop("animation.idle_shallow");
+                            }
+                        }
+                    } else {
+                        if (isMoving()) {
+                            if (isSprinting()) {
+                                builder.thenLoop("animation.run");
+                            } else {
+                                builder.thenLoop("animation.walk");
+                            }
+                        } else if (!this.getRotDirection().isNone()) {
+                            if (this.getRotDirection().isLeft()) {
+                                builder.thenLoop("animation.+left");
+                            } else {
+                                builder.thenLoop("animation.-right");
+                            }
+                        } else {
+                            if (getCommand() == 1) {
+                                builder.thenLoop("animation.idle_sit");
+                            } else if (mightBeSleeping()) {
+                                if (this.level().getRawBrightness(this.blockPosition(), 0) > 8 && isMature()) {
+                                    builder.thenLoop("animation.sleep-sunlight");
+                                } else {
+                                    builder.thenLoop("animation.sleep");
+                                }
+                            } else if (onGround()) {
+                                builder.thenLoop("animation.idle");
+                            }
+                        }
+                    }
 
-        AnimationController<DentisaurusLongirostrisEntity> attack = new AnimationController<>(this, "attack",5, state -> PlayState.STOP)
+                    return state.setAndContinue(builder);
+                })
+                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>());
+
+        AnimationController<DentisaurusLongirostrisEntity> attack = new AnimationController<>(
+                        this, "attack", 5, state -> PlayState.STOP)
                 .triggerableAnim("attack", RawAnimation.begin().thenPlay("animation.attack-idle"))
+                .triggerableAnim("attack2", RawAnimation.begin().thenPlay("animation.attack-idle2"))
                 .triggerableAnim("attack-walk", RawAnimation.begin().thenPlay("animation.attack-walk"))
+                .triggerableAnim("attack-walk2", RawAnimation.begin().thenPlay("animation.attack-walk2"))
                 .triggerableAnim("attack-run", RawAnimation.begin().thenPlay("animation.attack-run"))
+                .triggerableAnim("attack-run2", RawAnimation.begin().thenPlay("animation.attack-run2"))
                 .triggerableAnim("attack_swim_shallow", RawAnimation.begin().thenPlay("animation.attack_swim_shallow"))
                 .triggerableAnim("attack_swim_mid", RawAnimation.begin().thenPlay("animation.attack_swim_mid"))
-                .triggerableAnim("attack_quickly_swimming", RawAnimation.begin().thenPlay("animation.attack_quickly_swimming"))
+                .triggerableAnim(
+                        "attack_quickly_swimming", RawAnimation.begin().thenPlay("animation.attack_quickly_swimming"))
                 .triggerableAnim("attack_turn", RawAnimation.begin().thenPlay("animation.attack_turn"))
                 .triggerableAnim("attack_swim_turn", RawAnimation.begin().thenPlay("animation.attack_swim_turn"))
                 .triggerableAnim("attack2-small", RawAnimation.begin().thenPlay("animation.attack2-small"))
@@ -733,19 +713,20 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
                 .triggerableAnim("catch_fish-middle", RawAnimation.begin().thenPlay("animation.catch_fish-middle"))
                 .triggerableAnim("knockdown_left", RawAnimation.begin().thenPlay("animation.knockdown_left"))
                 .triggerableAnim("knockdown_right", RawAnimation.begin().thenPlay("animation.knockdown_right"))
-                .triggerableAnim("jump",RawAnimation.begin().thenPlay("animation.jump"))
-                .triggerableAnim("jump_attack",RawAnimation.begin().thenPlay("animation.jump_attack"));
+                .triggerableAnim("jump", RawAnimation.begin().thenPlay("animation.jump"))
+                .triggerableAnim("jump_attack", RawAnimation.begin().thenPlay("animation.jump_attack"))
+                .setSoundKeyframeHandler(new SimpleAutoPlayingSoundKeyFrameHandler<>());
 
-        AnimationController<DentisaurusLongirostrisEntity> extra = new AnimationController<>(this, "extra",0, state -> PlayState.STOP)
+        AnimationController<DentisaurusLongirostrisEntity> extra = new AnimationController<>(
+                        this, "extra", 0, state -> PlayState.STOP)
                 .triggerableAnim("idle2", RawAnimation.begin().thenPlay("animation.idle2"))
                 .triggerableAnim("idle3", RawAnimation.begin().thenPlay("animation.idle3"))
                 .triggerableAnim("idle_sit2", RawAnimation.begin().thenPlay("animation.idle_sit2"))
                 .triggerableAnim("idle_sit3", RawAnimation.begin().thenPlay("animation.idle_sit3"))
-                .triggerableAnim("idle_yawn", RawAnimation.begin().thenPlay("animation.idle_yawn"));
+                .triggerableAnim("idle_sit4", RawAnimation.begin().thenPlay("animation.idle_sit4"));
 
-            controllers.add(main,attack,extra);
+        controllers.add(main, attack, extra);
     }
-
 
     public int getWaterDepth() {
         if (!this.isInWater()) {
@@ -778,140 +759,104 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         return depth;
     }
 
-    public void tickStableHead(){
+    public void tickStableHead() {
         float pitch = this.getAnimator().getModelPitch(this.getAnimator().getPartialTick());
-        if(this.isInWater())
-        {
+        if (this.isInWater()) {
             setStableHead(pitch < 20);
-        }
-        else if(this.onGround())
-        {
+        } else if (this.onGround()) {
             setStableHead(true);
-        }else if(isFalling()){
+        } else if (isFalling()) {
             setStableHead(false);
         }
-    }
-    @Override
-    protected boolean canAddPassenger(@NotNull Entity pPassenger) {
-
-        return this.getPassengers().size() <= 3;
     }
 
     @Override
     protected void dropCustomDeathLoot(@NotNull DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        if(isSoul())
-            return;
+        if (isSoul()) return;
 
         super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
-        if(isMature() && random.nextFloat() < 0.15f){
+        if (isMature() && random.nextFloat() < 0.15f) {
             ItemStack stack = new ItemStack(ErsItems.SWAMP_DRAGON_EGG.get());
             this.spawnAtLocation(stack);
         }
     }
+
     @Override
-    public void containerChanged(@NotNull Container pContainer) {
-        this.setSaddled(!this.inventory.getItem(0).isEmpty());
-        setArmored(!getInventory().getItem(4).isEmpty() && isElite());
+    protected float getBaseArmorValue() {
+        return 12;
+    }
 
-        boolean healthBoost = false;
-        boolean armorBoost = false;
-        for (int i = 1; i <= 3; i++) {
-            ItemStack itemStack = this.inventory.getItem(i);
-            if(!itemStack.isEmpty()){
-                if(itemStack.is(Items.ENCHANTED_GOLDEN_APPLE)){
-                    healthBoost = true;
-                }
-                if(itemStack.is(Items.SHIELD)){
-                    armorBoost = true;
-                }
-            }
-        }
-
-        float scale = calculateScale();
-
-        if(!this.isElite())
-            scale *= 0.7f;
-        if(!this.isMature())
-            scale *= 0.4f;
-
-        if(healthBoost){
-            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(BASE_HEALTH * scale + 20);
-        }else {
-            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(BASE_HEALTH * scale);
-        }
-
-        if (armorBoost) {
-            this.getAttribute(Attributes.ARMOR).setBaseValue(16);
-        } else {
-            this.getAttribute(Attributes.ARMOR).setBaseValue(12);
-        }
+    @Override
+    protected float getBoostedArmorValue() {
+        return 16;
     }
 
     @Override
     public void openCustomInventoryScreen(@NotNull Player player) {
         if (!isClientSide() && !isSoul()) {
             NetworkHooks.openScreen(
-                (ServerPlayer) player,
-                new DentisaurusLongirostrisMenuProvider(this),
-                buf -> buf.writeInt(this.getId())
-            );
+                    (ServerPlayer) player,
+                    new DentisaurusLongirostrisMenuProvider(this),
+                    buf -> buf.writeInt(this.getId()));
         }
     }
 
     @Override
-    public void startAttack(AttackType type) {
+    public void startAttack(ErsAttackType type) {
         super.startAttack(type);
-        if(type != AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL && type != AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE && this.getCommand() == 1)
-            this.setCommand(0);
-    }
-    @Override
-    protected void defineSynchedData()
-    {
-        super.defineSynchedData();
-        entityData.define(FROM_BUCKET, false);
-        entityData.define(NEXT_POOP_TIME, RandomSource.create().nextInt(24000));
-        entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(200,400));
-        entityData.define(FILLED_FISH,0);
-    }
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound)
-    {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Command", this.getCommand());
-        compound.putInt("FilledFish",this.getFilledFish());
+        if (type != AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL
+                && type != AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE
+                && this.getCommand() == 1) this.setCommand(0);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound)
-    {
-        super.readAdditionalSaveData(compound);
-        this.setCommand(compound.getInt("Command"));
-        this.setFilledFish(compound.getInt("FilledFish"));
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(FROM_BUCKET, false);
+        entityData.define(NEXT_POOP_TIME, RandomSource.create().nextInt(24000));
+        entityData.define(NEXT_CHANGE_TIME, this.tickCount + random.nextIntBetweenInclusive(200, 400));
+        entityData.define(FILLED_FISH, 0);
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Command", this.getCommand());
+        compound.putInt("FilledFish", this.getFilledFish());
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setCommand(compoundTag.getInt("Command"));
+        this.setFilledFish(compoundTag.getInt("FilledFish"));
+        updateAgeFromServer();
     }
 
     @Override
     public void updateMount() {
-        this.getEntityData().set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200,400));
-        getAnimatableInstanceCache().getManagerForId(getId()).getAnimationControllers().get("extra").stop();
-//        stopTriggeredAnimation("extra","idle2");
-//        stopTriggeredAnimation("extra","idle3");
-//        stopTriggeredAnimation("extra","idle_yawn");
-//        stopTriggeredAnimation("extra","idle_sit2");
-//        stopTriggeredAnimation("extra","idle_sit3");
+        this.getEntityData()
+                .set(NEXT_CHANGE_TIME, this.tickCount + RandomSource.create().nextIntBetweenInclusive(200, 400));
+        getAnimatableInstanceCache()
+                .getManagerForId(getId())
+                .getAnimationControllers()
+                .get("extra")
+                .stop();
 
-        stopTriggeredAnimation("attack","catch_fish-small");
-        stopTriggeredAnimation("attack","catch_fish-middle");
-        if(this.getAttackState().isEmpty()){
-            stopTriggeredAnimation("attack","knockdown_left");
-            stopTriggeredAnimation("attack","knockdown_right");
+        stopTriggeredAnimation("attack", "catch_fish-small");
+        stopTriggeredAnimation("attack", "catch_fish-middle");
+        if (this.getAttackState().isEmpty()) {
+            stopTriggeredAnimation("attack", "knockdown_left");
+            stopTriggeredAnimation("attack", "knockdown_right");
         }
-        if(this.getAttackState().getType() == AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL || this.getAttackState().getType() == AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE){
+        if (this.getAttackState().getType() == AttackType.SWAMP_DRAGON_CATCH_FISH_SMALL
+                || this.getAttackState().getType() == AttackType.SWAMP_DRAGON_CATCH_FISH_MIDDLE) {
             this.getAttackState().isSyncInstance = true;
-            this.setAttackState(new MobAttack(AttackType.EMPTY,this));
+            this.setAttackState(new MobAttack(AttackType.EMPTY, this));
         }
 
-        if(horizontalCollision || onGround()){
-            stopTriggeredAnimation("attack","jump");
+        if (horizontalCollision || onGround()) {
+            stopTriggeredAnimation("attack", "jump");
         }
     }
 
@@ -921,8 +866,7 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     }
 
     @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, @NotNull DamageSource pSource)
-    {
+    public boolean causeFallDamage(float pFallDistance, float pMultiplier, @NotNull DamageSource pSource) {
         return false;
     }
 
@@ -931,83 +875,84 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         return pLevel.isUnobstructed(this);
     }
 
-    public GeneralAnimator<DentisaurusLongirostrisEntity> getAnimator(){
+    public GeneralAnimator<DentisaurusLongirostrisEntity> getAnimator() {
         return animator;
     }
-    public int getInventorySize(){
+
+    public int getInventorySize() {
         return 8;
     }
-    public int getNextPoopTime(){
+
+    public int getNextPoopTime() {
         return this.entityData.get(NEXT_POOP_TIME);
     }
-    public void setNextPoopTime(int time){
+
+    public void setNextPoopTime(int time) {
         this.entityData.set(NEXT_POOP_TIME, time);
     }
 
     @Override
-    public boolean isSaddleable()
-    {
+    public boolean isSaddleable() {
         return super.isSaddleable() && isMature();
     }
-    public static AttributeSupplier.Builder createAttributes()
-    {
+
+    public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, BASE_MOVE_SPEED)
                 .add(Attributes.MAX_HEALTH, BASE_HEALTH * 0.7)
-                .add(Attributes.FOLLOW_RANGE, 16)
+                .add(Attributes.FOLLOW_RANGE, 32)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1)
                 .add(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE * 0.7)
-                .add(Attributes.ARMOR,12)
-                .add(ForgeMod.SWIM_SPEED.get(),10);
+                .add(Attributes.ARMOR, 12)
+                .add(ForgeMod.SWIM_SPEED.get(), 10);
     }
 
     @Override
-    public void equipSaddle()
-    {
+    public void equipSaddle() {
         this.inventory.setItem(0, new ItemStack(ErsItems.SWAMP_DRAGON_SADDLE.get()));
         setSaddled(true);
         level().playSound(null, getX(), getY(), getZ(), SoundEvents.HORSE_SADDLE, getSoundSource(), 1, 1);
     }
-    public boolean isClientSide(){
+
+    public boolean isClientSide() {
         return level().isClientSide;
     }
+
     private static boolean isWaterBlock(Level level, BlockPos pos) {
         BlockState blockState = level.getBlockState(pos);
         // 检查是否为水方块（包括流动的水）
-        return blockState.getFluidState().is(FluidTags.WATER) &&
-            !blockState.getFluidState().isEmpty();
+        return blockState.getFluidState().is(FluidTags.WATER)
+                && !blockState.getFluidState().isEmpty();
     }
 
     @Override
     public boolean fromBucket() {
         return this.entityData.get(FROM_BUCKET);
     }
+
     @Override
     public void setFromBucket(boolean pFromBucket) {
         this.entityData.set(FROM_BUCKET, pFromBucket);
     }
+
     @Override
     public void saveToBucketTag(ItemStack pStack) {
         this.addAdditionalSaveData(pStack.getOrCreateTag());
     }
+
     @Override
     public void loadFromBucketTag(@NotNull CompoundTag pTag) {
         this.readAdditionalSaveData(pTag);
     }
+
     @Override
     public @NotNull SoundEvent getPickupSound() {
         return SoundEvents.BUCKET_FILL;
     }
+
     @Override
     public @NotNull ItemStack getBucketItemStack() {
         return new ItemStack(ErsItems.DENTISARUS_LONGIROSTRIS_LARGE_BUCKET.get());
-    }
-
-     public boolean isFalling() {
-        return !this.onGround() && 
-               !this.isInWater() && 
-               !this.isInLava() && 
-               this.getDeltaMovement().y < -0.8;
     }
 
     @Override
@@ -1024,32 +969,18 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     @Override
     public void aiStep() {
         super.aiStep();
-        if(getControllingPassenger() != null){
+        if (getControllingPassenger() != null) {
             waterAiStep(isElite() ? 2.6f * getRenderSize() : 2.4f * getRenderSize());
-        }else {
+        } else {
             this.setNoGravity(false);
         }
     }
 
     @Override
-    public @NotNull Vec3 getFluidFallingAdjustedMovement(double pGravity, boolean pIsFalling, @NotNull Vec3 pDeltaMovement) {
-        if (!this.isNoGravity()) {
-            double d0;
-            if (pIsFalling && java.lang.Math.abs(pDeltaMovement.y - 0.005) >= 0.003 && java.lang.Math.abs(pDeltaMovement.y - pGravity / 16.0) < 0.003) {
-                d0 = -0.003;
-            } else {
-                d0 = pDeltaMovement.y - pGravity / 16.0;
-            }
-
-            return new Vec3(pDeltaMovement.x, d0, pDeltaMovement.z);
-        } else {
-            return pDeltaMovement;
-        }
-    }
-
-    @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        if(source.type().msgId().equals("sweetBerryBush") || source.getEntity() instanceof Pufferfish || source.type().msgId().equals("cactus")) {
+        if (source.type().msgId().equals("sweetBerryBush")
+                || source.getEntity() instanceof Pufferfish
+                || source.type().msgId().equals("cactus")) {
             return true;
         }
         return super.isInvulnerableTo(source);
@@ -1062,41 +993,69 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
     public void makeStuckInBlock(@NotNull BlockState pState, @NotNull Vec3 pMotionMultiplier) {}
 
     @Override
-    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @org.jetbrains.annotations.Nullable SpawnGroupData pSpawnData, @org.jetbrains.annotations.Nullable CompoundTag pDataTag) {
+    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {}
+
+    @Override
+    protected void playSwimSound(float pVolume) {}
+
+    @Override
+    public @NotNull SpawnGroupData finalizeSpawn(
+            @NotNull ServerLevelAccessor pLevel,
+            @NotNull DifficultyInstance pDifficulty,
+            @NotNull MobSpawnType pReason,
+            @org.jetbrains.annotations.Nullable SpawnGroupData pSpawnData,
+            @org.jetbrains.annotations.Nullable CompoundTag pDataTag) {
         if (pReason == MobSpawnType.BUCKET) {
-            if (pDataTag != null && pDataTag.contains("UUID")) {
-                setUUID(UUID.fromString(pDataTag.getString("UUID")));
+            if (pDataTag != null && pDataTag.contains("StringUUID")) {
+                setUUID(UUID.fromString(pDataTag.getString("StringUUID")));
             }
 
             return pSpawnData;
         } else {
             RandomSource random = pLevel.getRandom();
             if (pSpawnData == null) {
-                if(random.nextFloat() < 0.1f) {
-                    pSpawnData = new SwampDragonGroupData(Variant.getRareSpawnVariant(random));
-                }else {
-                    pSpawnData = new SwampDragonGroupData(Variant.getCommonSpawnVariant(random),Variant.getCommonSpawnVariant(random),
-                            Variant.getCommonSpawnVariant(random),Variant.getCommonSpawnVariant(random));
+                if (random.nextFloat() < 0.1f) {
+                    pSpawnData = new ErsGroupData<>(false, SpawnVariant.getRareSpawnVariant(Variant.values(), random));
+                } else {
+                    pSpawnData = new ErsGroupData<>(
+                            false,
+                            SpawnVariant.getCommonSpawnVariant(Variant.values(), random),
+                            SpawnVariant.getCommonSpawnVariant(Variant.values(), random),
+                            SpawnVariant.getCommonSpawnVariant(Variant.values(), random),
+                            SpawnVariant.getCommonSpawnVariant(Variant.values(), random));
                 }
             }
 
-            this.setVariant(((SwampDragonGroupData)pSpawnData).getVariant(random));
+            this.setVariant(((ErsGroupData<Variant>) pSpawnData).getVariant(random));
 
-            if(this.random.nextFloat() < 0.25f){
+            if (this.random.nextFloat() < 0.25f) {
                 this.setCanBeElite(true);
             }
 
-            this.setAgeInDays(this.random.nextIntBetweenInclusive(15,50));
-            updateFromAgeServer();
+            this.setAgeInDays(this.random.nextIntBetweenInclusive(15, 50));
+            updateAgeFromServer();
             this.setHealth(this.getMaxHealth());
-            if(isMature()){
-                if(this.random.nextFloat() < 0.15f){
-                    placeNest();
+            if (isMature()) {
+                if (this.random.nextFloat() < 0.15f) {
+                    TickHelper.tickLater(level(), 20, this::placeNest);
                 }
             }
 
-            if(this.random.nextFloat() < 0.01f){
-                var customNameList = new String[]{"Ladon", "Forsaken","Acheron_Pollux","profound","Nakishimo","Carpodacus dubius","sunfyre","Nekorizu","U3UUU"};
+            if (this.random.nextFloat() < 0.01f) {
+                var customNameList = new String[] {
+                    "Ladon",
+                    "Forsaken",
+                    "Acheron_Pollux",
+                    "profound",
+                    "Nakishimo",
+                    "Carpodacus dubius",
+                    "sunfyre",
+                    "Nekorizu",
+                    "U3UUU",
+                    "Kai_Sylph",
+                    "Skadi",
+                    "Bearer of the flowing red train"
+                };
                 this.setCustomName(Component.literal(customNameList[this.random.nextInt(customNameList.length)]));
             }
 
@@ -1112,21 +1071,22 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
         setVariantId(pVariant.getId());
     }
 
-    public enum Variant implements StringRepresentable {
+    public enum Variant implements StringRepresentable, SpawnVariant {
         ORIGINAL(0, "original", true),
-        ORIGINAL_LIGHT(1,"original_light",true),
-        ORIGINAL_DEEP(2,"original_deep",true),
+        ORIGINAL_LIGHT(1, "original_light", true),
+        ORIGINAL_DEEP(2, "original_deep", true),
         LACK_YELLOW(3, "lack_yellow", false),
-        LACK_YELLOW_LIGHT(4,"lack_yellow_light",false),
-        LACK_YELLOW_DEEP(5,"lack_yellow_deep",false),
+        LACK_YELLOW_LIGHT(4, "lack_yellow_light", false),
+        LACK_YELLOW_DEEP(5, "lack_yellow_deep", false),
         BLACK(6, "black", false),
-        BLACK_LIGHT(7,"black_light",false),
-        BLACK_DEEP(8,"black_deep",false),
+        BLACK_LIGHT(7, "black_light", false),
+        BLACK_DEEP(8, "black_deep", false),
         WHITE(9, "white", false),
-        WHITE_LIGHT(10,"white_light",false),
-        WHITE_DEEP(11,"white_deep",false);
+        WHITE_LIGHT(10, "white_light", false),
+        WHITE_DEEP(11, "white_deep", false);
 
-        private static final IntFunction<Variant> BY_ID = ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        private static final IntFunction<Variant> BY_ID =
+                ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
         private final int id;
         private final String name;
@@ -1146,37 +1106,17 @@ public class DentisaurusLongirostrisEntity extends ErsTamableVehicle<Dentisaurus
             return this.name;
         }
 
+        @Override
+        public boolean isCommon() {
+            return this.common;
+        }
+
         public @NotNull String getSerializedName() {
             return this.name;
         }
 
         public static Variant byId(int pId) {
             return BY_ID.apply(pId);
-        }
-
-        public static Variant getCommonSpawnVariant(RandomSource pRandom) {
-            return getSpawnVariant(pRandom, true);
-        }
-
-        public static Variant getRareSpawnVariant(RandomSource pRandom) {
-            return getSpawnVariant(pRandom, false);
-        }
-
-        private static Variant getSpawnVariant(RandomSource pRandom, boolean pCommon) {
-            Variant[] $$2 = Arrays.stream(values()).filter((p_149252_) -> p_149252_.common == pCommon).toArray(Variant[]::new);
-            return Util.getRandom($$2, pRandom);
-        }
-    }
-    public static class SwampDragonGroupData extends AgeableMobGroupData {
-        public final Variant[] types;
-
-        public SwampDragonGroupData(Variant... pTypes) {
-            super(false);
-            this.types = pTypes;
-        }
-
-        public Variant getVariant(RandomSource pRandom) {
-            return this.types[pRandom.nextInt(this.types.length)];
         }
     }
 }

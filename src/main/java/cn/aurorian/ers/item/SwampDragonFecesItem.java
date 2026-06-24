@@ -1,6 +1,7 @@
 package cn.aurorian.ers.item;
 
 import cn.aurorian.ers.init.ErsItems;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -22,8 +23,6 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class SwampDragonFecesItem extends Item {
     public SwampDragonFecesItem(Properties pProperties) {
         super(pProperties);
@@ -37,7 +36,10 @@ public class SwampDragonFecesItem extends Item {
         }
 
         ItemStack stack = context.getItemInHand();
-        if (tryBonemealEffect(context.getLevel(), context.getClickedPos(), context.getLevel().getBlockState(context.getClickedPos()))) {
+        if (tryBonemealEffect(
+                context.getLevel(),
+                context.getClickedPos(),
+                context.getLevel().getBlockState(context.getClickedPos()))) {
             if (context.getPlayer() != null && !context.getPlayer().getAbilities().instabuild) {
                 stack.shrink(1);
             }
@@ -46,20 +48,22 @@ public class SwampDragonFecesItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-            List<BlockItem> fecesBlocks =
-            List.of((BlockItem) ErsItems.BONE_FECES.get(), (BlockItem) ErsItems.LARGE_FECES.get(),
-                    (BlockItem) ErsItems.SMALL_FECES.get(),(BlockItem) ErsItems.GLASSES_FECES.get());
+        List<BlockItem> fecesBlocks = List.of(
+                (BlockItem) ErsItems.BONE_FECES.get(), (BlockItem) ErsItems.LARGE_FECES.get(),
+                (BlockItem) ErsItems.SMALL_FECES.get(), (BlockItem) ErsItems.GLASSES_FECES.get());
         BlockItem selected = fecesBlocks.get(RandomSource.create().nextInt(fecesBlocks.size()));
         InteractionResult result = selected.place(new BlockPlaceContext(context));
         // 播放音效
-        context.getLevel().playSound(null,
-                context.getClickedPos().getX() + 0.5,
-                context.getClickedPos().getY() + 0.5,
-                context.getClickedPos().getZ() + 0.5,
-                SoundEvents.SLIME_BLOCK_PLACE,
-                SoundSource.BLOCKS,
-                0.5f,
-                1.0f);
+        context.getLevel()
+                .playSound(
+                        null,
+                        context.getClickedPos().getX() + 0.5,
+                        context.getClickedPos().getY() + 0.5,
+                        context.getClickedPos().getZ() + 0.5,
+                        SoundEvents.SLIME_BLOCK_PLACE,
+                        SoundSource.BLOCKS,
+                        0.5f,
+                        1.0f);
         if (result == InteractionResult.SUCCESS) {
             Player player = context.getPlayer();
             if (player != null && !player.getAbilities().instabuild) {

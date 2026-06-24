@@ -19,13 +19,12 @@ public class OasisBreedGoal extends BreedGoal {
 
     public void tick() {
         super.tick();
-        this.animal.getLookControl().setLookAt(this.partner, 10.0F, (float)this.animal.getMaxHeadXRot());
+        this.animal.getLookControl().setLookAt(this.partner, 10.0F, (float) this.animal.getMaxHeadXRot());
         this.animal.getNavigation().moveTo(this.partner, this.moveSpeed);
         ++this.breedDelay;
         if (this.breedDelay >= 60 && this.animal.distanceToSqr(this.partner) < 20.0) {
 
             this.breed();
         }
-
     }
 }

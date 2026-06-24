@@ -9,13 +9,20 @@ public class TubunasusDurovelaBodyControl extends GeneralVehicleBodyControl {
     }
 
     private final TubunasusDurovelaEntity entity;
+
     @Override
     public void clientTick() {
-        if(entity.isTame() && entity.getOwner() == entity.getControllingPassenger()) {
-            vehicleTick(entity.getRushTimer() > 100 ? 2 : 3, entity.getRushTimer() > 100 ? 2 : 3,9,
-                    this.entity.getRushTimer() < 200 ? 5 : 2, entity.getRushTimer() < 100 ? 9 : 0, 20,25);
+        if (entity.isTame() && entity.getOwner() == entity.getControllingPassenger()) {
+            vehicleTick(
+                    entity.getRushTimer() > 100 ? 2 : 3,
+                    entity.getRushTimer() > 100 ? 2 : 3,
+                    9,
+                    this.entity.getRushTimer() < 200 ? 5 : 2,
+                    entity.getRushTimer() < 100 ? 9 : 0,
+                    20,
+                    25,
+                    80);
 
-        } else
-            aiTick(35f,2f, entity.isInWater() ? 2.3f : 10f);
+        } else aiTick(35f, 2f, entity.isInWater() ? 2.3f : 10f);
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
-public class FecesRender extends GeoBlockRenderer<FecesBlockEntity>{
+public class FecesRender extends GeoBlockRenderer<FecesBlockEntity> {
 
     public FecesRender(@NotNull BlockEntityType<FecesBlockEntity> blockEntityType) {
         super(new FecesBlockModel(blockEntityType));

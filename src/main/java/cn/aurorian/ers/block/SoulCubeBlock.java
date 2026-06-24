@@ -25,7 +25,8 @@ import org.jetbrains.annotations.NotNull;
 public class SoulCubeBlock extends Block {
     public SoulCubeBlock(Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, false));
+        this.registerDefaultState(
+                this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, false));
     }
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -35,25 +36,31 @@ public class SoulCubeBlock extends Block {
     public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, ACTIVE);
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
-        if(player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)){
-            if(!state.getValue(SoulCubeBlock.ACTIVE)){
+    public @NotNull InteractionResult use(
+            @NotNull BlockState state,
+            @NotNull Level level,
+            @NotNull BlockPos pos,
+            @NotNull Player player,
+            @NotNull InteractionHand pHand,
+            @NotNull BlockHitResult pHit) {
+        if (player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)) {
+            if (!state.getValue(SoulCubeBlock.ACTIVE)) {
                 player.getMainHandItem().shrink(1);
                 BlockState newState = state.setValue(SoulCubeBlock.ACTIVE, true);
-                level.playSound(player,pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
+                level.playSound(player, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
                 level.setBlockAndUpdate(pos, newState);
 
-
                 ItemStack gift = new ItemStack(ErsItems.SOUL_CUBE_GIFT.get());
-                gift.getOrCreateTag().putInt("X",pos.getX());
-                gift.getOrCreateTag().putInt("Y",pos.getY());
-                gift.getOrCreateTag().putInt("Z",pos.getZ());
+                gift.getOrCreateTag().putInt("X", pos.getX());
+                gift.getOrCreateTag().putInt("Y", pos.getY());
+                gift.getOrCreateTag().putInt("Z", pos.getZ());
 
                 level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), gift));
                 return InteractionResult.SUCCESS;

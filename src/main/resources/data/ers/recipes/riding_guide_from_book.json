@@ -5,7 +5,7 @@
     {
       "type": "forge:nbt",
       "item": "patchouli:guide_book",
-      "nbt": "{book:'ers:manual'}"
+      "nbt": "{\"patchouli:book\":\"ers:manual\"}"
     }
   ],
   "result": {

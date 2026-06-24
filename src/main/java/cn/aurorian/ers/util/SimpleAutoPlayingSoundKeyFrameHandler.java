@@ -12,14 +12,15 @@ import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.keyframe.event.SoundKeyframeEvent;
 
-public class SimpleAutoPlayingSoundKeyFrameHandler<A extends GeoAnimatable> implements AnimationController.SoundKeyframeHandler<A>{
+public class SimpleAutoPlayingSoundKeyFrameHandler<A extends GeoAnimatable>
+        implements AnimationController.SoundKeyframeHandler<A> {
     private final String namespace;
 
     public SimpleAutoPlayingSoundKeyFrameHandler() {
         this.namespace = EcologicalReplenishmentStation.MODID;
     }
 
-    public SimpleAutoPlayingSoundKeyFrameHandler(String namespace){
+    public SimpleAutoPlayingSoundKeyFrameHandler(String namespace) {
         this.namespace = namespace;
     }
 
@@ -28,34 +29,33 @@ public class SimpleAutoPlayingSoundKeyFrameHandler<A extends GeoAnimatable> impl
         var soundName = soundKeyframeEvent.getKeyframeData().getSound();
         var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.fromNamespaceAndPath(namespace, soundName));
 
-        if(sound == null || !(soundKeyframeEvent.getAnimatable() instanceof LivingEntity entity))
-            return;
+        if (sound == null || !(soundKeyframeEvent.getAnimatable() instanceof LivingEntity entity)) return;
 
-        if(!(soundKeyframeEvent.getAnimatable() instanceof ErsEntity<?> ers))
-            return;
+        if (!(soundKeyframeEvent.getAnimatable() instanceof ErsEntity<?> ers)) return;
 
         var playerPos = Minecraft.getInstance().player.getEyePosition();
 
-        var entityPos = entity.position().add(0,1,0);
+        var entityPos = entity.position().add(0, 1, 0);
         var distance = Math.sqrt(playerPos.distanceToSqr(entityPos));
 
-        if (distance > 200) return;
+        if (distance > ers.getSoundRange()) return;
 
         var volume = ers.getVolume() * Math.min(1f, 1f / (distance / ers.getSoundRange()));
 
-        if (Minecraft.getInstance().player.getVehicle() instanceof ErsTamableVehicle<?> && Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
-            volume = 2.2f;
+        if (Minecraft.getInstance().player.getVehicle() instanceof ErsTamableVehicle<?>
+                && Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
+            volume *= 2f;
         }
 
-        entity.level().playLocalSound(
-                entity.getX(),
-                entity.getY(),
-                entity.getZ(),
-                sound,
-                entity.getSoundSource(),
-                (float) volume,
-                1.0f,
-                false
-        );
+        entity.level()
+                .playLocalSound(
+                        entity.getX(),
+                        entity.getY(),
+                        entity.getZ(),
+                        sound,
+                        entity.getSoundSource(),
+                        (float) volume,
+                        1.0f,
+                        false);
     }
 }

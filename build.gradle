@@ -10,6 +10,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'org.spongepowered.mixin' version '0.7.+'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 
@@ -191,7 +192,14 @@ publishing {
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            name = 'aurorianRepo'
+            url = uri('http://rm.aurorian.cn:8081/repository/maven-snapshots/')
+            // Gradle blocks insecure (HTTP) by default in recent versions; allow it explicitly.
+            allowInsecureProtocol = true
+            credentials {
+                username = project.findProperty('mavenUsername')
+                password = project.findProperty('mavenPassword')
+            }
         }
     }
 }
@@ -206,4 +214,84 @@ tasks.register('jarJarRelease') {
 tasks.jarJar.finalizedBy('reobfJarJar')
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+spotless {
+    java {
+        palantirJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+        indentWithSpaces(4)
+    }
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'spotlessApply'
+}
+
+import java.util.zip.*
+import java.util.Base64
+
+def geoMagic = 'ENC:'
+def geoKey = [
+    0x47, (byte) 0xE3, 0x2A, (byte) 0xB1, 0x7F, (byte) 0xC8, 0x55, (byte) 0x9D,
+    0x11, (byte) 0xA4, 0x6E, (byte) 0xD2, 0x38, (byte) 0xF5, 0x0C, (byte) 0x82,
+    0x73, (byte) 0x19, (byte) 0xE7, 0x44, (byte) 0xB6, 0x2D, (byte) 0x9A, 0x61
+] as byte[]
+
+boolean isGeoResource(String name) {
+    return (name.startsWith('assets/ers/geo/') || name.startsWith('assets/ers/animations/') ||
+            name.startsWith('assets/oasis/geo/') || name.startsWith('assets/oasis/animations/')) &&
+            name.endsWith('.json')
+}
+
+byte[] xorBytes(byte[] data, byte[] key) {
+    def result = new byte[data.length]
+    for (int i = 0; i < data.length; i++) {
+        result[i] = (byte) (data[i] ^ key[i % key.length])
+    }
+    return result
+}
+
+def encryptJarFile = { File jarFile ->
+    if (!jarFile.exists()) return
+
+    def tempFile = new File(jarFile.parent, jarFile.name + '.tmp')
+
+    new ZipOutputStream(new FileOutputStream(tempFile)).withStream { zos ->
+        new ZipFile(jarFile).withCloseable { zf ->
+            zf.entries().each { entry ->
+                def newEntry = new ZipEntry(entry.name)
+                newEntry.time = entry.time
+                zos.putNextEntry(newEntry)
+
+                if (!entry.isDirectory() && isGeoResource(entry.name)) {
+                    def bytes = zf.getInputStream(entry).bytes
+                    def text = new String(bytes, 'UTF-8')
+                    if (!text.startsWith(geoMagic)) {
+                        def encrypted = xorBytes(bytes, geoKey)
+                        def encoded = geoMagic + Base64.encoder.encodeToString(encrypted)
+                        zos.write(encoded.getBytes('UTF-8'))
+                    } else {
+                        zos.write(bytes)
+                    }
+                } else {
+                    zf.getInputStream(entry).withStream { is ->
+                        zos << is
+                    }
+                }
+                zos.closeEntry()
+            }
+        }
+    }
+
+    jarFile.delete()
+    tempFile.renameTo(jarFile)
+}
+
+tasks.withType(Jar).configureEach { jarTask ->
+    jarTask.doLast {
+        encryptJarFile(archiveFile.get().asFile)
+    }
 }

@@ -7,37 +7,38 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import org.jetbrains.annotations.NotNull;
 
 public class TubunasusMeleeAttackGoal extends MeleeAttackGoal {
-    ErsTamableVehicle<?> tubunasusEntity;
-    public TubunasusMeleeAttackGoal(ErsTamableVehicle<?> pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
+    ErsTamableVehicle<?> entity;
+
+    public TubunasusMeleeAttackGoal(
+            ErsTamableVehicle<?> pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
         super(pMob, pSpeedModifier, pFollowingTargetEvenIfNotSeen);
-        tubunasusEntity = pMob;
+        entity = pMob;
     }
 
     @Override
     public boolean canUse() {
-        return super.canUse() && !tubunasusEntity.isVehicle();
+        return super.canUse() && entity.getControllingPassenger() == null;
     }
 
     @Override
     public void stop() {
         super.stop();
-        tubunasusEntity.setSprinting(false);
+        entity.setSprinting(false);
     }
 
     @Override
     protected void checkAndPerformAttack(@NotNull LivingEntity pEnemy, double pDistToEnemySqr) {
         double d0 = this.getAttackReachSqr(pEnemy);
-        if (pDistToEnemySqr <= d0 && isTimeToAttack() && tubunasusEntity.getAttackState().isEmpty()) {
+        if (pDistToEnemySqr <= d0 && isTimeToAttack() && entity.getAttackState().isEmpty()) {
             this.resetAttackCooldown();
-            tubunasusEntity.setSprinting(false);
-            if(tubunasusEntity.isAlliedTo(pEnemy))
-                return;
-            tubunasusEntity.startAttack(AttackType.TUBUNASUS_ATTACK);
+            entity.setSprinting(false);
+            if (entity.isAlliedTo(pEnemy)) return;
+            entity.startAttack(AttackType.TUBUNASUS_ATTACK);
             this.mob.doHurtTarget(pEnemy);
         }
 
-        if(pDistToEnemySqr > d0){
-            tubunasusEntity.setSprinting(true);
+        if (pDistToEnemySqr > d0) {
+            entity.setSprinting(true);
         }
     }
 }

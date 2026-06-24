@@ -1,5 +1,8 @@
 package cn.aurorian.ers.client.animator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -7,21 +10,17 @@ import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class GeneralAnimator<T extends Mob & GeoAnimatable> {
-    protected final CircularBuffer yawTrail = new CircularBuffer(64);//记录身体旋转的buffer
+    protected final CircularBuffer yawTrail = new CircularBuffer(64); // 记录身体旋转的buffer
     protected final CircularBuffer pitchTrail = new CircularBuffer(16);
-    private final CircularBuffer yTrail = new CircularBuffer(8);
+    protected final CircularBuffer yTrail = new CircularBuffer(8);
     public boolean isInScreen;
 
     protected T entity;
     protected float partialTicks;
     private boolean init;
 
-    public GeneralAnimator(T entity){
+    public GeneralAnimator(T entity) {
         this.entity = entity;
         init = false;
     }
@@ -31,13 +30,16 @@ public class GeneralAnimator<T extends Mob & GeoAnimatable> {
      * 可能是由于tick存在的上限，yawDiff最大值为4，最小值为-4
      */
 
-    public void tick(){
-        if(!init){
+    public void tick() {
+        if (!init) {
             init = true;
             yawTrail.fill(-entity.yBodyRot);
             yTrail.fill((float) entity.getY());
             pitchTrail.fill(getModelPitch(partialTicks));
         }
+
+        if (entity.isPassenger()) return;
+
         yawTrail.update(-entity.yBodyRot);
         yTrail.update((float) entity.getY());
         pitchTrail.update(getModelPitch(partialTicks));
@@ -55,24 +57,23 @@ public class GeneralAnimator<T extends Mob & GeoAnimatable> {
     }
 
     public float getModelPitch(float pt) {
-        return getModelPitch(pt,10);
+        return getModelPitch(pt, 10);
     }
 
-    public List<GeoBone> getBonesByName(String[] boneNames, GeoModel<T> model){
+    public List<GeoBone> getBonesByName(String[] boneNames, GeoModel<T> model) {
         List<GeoBone> bones = new ArrayList<>();
-        for(String boneName : boneNames){
+        for (String boneName : boneNames) {
             Optional<GeoBone> bone = model.getBone(boneName);
             bone.ifPresent(bones::add);
         }
         return bones;
     }
 
-    public void setPartialTick(float partialTicks){
+    public void setPartialTick(float partialTicks) {
         this.partialTicks = partialTicks;
     }
 
-    public float getPartialTick(){
+    public float getPartialTick() {
         return partialTicks;
     }
 }
-       

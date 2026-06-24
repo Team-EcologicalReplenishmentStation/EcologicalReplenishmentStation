@@ -11,14 +11,13 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class ClyderotundaSpecimenBlockEntity extends BlockEntity implements GeoBlockEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public ClyderotundaSpecimenBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(OasisBlockEntities.CLYDEROTUNDA_SPECIMEN_BLOCK_ENTITY.get(), pPos, pBlockState);
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-
-    }
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {}
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

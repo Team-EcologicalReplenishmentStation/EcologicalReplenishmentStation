@@ -3,6 +3,9 @@ package cn.aurorian.ers.item.weapon;
 import cn.aurorian.ers.client.render.item.ErsBWLRender;
 import cn.aurorian.ers.entity.projectile.DragonClawHarpoonEntity;
 import cn.aurorian.ers.init.ErsItems;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.sounds.SoundEvent;
@@ -10,8 +13,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -23,17 +30,36 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.util.NonNullLazy;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
 public class DragonClawHarpoon extends TridentItem {
     public DragonClawHarpoon(Properties pProperties) {
         super(pProperties);
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+        builder.put(
+                Attributes.ATTACK_DAMAGE,
+                new AttributeModifier(
+                        BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 10.0D, AttributeModifier.Operation.ADDITION));
+        builder.put(
+                Attributes.ATTACK_SPEED,
+                new AttributeModifier(
+                        BASE_ATTACK_SPEED_UUID, "Tool modifier", -2.9F, AttributeModifier.Operation.ADDITION));
+        this.defaultModifiers = builder.build();
+    }
+
+    private final Multimap<Attribute, AttributeModifier> defaultModifiers;
+
+    public @NotNull Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(
+            @NotNull EquipmentSlot pEquipmentSlot) {
+        return pEquipmentSlot == EquipmentSlot.MAINHAND
+                ? this.defaultModifiers
+                : super.getDefaultAttributeModifiers(pEquipmentSlot);
     }
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
-            static final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() -> new ErsBWLRender(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels()));
+            static final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() -> new ErsBWLRender(
+                    Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+                    Minecraft.getInstance().getEntityModels()));
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
@@ -43,17 +69,20 @@ public class DragonClawHarpoon extends TridentItem {
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pEntityLiving, int pTimeLeft) {
+    public void releaseUsing(
+            @NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pEntityLiving, int pTimeLeft) {
         if (pEntityLiving instanceof Player $$4) {
             int $$5 = this.getUseDuration(pStack) - pTimeLeft;
             if ($$5 >= 10) {
                 int $$6 = EnchantmentHelper.getRiptide(pStack);
                 if ($$6 <= 0 || $$4.isInWaterOrRain()) {
                     if (!pLevel.isClientSide) {
-                        pStack.hurtAndBreak(1, $$4, (p_43388_) -> p_43388_.broadcastBreakEvent(pEntityLiving.getUsedItemHand()));
+                        pStack.hurtAndBreak(
+                                1, $$4, (p_43388_) -> p_43388_.broadcastBreakEvent(pEntityLiving.getUsedItemHand()));
                         if ($$6 == 0) {
                             DragonClawHarpoonEntity $$7 = new DragonClawHarpoonEntity(pLevel, $$4, pStack);
-                            $$7.shootFromRotation($$4, $$4.getXRot(), $$4.getYRot(), 0.0F, 2.5F + (float)$$6 * 0.5F, 1.0F);
+                            $$7.shootFromRotation(
+                                    $$4, $$4.getXRot(), $$4.getYRot(), 0.0F, 2.5F + (float) $$6 * 0.5F, 1.0F);
                             if ($$4.getAbilities().instabuild) {
                                 $$7.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                             }
@@ -74,7 +103,7 @@ public class DragonClawHarpoon extends TridentItem {
                         float $$11 = -Mth.sin($$9 * 0.017453292F);
                         float $$12 = Mth.cos($$8 * 0.017453292F) * Mth.cos($$9 * 0.017453292F);
                         float $$13 = Mth.sqrt($$10 * $$10 + $$11 * $$11 + $$12 * $$12);
-                        float $$14 = 3.0F * ((1.0F + (float)$$6) / 4.0F);
+                        float $$14 = 3.0F * ((1.0F + (float) $$6) / 4.0F);
                         $$10 *= $$14 / $$13;
                         $$11 *= $$14 / $$13;
                         $$12 *= $$14 / $$13;
@@ -95,7 +124,6 @@ public class DragonClawHarpoon extends TridentItem {
 
                         pLevel.playSound(null, $$4, $$18, SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
-
                 }
             }
         }

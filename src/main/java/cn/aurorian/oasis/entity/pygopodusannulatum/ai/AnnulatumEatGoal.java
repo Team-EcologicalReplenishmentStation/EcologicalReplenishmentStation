@@ -16,7 +16,7 @@ public class AnnulatumEatGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (this.mob.isVehicle() ||this.mob.isBaby()) {
+        if (this.mob.isVehicle() || this.mob.isBaby()) {
             return false;
         } else {
             if (this.mob.getNoActionTime() >= 100) {
@@ -27,16 +27,14 @@ public class AnnulatumEatGoal extends Goal {
                 return false;
             }
 
-
             return isGrass() && !mob.isSprinting();
-
         }
     }
 
     @Override
     public void tick() {
         tickCount++;
-        if(isGrass()){
+        if (isGrass()) {
             this.mob.level().destroyBlock(this.mob.getOnPos().above(), false);
             this.mob.feed(2);
             tickCount = 0;
@@ -47,7 +45,7 @@ public class AnnulatumEatGoal extends Goal {
     public void start() {
         this.mob.setEating(true);
         this.mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.05);
-        if(isGrass()){
+        if (isGrass()) {
             this.mob.level().destroyBlock(this.mob.getOnPos().above(), false);
             this.mob.feed(2);
         }
@@ -65,7 +63,8 @@ public class AnnulatumEatGoal extends Goal {
         return (isGrass() || tickCount < 100);
     }
 
-    private boolean isGrass(){
-        return this.mob.level().getBlockState(this.mob.getOnPos().above()).is(Blocks.GRASS) || this.mob.level().getBlockState(this.mob.getOnPos().above()).is(Blocks.TALL_GRASS);
+    private boolean isGrass() {
+        return this.mob.level().getBlockState(this.mob.getOnPos().above()).is(Blocks.GRASS)
+                || this.mob.level().getBlockState(this.mob.getOnPos().above()).is(Blocks.TALL_GRASS);
     }
 }

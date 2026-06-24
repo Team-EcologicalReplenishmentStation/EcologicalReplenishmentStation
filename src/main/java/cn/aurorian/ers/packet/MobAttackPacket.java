@@ -1,10 +1,9 @@
 package cn.aurorian.ers.packet;
 
 import cn.aurorian.ers.entity.ErsTamableVehicle;
+import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class MobAttackPacket {
     private final int entityId;
@@ -19,17 +18,18 @@ public class MobAttackPacket {
         buf.writeInt(entityId);
         buf.writeInt(attackId);
     }
+
     public static MobAttackPacket decode(FriendlyByteBuf buf) {
-        return new MobAttackPacket(buf.readInt(),buf.readInt());
+        return new MobAttackPacket(buf.readInt(), buf.readInt());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getDirection().getReceptionSide().isServer()) {
-                ErsTamableVehicle<?> tamable = (ErsTamableVehicle<?>) ctx.get().getSender().level().getEntity(entityId);
+                ErsTamableVehicle<?> tamable =
+                        (ErsTamableVehicle<?>) ctx.get().getSender().level().getEntity(entityId);
 
-                if(tamable == null)
-                    return;
+                if (tamable == null) return;
 
                 switch (this.attackId) {
                     case 1:
@@ -47,9 +47,9 @@ public class MobAttackPacket {
                     case 5:
                         tamable.executeJumpAttackType();
                         break;
-                     default:
-                         break;
-                    }
+                    default:
+                        break;
+                }
             }
         });
         ctx.get().setPacketHandled(true);

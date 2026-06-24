@@ -53,13 +53,13 @@ public class LatimeriaPercoidesEntity extends AbstractFish implements GeoEntity,
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         AnimationController<LatimeriaPercoidesEntity> main = new AnimationController<>(this, "main", 10, state -> {
             RawAnimation builder = RawAnimation.begin();
-            if(isInWater()){
+            if (isInWater()) {
                 if (state.isMoving()) {
                     builder.thenLoop("animation.swim");
                 } else {
                     builder.thenLoop("animation.idle");
                 }
-            }else {
+            } else {
                 builder.thenLoop("animation.flop");
             }
             return state.setAndContinue(builder);
@@ -84,8 +84,7 @@ public class LatimeriaPercoidesEntity extends AbstractFish implements GeoEntity,
     @Override
     public void tick() {
         super.tick();
-        if(level().isClientSide())
-            animator.tick();
+        if (level().isClientSide()) animator.tick();
     }
 
     @Override

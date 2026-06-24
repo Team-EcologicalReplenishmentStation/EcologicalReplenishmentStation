@@ -1,5 +1,6 @@
 package cn.aurorian.ers.particle;
 
+import javax.annotation.Nullable;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -8,17 +9,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
 @OnlyIn(Dist.CLIENT)
 public class FallingBloodParticle extends TextureSheetParticle {
 
     FallingBloodParticle(ClientLevel pLevel, double pX, double pY, double pZ) {
         super(pLevel, pX, pY, pZ);
         this.quadSize *= 2.4f;
-        int $$9 = (int)(32.0 / (Math.random() * 0.8 + 0.2));
-        this.lifetime = (int)Math.max((float)$$9 * 0.9F, 1.0F);
-        this.roll = (float)Math.random() * 6.2831855F;
+        int $$9 = (int) (32.0 / (Math.random() * 0.8 + 0.2));
+        this.lifetime = (int) Math.max((float) $$9 * 0.9F, 1.0F);
+        this.roll = (float) Math.random() * 6.2831855F;
     }
 
     public @NotNull ParticleRenderType getRenderType() {
@@ -26,7 +25,7 @@ public class FallingBloodParticle extends TextureSheetParticle {
     }
 
     public float getQuadSize(float pScaleFactor) {
-        return this.quadSize * Mth.clamp(((float)this.age + pScaleFactor) / (float)this.lifetime * 32.0F, 0.0F, 1.0F);
+        return this.quadSize * Mth.clamp(((float) this.age + pScaleFactor) / (float) this.lifetime * 32.0F, 0.0F, 1.0F);
     }
 
     public void tick() {
@@ -56,7 +55,15 @@ public class FallingBloodParticle extends TextureSheetParticle {
         }
 
         @Nullable
-        public Particle createParticle(@NotNull SimpleParticleType pType, @NotNull ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+        public Particle createParticle(
+                @NotNull SimpleParticleType pType,
+                @NotNull ClientLevel pLevel,
+                double pX,
+                double pY,
+                double pZ,
+                double pXSpeed,
+                double pYSpeed,
+                double pZSpeed) {
             FallingBloodParticle particle = new FallingBloodParticle(pLevel, pX, pY, pZ);
             particle.pickSprite(this.sprite);
             return particle;

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ers:tachycaris_gustatus_meat"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ers:entities/tachycaris_gustatus"
+}

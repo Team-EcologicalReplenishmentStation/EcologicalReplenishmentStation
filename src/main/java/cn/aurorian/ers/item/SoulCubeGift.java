@@ -19,25 +19,29 @@ public class SoulCubeGift extends Item {
     }
 
     @Override
-    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack itemStack, @NotNull Player player, @NotNull LivingEntity target, @NotNull InteractionHand pUsedHand) {
-        if(target instanceof ErsTamable<?> pet) {
-            if(!pet.isTame())
-                return InteractionResult.PASS;
-            if(!pet.isOwnedBy(player))
-                return InteractionResult.PASS;
+    public @NotNull InteractionResult interactLivingEntity(
+            @NotNull ItemStack itemStack,
+            @NotNull Player player,
+            @NotNull LivingEntity target,
+            @NotNull InteractionHand pUsedHand) {
+        if (target instanceof ErsTamable<?> pet) {
+            if (!pet.isTame()) return InteractionResult.PASS;
+            if (!pet.isOwnedBy(player)) return InteractionResult.PASS;
 
             pet.setEnable(true);
 
             CompoundTag tag = itemStack.getOrCreateTag();
             pet.setDimension(target.level().dimension().toString());
-            pet.setRespawnPos(new BlockPos(tag.getInt("X"),
-                    tag.getInt("Y"),
-                    tag.getInt("Z")));
+            pet.setRespawnPos(new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z")));
             itemStack.shrink(1);
-            player.level().playSound(player,
-                    target.getOnPos(),
-                    SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.NEUTRAL,
-                    1.0F, 1.0F);
+            player.level()
+                    .playSound(
+                            player,
+                            target.getOnPos(),
+                            SoundEvents.RESPAWN_ANCHOR_SET_SPAWN,
+                            SoundSource.NEUTRAL,
+                            1.0F,
+                            1.0F);
         }
 
         return InteractionResult.CONSUME;
